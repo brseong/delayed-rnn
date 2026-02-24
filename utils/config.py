@@ -10,8 +10,8 @@ class Singleton(type):
         return cls._instances[cls]
 
 class ModelType(Enum):
-    SIMPLE_RNN = auto()
-    SIMPLE_LSTM = auto()
+    RNN = auto()
+    LSTM = auto()
     LEARNABLE_DELAY_RNN = auto()
 
 @dataclass
