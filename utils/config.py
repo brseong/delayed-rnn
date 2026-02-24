@@ -19,6 +19,8 @@ class Config(metaclass=Singleton):
     model_type = ModelType.LEARNABLE_DELAY_RNN
     max_delay = 10
     
+    max_think_steps = 100
+    
     seed = 42
     batch_size = 64
     input_size = 1         # 픽셀 하나씩 입력 (시퀀스 데이터)

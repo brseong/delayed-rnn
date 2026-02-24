@@ -15,6 +15,8 @@ class ThinkingRNN(nn.Module):
         super(ThinkingRNN, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.max_think_steps = config.max_think_steps
+        self.cfg = config
         
         # 기존 클래스 수에 '생각 종료(Think End)' 토큰을 추가하여 전체 단어장 크기 설정
         self.vocab_size = num_classes + 1 
@@ -68,7 +70,7 @@ class ThinkingRNN(nn.Module):
                 think_steps += 1
                 
                 # '생각 끝' 토큰이 뽑히거나, 무한 루프에 빠지는 것을 방지(최대 100번)하면 생각 종료
-                if curr_input.argmax(dim=-1).item() == self.think_end_token or think_steps > 100:
+                if curr_input.argmax(dim=-1).item() == self.think_end_token or think_steps > self.max_think_steps:
                     break  
             
             # --- 3. 출력(Output) 단계 (정확히 N 길이만큼만 생성) ---
@@ -97,6 +99,8 @@ class ThinkingLSTM(nn.Module):
         super(ThinkingLSTM, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.max_think_steps = config.max_think_steps
+        self.cfg = config
         
         # 단어장 크기 (클래스 수 + '생각 끝' 토큰)
         self.vocab_size = num_classes + 1
@@ -148,7 +152,7 @@ class ThinkingLSTM(nn.Module):
                 sampled_idx = curr_input_squeeze.argmax(dim=-1).item()
                 think_steps += 1
                 
-                if sampled_idx == self.think_end_token or think_steps > 100:
+                if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
                     break  
             
             # --- 3. 출력(Output) 단계 ---
@@ -178,6 +182,8 @@ class ThinkingLearnableDelayRNN(nn.Module):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
+        self.max_think_steps = config.max_think_steps
+        self.cfg = config
         self.max_delay = max_delay
         self.device = config.device
         
@@ -297,7 +303,7 @@ class ThinkingLearnableDelayRNN(nn.Module):
                 sampled_idx = curr_input.argmax(dim=-1).item()
                 think_steps += 1
                 
-                if sampled_idx == self.think_end_token or think_steps > 100:
+                if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
                     break  
             
             # --- 3. 출력(Output) 단계 ---
