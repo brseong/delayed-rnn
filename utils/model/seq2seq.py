@@ -1,14 +1,22 @@
+from dataclasses import dataclass
 from typing import Any
 
 import torch
 import torch.nn as nn
-from jaxtyping import Float
+from jaxtyping import Float, Int
 
 from utils.config import Config
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.utils.rnn import pack_padded_sequence
+
+@dataclass
+class Seq2SeqOutput:
+    outputs: Float[torch.Tensor, "batch_size N vocab_size"]
+    # logits: Float[torch.Tensor, "batch_size N vocab_size"]
+    think_steps: Int[torch.Tensor, "batch_size"]
 
 class ThinkingRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size: int, num_classes: int, config):
@@ -27,7 +35,7 @@ class ThinkingRNN(nn.Module):
         self.fc = nn.Linear(hidden_size, self.vocab_size)
         self.device = config.device
 
-    def forward(self, x, N=None):
+    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
         """
         추론(Inference) 시퀀스 생성 함수
         x shape: (Batch, N+3, vocab_size) - 원핫 인코딩된 입력 시퀀스
@@ -40,13 +48,17 @@ class ThinkingRNN(nn.Module):
         
         # --- 1. 인코딩 단계 (주어진 N+3 시퀀스 읽기) ---
         h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
-        _, h = self.rnn(x, h0)  # 마지막 은닉 상태 h를 전체 문맥(Context)으로 사용
+        lengths_cpu = lengths.cpu() # pack_padded_sequence는 CPU 텐서를 요구합니다.
+        packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
+        _, h = self.rnn(packed_x, h0)
         
-        # 디코더의 첫 입력은 입력 시퀀스의 마지막 토큰으로 시작
-        dec_input = x[:, -1, :].unsqueeze(1)  # shape: (Batch, 1, vocab_size)
+        # [핵심 수정] 패딩을 건너뛰고 각 배치의 '진짜 마지막 토큰'을 디코더의 첫 입력으로 설정
+        batch_indices = torch.arange(batch_size, device=self.device)
+        dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)
         
         # 최종 N 길이의 결과를 저장할 빈 텐서
         final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
+        think_steps_list = []
         
         # 배치 내 각 샘플마다 '생각하는 시간'이 다를 수 있으므로 개별 처리합니다.
         for i in range(batch_size):
@@ -58,7 +70,7 @@ class ThinkingRNN(nn.Module):
             while True:
                 out, h_i = self.rnn(curr_input, h_i)
                 logits = self.fc(out.squeeze(1))  # (1, vocab_size)
-                probs = F.softmax(logits, dim=-1)
+                # probs = F.softmax(logits, dim=-1)
                 
                 # # Softmax 확률 분포에서 1개 샘플링
                 # sampled_idx = torch.multinomial(probs, 1)
@@ -72,12 +84,13 @@ class ThinkingRNN(nn.Module):
                 # '생각 끝' 토큰이 뽑히거나, 무한 루프에 빠지는 것을 방지(최대 100번)하면 생각 종료
                 if curr_input.argmax(dim=-1).item() == self.think_end_token or think_steps > self.max_think_steps:
                     break  
+            think_steps_list.append(think_steps)
             
             # --- 3. 출력(Output) 단계 (정확히 N 길이만큼만 생성) ---
             for j in range(N):
                 out, h_i = self.rnn(curr_input, h_i)
                 logits = self.fc(out.squeeze(1))
-                probs = F.softmax(logits, dim=-1)
+                # probs = F.softmax(logits, dim=-1)
                 
                 # sampled_idx = torch.multinomial(probs, 1)
                 # one_hot_out = F.one_hot(sampled_idx, num_classes=self.vocab_size).float()
@@ -88,11 +101,8 @@ class ThinkingRNN(nn.Module):
                 final_outputs[i, j, :] = one_hot_out.squeeze(0)
                 curr_input = one_hot_out.unsqueeze(1)
                 
-        return final_outputs[:,:,:-1]  # '생각 끝' 토큰을 제외한 실제 클래스 확률만 반환
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], # '생각 끝' 토큰을 제외한 실제 클래스 확률만 반환
+                             think_steps=torch.tensor(think_steps_list, device=self.device))
 
 class ThinkingLSTM(nn.Module):
     def __init__(self, input_size:int, hidden_size: int, num_classes: int, config):
@@ -111,7 +121,7 @@ class ThinkingLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, self.vocab_size)
 
-    def forward(self, x, N=None):
+    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
         batch_size = x.size(0)
         
         if N is None:
@@ -122,14 +132,19 @@ class ThinkingLSTM(nn.Module):
         h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
         c0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
         
-        # 전체 시퀀스 문맥 파악
+        # [핵심 수정] 패딩 오염 방지용 pack_padded_sequence 적용
+        lengths_cpu = lengths.cpu()
+        packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
+        _, (h, c) = self.lstm(packed_x, (h0, c0))
         _, (h, c) = self.lstm(x, (h0, c0))
         
-        # 디코더의 첫 입력
-        dec_input = x[:, -1, :].unsqueeze(1)  
+        # [핵심 수정] 진짜 마지막 토큰 인덱싱
+        batch_indices = torch.arange(batch_size, device=self.device)
+        dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)
         
         # 최종 결과를 저장할 빈 텐서 (Loss 계산을 위해 Logits 형태 유지)
         final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
+        think_steps_list = []
         
         for i in range(batch_size):
             # LSTM의 은닉 상태와 셀 상태를 각각 슬라이싱
@@ -154,6 +169,7 @@ class ThinkingLSTM(nn.Module):
                 
                 if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
                     break  
+            think_steps_list.append(think_steps)
             
             # --- 3. 출력(Output) 단계 ---
             for j in range(N):
@@ -167,15 +183,7 @@ class ThinkingLSTM(nn.Module):
                 one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
                 curr_input = one_hot_out.unsqueeze(1)
                 
-        return final_outputs[:,:,:-1]
-    
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from typing import Tuple
-
-# 타입 힌트를 위한 임시 정의 (실제 환경에 맞게 조정하세요)
-# from jaxtyping import Float
+        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
 
 class ThinkingLearnableDelayRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
@@ -258,9 +266,13 @@ class ThinkingLearnableDelayRNN(nn.Module):
         w_efferent, b_efferent = self.efferent.weight, self.efferent.bias
         return ThinkingLearnableDelayRNN.step_jit(x_t, credit_matrix, buffer, buffer_ptr, self.lateral, self.max_delay, w_afferent, b_afferent, w_efferent, b_efferent)
     
-    def forward(self, x, N=None):
+    def forward(self,
+                x:Float[torch.Tensor, "batch_size time_steps input_size"],
+                lengths:Int[torch.Tensor, "batch_size"],
+                N=None) -> Seq2SeqOutput:
         """
         x shape: (batch_size, time_steps, input_size)
+        lengths shape: (batch_size,)
         """
         batch_size = x.size(0)
         if N is None:
@@ -271,25 +283,41 @@ class ThinkingLearnableDelayRNN(nn.Module):
         # 1. 초기화 및 인코딩(Encoding) 단계
         # 전체 배치에 대한 buffer 초기화
         buffer = x.new_zeros(self.max_delay + 1, batch_size, self.hidden_size)
-        buffer_ptr = 0  
+        buffer_ptr = 0 
+        
+        # [핵심 로직 1] 패딩에 오염되기 전의 상태를 저장할 빈 텐서 준비
+        saved_buffers = buffer.new_zeros(buffer.size())
+        saved_buffer_ptrs = buffer.new_zeros(batch_size, dtype=torch.long)
         
         # 입력 시퀀스를 순차적으로 읽으며 buffer에 문맥 축적
         for t in range(x.size(1)):
             x_t = x[:, t, :]
             buffer, buffer_ptr, _ = self.step(x_t, credit_matrix, buffer, buffer_ptr)
             
-        # 디코더의 첫 입력 (입력 시퀀스의 마지막 토큰)
-        dec_input = x[:, -1, :] # shape: (batch_size, vocab_size)
+            # [핵심 로직 2] 방금 계산한 t가 어떤 배치의 '진짜 마지막 단어'인지 확인
+            is_last_token:torch.Tensor = (t == lengths - 1) # type: ignore # shape: (batch_size,)
+            
+            if is_last_token.any():
+                # 문장이 끝난 배치들만 현재의 깨끗한 buffer와 포인터를 복사해 둡니다.
+                mask = is_last_token.view(1, batch_size, 1) # broadcasting을 위해 형태 변경
+                saved_buffers = torch.where(mask, buffer, saved_buffers)
+                saved_buffer_ptrs[is_last_token] = buffer_ptr
+            
+        # 디코더의 첫 입력 (진짜 마지막 토큰 추출)
+        batch_indices = torch.arange(batch_size, out=x.new_empty(batch_size, dtype=torch.long))
+        dec_input = x[batch_indices, lengths - 1, :]
         
         # 최종 결과를 저장할 텐서 (Logits 유지)
-        final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
+        final_outputs = x.new_zeros(batch_size, N, self.vocab_size)
+        think_steps_list = []
         
         # 배치별로 생각하는(Thinking) 시간이 다르므로 독립적으로 분리하여 연산
         for i in range(batch_size):
-            # i번째 배치의 상태만 슬라이싱 (형태를 유지하기 위해 i:i+1 사용)
-            buffer_i = buffer[:, i:i+1, :]     # (max_delay+1, 1, hidden_size)
-            buffer_ptr_i = buffer_ptr          # 포인터는 정수이므로 복사
-            curr_input = dec_input[i:i+1, :]   # (1, vocab_size)
+            # [핵심 로직 3] 루프를 끝까지 돌아 패딩에 오염된 원래 buffer 대신, 
+            # 아까 저장해둔 깨끗한 saved_buffers에서 상태를 불러와 생각을 시작합니다.
+            buffer_i = saved_buffers[:, i:i+1, :]     
+            buffer_ptr_i = saved_buffer_ptrs[i].item() # 저장된 정수형 포인터
+            curr_input = dec_input[i:i+1, :]
             
             # --- 2. 생각(Thinking) 단계 ---
             think_steps = 0
@@ -305,6 +333,7 @@ class ThinkingLearnableDelayRNN(nn.Module):
                 
                 if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
                     break  
+            think_steps_list.append(think_steps)
             
             # --- 3. 출력(Output) 단계 ---
             for j in range(N):
@@ -316,4 +345,4 @@ class ThinkingLearnableDelayRNN(nn.Module):
                 # 다음 스텝 입력을 위한 샘플링
                 curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
                 
-        return final_outputs[:,:,:-1]  # '생각 끝' 토큰 제외한 실제 클래스 확률 반환
+        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
