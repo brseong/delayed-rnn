@@ -58,16 +58,17 @@ presets={
         epochs=100),
 }
 
-def get_model_with_preset(model_class:ModelType, device:torch.device) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
-    config = presets[model_class]
-    config.device = device  # Set the device in the config for later use in model initialization
+def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
+    if config is None:
+        config = presets[model_class]
+        config.device = device  # Set the device in the config for later use in model initialization
     match config.model_type:
         case ModelType.RNN:
-            return ThinkingRNN(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+            return ThinkingRNN(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
         case ModelType.LSTM:
-            return ThinkingLSTM(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+            return ThinkingLSTM(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
         case ModelType.DelayedRNN:
-            return ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, config.max_delay, config).to(config.device)
+            return ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
         case _:
             raise ValueError(f"Unsupported model type: {config.model_type}")
 
