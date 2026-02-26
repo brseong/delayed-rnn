@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
@@ -15,7 +16,7 @@ from torch.nn.utils.rnn import pack_padded_sequence
 presets={
     ModelType.RNN: Config(
         model_type=ModelType.RNN,
-        max_delay=40,
+        # max_delay=40,
         max_think_steps=100,
         seed=None,
         batch_size=32,
@@ -29,7 +30,7 @@ presets={
         epochs=100),
     ModelType.LSTM: Config(
         model_type=ModelType.LSTM,
-        max_delay=40,
+        # max_delay=40,
         max_think_steps=100,
         seed=None,
         batch_size=32,
@@ -57,7 +58,7 @@ presets={
         epochs=100),
 }
 
-def get_model_with_preset(model_class:ModelType) -> nn.Module:
+def get_model_with_preset(model_class:ModelType) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
     config = presets[model_class]
     match config.model_type:
         case ModelType.RNN:
@@ -82,7 +83,7 @@ class ThinkingRNN(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         
         # 기존 클래스 수에 '생각 종료(Think End)' 토큰을 추가하여 전체 단어장 크기 설정
         self.vocab_size = num_classes + 1 
@@ -168,7 +169,7 @@ class ThinkingLSTM(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         
         # 단어장 크기 (클래스 수 + '생각 끝' 토큰)
         self.vocab_size = num_classes + 1
@@ -249,7 +250,7 @@ class ThinkingLearnableDelayRNN(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         self.max_delay = max_delay
         self.device = config.device
         
