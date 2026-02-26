@@ -18,9 +18,7 @@ class ModelType(Enum):
 class Config():
     model_type: ModelType = ModelType.DelayedRNN
     max_delay: int = 10
-    
     max_think_steps: int = 100
-    
     seed: int|None = None
     batch_size: int = 64
     input_size: int = 1         # 픽셀 하나씩 입력 (시퀀스 데이터)

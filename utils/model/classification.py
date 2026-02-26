@@ -4,7 +4,25 @@ import torch
 import torch.nn as nn
 from jaxtyping import Float
 
-from utils.config import Config
+from utils.config import Config, ModelType
+
+presets={
+    ModelType.RNN: Config(model_type=ModelType.RNN),
+    ModelType.LSTM: Config(model_type=ModelType.LSTM),
+    ModelType.DelayedRNN: Config(model_type=ModelType.DelayedRNN)
+}
+
+def get_model_with_preset(model_class:ModelType) -> nn.Module:
+    config = presets[model_class]
+    match config.model_type:
+        case ModelType.RNN:
+            return SimpleRNN(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+        case ModelType.LSTM:
+            return SimpleLSTM(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+        case ModelType.DelayedRNN:
+            return LearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, config.max_delay, config).to(config.device)
+        case _:
+            raise ValueError(f"Unsupported model type: {config.model_type}")
 
 class SimpleRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, config:Config):
