@@ -24,7 +24,7 @@ presets={
         # seq_length=784,
         seq_min=5,
         seq_max=20,
-        hidden_size=256,
+        hidden_size=512,
         num_classes=10,
         learning_rate=0.01,
         epochs=100),
@@ -38,7 +38,7 @@ presets={
         # seq_length=784,
         seq_min=5,
         seq_max=20,
-        hidden_size=128,
+        hidden_size=256,
         num_classes=10,
         learning_rate=0.01,
         epochs=100),
@@ -52,14 +52,15 @@ presets={
         # seq_length=784,
         seq_min=5,
         seq_max=20,
-        hidden_size=180,
+        hidden_size=360,
         num_classes=10,
         learning_rate=0.01,
         epochs=100),
 }
 
-def get_model_with_preset(model_class:ModelType) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
+def get_model_with_preset(model_class:ModelType, device:torch.device) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
     config = presets[model_class]
+    config.device = device  # Set the device in the config for later use in model initialization
     match config.model_type:
         case ModelType.RNN:
             return ThinkingRNN(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
