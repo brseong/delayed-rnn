@@ -162,3 +162,13 @@ class LearnableDelayRNN(nn.Module):
             return_seq.copy_(y)
         
         return y[:, -1, :]  # Return only the last output if return_seq is not specified
+    
+if __name__ == "__main__":
+    # Example usage
+    config = Config(device='cpu')
+    model = SimpleRNN(input_size=1, hidden_size=128, num_classes=10, config=config)
+    print("SimpleRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    model = SimpleLSTM(input_size=1, hidden_size=64, num_classes=10, config=config)
+    print("SimpleLSTM", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    model = LearnableDelayRNN(input_size=1, hidden_size=64, output_size=10, max_delay=20, config=config)
+    print("LearnableDelayRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")

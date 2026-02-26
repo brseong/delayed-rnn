@@ -21,7 +21,7 @@ class Config():
     
     max_think_steps: int = 100
     
-    seed: int = 42
+    seed: int|None = None
     batch_size: int = 64
     input_size: int = 1         # 픽셀 하나씩 입력 (시퀀스 데이터)
     seq_length: int = 784       # 28x28 = 784
@@ -31,4 +31,4 @@ class Config():
     num_classes: int = 10
     learning_rate: float = 0.001
     epochs: int = 10
-    device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device: torch.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
