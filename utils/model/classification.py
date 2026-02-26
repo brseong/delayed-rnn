@@ -6,6 +6,7 @@ from jaxtyping import Float
 
 from utils.config import Config, ModelType
 
+
 presets={
     ModelType.RNN: Config(model_type=ModelType.RNN),
     ModelType.LSTM: Config(model_type=ModelType.LSTM),
@@ -23,6 +24,8 @@ def get_model_with_preset(model_class:ModelType) -> nn.Module:
             return LearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, config.max_delay, config).to(config.device)
         case _:
             raise ValueError(f"Unsupported model type: {config.model_type}")
+
+
 
 class SimpleRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, config:Config):
@@ -72,6 +75,33 @@ class SimpleLSTM(nn.Module):
         # out[:, -1, :] shape: (Batch, Hidden_Size)
         out = self.fc(out[:, -1, :])
         return out
+
+class SimpleGRU(nn.Module):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
+        super(SimpleGRU, self).__init__()
+        self.hidden_size = hidden_size
+        self.device = config.device
+        
+        # batch_first=True: 입력 형태 (Batch, Seq, Feature)
+        self.gru = nn.GRU(input_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        # x shape: (Batch, Seq_Length, Input_Size)
+        
+        # GRU 초기 은닉 상태 설정
+        # shape: (num_layers, batch_size, hidden_size)
+        h0 = torch.zeros(1, x.size(0), self.hidden_size).to(self.device)
+        
+        # GRU 순전파
+        # out shape: (Batch, Seq_Length, Hidden_Size)
+        out, _ = self.gru(x, h0)
+        
+        # 마지막 타임스텝(Time step)의 결과만 가져와서 분류
+        # out[:, -1, :] shape: (Batch, Hidden_Size)
+        out = self.fc(out[:, -1, :])
+        return out
+
 
 class LearnableDelayRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, output_size:int, max_delay:int, config:Config):
@@ -186,7 +216,12 @@ if __name__ == "__main__":
     config = Config(device='cpu')
     model = SimpleRNN(input_size=1, hidden_size=128, num_classes=10, config=config)
     print("SimpleRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+
     model = SimpleLSTM(input_size=1, hidden_size=64, num_classes=10, config=config)
     print("SimpleLSTM", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
-    model = LearnableDelayRNN(input_size=1, hidden_size=64, output_size=10, max_delay=20, config=config)
+
+    model = SimpleGRU(input_size=1, hidden_size=75, num_classes=10, config=config)
+    print("SimpleGRU", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    
+    model = LearnableDelayRNN(input_size=1, hidden_size=90, output_size=10, max_delay=20, config=config)
     print("LearnableDelayRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")

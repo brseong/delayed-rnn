@@ -12,6 +12,7 @@ from enum import Enum, auto
 class ModelType(Enum):
     RNN = auto()
     LSTM = auto()
+    GRU = auto()
     DelayedRNN = auto()
 
 @dataclass()
