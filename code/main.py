@@ -69,9 +69,11 @@ def main(args):
         hidden_size=hidden_size, 
         num_layers=num_layers, 
         num_classes=num_classes,
-        device=device,
+        batch_size=batch_size,
         is_classification=is_classification,
+        device=device,
     )
+    
     # model = torch.compile(model)
 
     model_name: str = model.model_name
@@ -94,38 +96,40 @@ def main(args):
             group=group_name,
             config=OmegaConf.to_container(args, resolve=True),
         )
-    
+
     for epoch in tqdm(range(num_epochs), desc=f"Epochs [{dataset_name}]"):
         train_start_time = time.time()
-        avg_loss, accuracy = train_dataset.train(
+        avg_loss, token_acc, seq_acc = train_dataset.train(
             model = model, 
             dataloader = train_dataloader, 
-            optimizer = optimizer, 
-            device = device
+            optimizer = optimizer,
+            device = device,
         )
         train_end_time = time.time()
         
         if use_lr_scheduler:
             scheduler.step()
         
-        print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {avg_loss:.4f}, Accuracy: {accuracy:.4f}")
+        print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {avg_loss:.4f}, Token Accuracy: {token_acc:.4f}, Sequence Accuracy: {seq_acc:.4f}")
         
         eval_start_time = time.time()
-        eval_avg_loss, eval_accuracy, flops_1b = eval_dataset.eval(
+        eval_avg_loss, eval_token_acc, eval_seq_acc, flops_1b = eval_dataset.eval(
             model = model,
             dataloader = eval_dataloader,
             device = device
         )
         eval_end_time = time.time()
         
-        print(f"Eval - Loss: {eval_avg_loss:.4f}, Accuracy: {eval_accuracy:.4f}, FLOPs (1B): {flops_1b:.2f}")
+        print(f"Eval - Loss: {eval_avg_loss:.4f}, Token Accuracy: {eval_token_acc:.4f}, Sequence Accuracy: {eval_seq_acc:.4f}, FLOPs (1B): {flops_1b:.2f}")
         
         if use_wandb:
             wandb.log({
                 "train_loss": avg_loss,
-                "train_accuracy": accuracy,
+                "train_token_accuracy": token_acc,
+                "train_seq_accuracy": seq_acc,
                 "eval_loss": eval_avg_loss,
-                "eval_accuracy": eval_accuracy,
+                "eval_token_accuracy": eval_token_acc,
+                "eval_seq_accuracy": eval_seq_acc,
                 "Flops(1B)": flops_1b,
                 "train_time": train_end_time - train_start_time,
                 "eval_time": eval_end_time - eval_start_time,

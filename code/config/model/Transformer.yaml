@@ -1,4 +1,4 @@
 
 _target_: models.Transformer.Transformer
 nhead: 4
-encoding_method: 'positional' # 'positional' or 'RoPE'
+encoding_method: 'positional'

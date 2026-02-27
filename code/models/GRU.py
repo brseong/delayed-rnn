@@ -1,5 +1,7 @@
+
 import torch
 import torch.nn as nn
+
 from models import compute_loss
 
 class GRU(nn.Module):
@@ -9,8 +11,10 @@ class GRU(nn.Module):
         input_size: int, 
         hidden_size: int, 
         num_classes: int,  
+        batch_size: int,
+        is_classification: bool = True,
         device: str = "cuda",
-        is_classification: bool = True
+        
     ):
         self.model_name: str = self.__class__.__name__
         super().__init__() 
@@ -18,19 +22,18 @@ class GRU(nn.Module):
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.num_classes = num_classes
-        
-        self.compute_loss = compute_loss
-        
+
         self.device = device
         self.is_classification = is_classification
+        
+        
+        self.compute_loss = compute_loss
         
         self.gru_cell = nn.GRUCell(
             input_size=self.input_size,
             hidden_size=self.hidden_size,
         ).to(self.device)
 
-        self.loss_fn = nn.CrossEntropyLoss(ignore_index=-100)
-        
         if self.num_classes > 0:
             self.fc = nn.Sequential(
                 nn.Linear(self.hidden_size, self.hidden_size),
@@ -38,8 +41,7 @@ class GRU(nn.Module):
                 nn.Linear(self.hidden_size, self.num_classes)
             ).to(self.device)
       
-    def forward(self, x, lengths=None, out_lengths=None, train = False):
-        
+    def forward(self, x, lengths=None, out_lengths=None, train = False, targets=None):
         batch_size, max_seq_len, _ = x.size()
         h_t = torch.zeros(batch_size, self.hidden_size).to(self.device)
         if lengths is not None:
@@ -48,6 +50,7 @@ class GRU(nn.Module):
             Args:
                 x : (batch_size, seq_len + 3, input_size + 1)
                 lengths : (batch_size,) if length is not None
+                targets : (batch_size, seq_len, input_size) 
             """
             masks = masks = (torch.arange(max_seq_len).to(self.device) < lengths.unsqueeze(1)).float()
             outputs = []
@@ -61,7 +64,6 @@ class GRU(nn.Module):
             for t in range(out_lengths):
                 x_t = torch.zeros(batch_size, self.input_size).to(self.device) 
                 next_h = self.gru_cell(x_t, h_t)
-                
                 out = self.fc(next_h)
                 outputs.append(out.unsqueeze(1))
                 
@@ -74,5 +76,6 @@ class GRU(nn.Module):
                 x_t = x[:, t, :]
                 h_t = self.gru_cell(x_t, h_t)
             out = self.fc(h_t) # (batch_size, num_classes)
+
+        return out
             
-        return out 

@@ -27,10 +27,16 @@ data_name="Qswap"
 num_epochs=50
 hidden_size=256
 min_seq_len=5
-max_seq_len=50
+max_seq_len=100
 
 if [ "$MODEL" == "Transformer" ]; then
+    EXTRA_ARGS+=("batch_size=256")
     EXTRA_ARGS+=("model_args.num_layers=1")
+    EXTRA_ARGS+=("model_args.hidden_size=128")
+fi
+
+if [ "$MODEL" == "LinearTransformer" ]; then
+    EXTRA_ARGS+=("model_args.num_layers=2")
     EXTRA_ARGS+=("model_args.hidden_size=128")
 fi
 

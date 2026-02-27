@@ -1,0 +1,4 @@
+
+_target_: models.LinearTransformer.LinearTransformer
+nhead: 4
+encoding_method: 'positional'

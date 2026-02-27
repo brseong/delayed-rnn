@@ -23,6 +23,6 @@ wandb:
 model_args:
     num_layers: 1
     hidden_size: 128
-    
+    # use_teacher_forcing: True
 
 

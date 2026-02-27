@@ -1,3 +1,4 @@
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -5,6 +6,7 @@ import torch.nn.functional as F
 from fvcore.nn import FlopCountAnalysis
 
 IGNORE_IDX=-100   
+INPUT_OUT_PADDING = 0.5
 loss_fn = nn.CrossEntropyLoss(ignore_index=IGNORE_IDX)
 
 def compute_loss(out, output_lengths=None, targets=None, optimizer=None, device="cuda"):
@@ -36,9 +38,26 @@ def compute_loss(out, output_lengths=None, targets=None, optimizer=None, device=
         # masking out of length positions
         is_correct = (predicted == targets).float()
         masked_correct = is_correct * masks
-        corrects = masked_correct.sum() / output_lengths.sum()
+        token_acc_tensor = masked_correct.sum(dim=-1) / output_lengths
+        seq_acc_tensor = torch.logical_or(predicted == targets, ~masks).all(dim=-1).float()
+    
+        return loss, token_acc_tensor, seq_acc_tensor
     else:
         # number of correct predictions in the batch
         corrects = (predicted == targets).sum().item() 
 
-    return loss, corrects
+        return loss, corrects
+
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=5000):
+        super().__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pe', pe.unsqueeze(0))
+
+    def forward(self, x):
+        x = x + self.pe[:, :x.size(1), :]
+        return x

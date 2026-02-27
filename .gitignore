@@ -5,4 +5,3 @@ __pycache__/
 
 code/outputs/*
 code/wandb/*
-!.gitignore

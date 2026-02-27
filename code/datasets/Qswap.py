@@ -86,7 +86,9 @@ class Qswap(Dataset):
     def train(self, model, dataloader, optimizer, device):
         model.train()
         
-        correct_list: list[float] = []
+        token_acc_list: list[float] = []
+        seq_acc_list: list[float] = []
+        
         total_loss: float = 0.0
         
         for _, batch in enumerate(dataloader):
@@ -97,25 +99,32 @@ class Qswap(Dataset):
             output_lengths = (lengths - (inputs.shape[1] - targets.shape[1])).to(device)
 
             optimizer.zero_grad()
-            out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = True)
-            loss, num_correct = model.compute_loss(
+            out = model(
+                x = inputs, 
+                lengths=lengths, 
+                out_lengths = targets.shape[1], 
+                train = True, 
+            )
+            loss, token_acc_tensor, seq_acc_tensor = model.compute_loss(
                 out = out, 
                 output_lengths=output_lengths, 
                 targets = targets, 
                 optimizer = optimizer
             )
             total_loss += loss.item()
-            correct_list.append(num_correct)
-            
+            token_acc_list.append(token_acc_tensor)
+            seq_acc_list.append(seq_acc_tensor)
 
-        accuracy = sum(correct_list) / len(correct_list)
+        token_acc = torch.cat(token_acc_list).mean().item()
+        seq_acc = torch.cat(seq_acc_list).mean().item()
         
-        return total_loss, accuracy
+        return total_loss, token_acc, seq_acc
     
     @torch.inference_mode()
     def eval(self, model, dataloader, device):
         model.eval()
-        correct_list: list[float] = []
+        token_acc_list: list[float] = []
+        seq_acc_list: list[float] = []
         total_loss: float = 0.0
         
         
@@ -133,10 +142,12 @@ class Qswap(Dataset):
                 flops_1b = flops.total() / 1e9
             
             out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = False)
-            loss, num_correct = model.compute_loss(out = out, output_lengths=output_lengths, targets = targets)
+            loss, token_acc_tensor, seq_acc_tensor = model.compute_loss(out = out, output_lengths=output_lengths, targets = targets)
             total_loss += loss.item()
-            correct_list.append(num_correct)
+            token_acc_list.append(token_acc_tensor)
+            seq_acc_list.append(seq_acc_tensor)
             
-        accuracy = sum(correct_list) / len(correct_list)
+        token_acc = torch.cat(token_acc_list).mean().item()
+        seq_acc = torch.cat(seq_acc_list).mean().item()
         
-        return total_loss, accuracy, flops_1b
+        return total_loss, token_acc, seq_acc, flops_1b

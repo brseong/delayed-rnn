@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 
@@ -10,8 +11,10 @@ class RNN(nn.Module):
         input_size: int, 
         hidden_size: int, 
         num_classes: int,  
+        batch_size: int,
+        is_classification: bool = True,
         device: str = "cuda",
-        is_classification: bool = True
+        
     ):
         self.model_name: str = self.__class__.__name__
         super().__init__() 
@@ -23,6 +26,7 @@ class RNN(nn.Module):
         self.device = device
         self.is_classification = is_classification
         
+        
         self.compute_loss = compute_loss
         
         self.rnn_cell = nn.RNNCell(
@@ -30,8 +34,6 @@ class RNN(nn.Module):
             hidden_size=self.hidden_size,
         ).to(self.device)
 
-        
-        
         if self.num_classes > 0:
             self.fc = nn.Sequential(
                 nn.Linear(self.hidden_size, self.hidden_size),
@@ -39,7 +41,7 @@ class RNN(nn.Module):
                 nn.Linear(self.hidden_size, self.num_classes)
             ).to(self.device)
       
-    def forward(self, x, lengths=None, out_lengths=None, train = False):
+    def forward(self, x, lengths=None, out_lengths=None, train = False, targets=None):
         batch_size, max_seq_len, _ = x.size()
         h_t = torch.zeros(batch_size, self.hidden_size).to(self.device)
         if lengths is not None:
