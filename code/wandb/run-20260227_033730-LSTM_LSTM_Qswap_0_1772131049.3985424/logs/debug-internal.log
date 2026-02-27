@@ -1,7 +1,0 @@
-{"time":"2026-02-27T03:37:30.281232767+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
-{"time":"2026-02-27T03:37:30.688516869+09:00","level":"INFO","msg":"stream: created new stream","id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}
-{"time":"2026-02-27T03:37:30.688565839+09:00","level":"INFO","msg":"handler: started","stream_id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}
-{"time":"2026-02-27T03:37:30.688858101+09:00","level":"INFO","msg":"stream: started","id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}
-{"time":"2026-02-27T03:37:30.688861865+09:00","level":"INFO","msg":"writer: started","stream_id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}
-{"time":"2026-02-27T03:37:30.68886645+09:00","level":"INFO","msg":"sender: started","stream_id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}
-{"time":"2026-02-27T03:37:36.390750141+09:00","level":"INFO","msg":"stream: closing","id":"LSTM_LSTM_Qswap_0_1772131049.3985424"}

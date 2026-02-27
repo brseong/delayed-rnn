@@ -1,6 +1,0 @@
-- num_workers=0
-- seed=10
-- model=LSTM
-- dataset=Qswap
-- use_wandb=true
-- group_name=LSTM

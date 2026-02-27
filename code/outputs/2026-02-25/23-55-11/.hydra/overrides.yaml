@@ -1,5 +1,0 @@
-- seed=2
-- model=RNN
-- dataset=sMNIST
-- use_wandb=false
-- group_name=default

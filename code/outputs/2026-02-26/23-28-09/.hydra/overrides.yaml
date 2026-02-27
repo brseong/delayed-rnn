@@ -1,8 +1,0 @@
-- num_workers=0
-- seed=8
-- model=LSTM
-- dataset=Qswap
-- use_wandb=true
-- group_name=LSTM
-- num_epochs=100
-- model_args.hidden_size=256

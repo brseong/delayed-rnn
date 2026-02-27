@@ -1,8 +1,0 @@
-- num_workers=0
-- seed=6
-- model=GRU
-- dataset=Qswap
-- use_wandb=true
-- group_name=GRU
-- num_epochs=100
-- model_args.hidden_size=256

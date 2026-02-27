@@ -1,5 +1,0 @@
-- seed=1
-- model=Mamba
-- dataset=psMNIST
-- use_wandb=true
-- group_name=Mamba

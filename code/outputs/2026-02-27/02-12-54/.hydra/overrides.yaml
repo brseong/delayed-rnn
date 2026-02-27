@@ -1,8 +1,0 @@
-- num_workers=0
-- seed=1
-- model=RNN
-- dataset=Qswap
-- use_wandb=false
-- wandb.group_name=default
-- num_epochs=100
-- model_args.hidden_size=512

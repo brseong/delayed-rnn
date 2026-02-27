@@ -1,7 +1,0 @@
-{"time":"2026-02-27T01:14:52.302472872+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
-{"time":"2026-02-27T01:14:52.683898642+09:00","level":"INFO","msg":"stream: created new stream","id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}
-{"time":"2026-02-27T01:14:52.683990875+09:00","level":"INFO","msg":"handler: started","stream_id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}
-{"time":"2026-02-27T01:14:52.68430547+09:00","level":"INFO","msg":"stream: started","id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}
-{"time":"2026-02-27T01:14:52.684307233+09:00","level":"INFO","msg":"writer: started","stream_id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}
-{"time":"2026-02-27T01:14:52.684312628+09:00","level":"INFO","msg":"sender: started","stream_id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}
-{"time":"2026-02-27T01:20:16.434698162+09:00","level":"INFO","msg":"stream: closing","id":"Transformer_Transformer_Qswap_1_1772122491.4357803"}

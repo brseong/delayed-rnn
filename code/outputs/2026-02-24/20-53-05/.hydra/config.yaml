@@ -1,6 +1,0 @@
-default:
-- _self_
-- model: null
-dataset: sMNIST
-seed: 0
-use_wandb: false

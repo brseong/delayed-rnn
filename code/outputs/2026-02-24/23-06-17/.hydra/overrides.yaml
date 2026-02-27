@@ -1,4 +1,0 @@
-- seed=1
-- model=RNN
-- dataset=psMNIST
-- use_wandb=true

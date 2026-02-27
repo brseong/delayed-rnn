@@ -1,5 +1,0 @@
-- seed=7
-- model=LSTM
-- dataset=psMNIST
-- use_wandb=true
-- group_name=LSTM

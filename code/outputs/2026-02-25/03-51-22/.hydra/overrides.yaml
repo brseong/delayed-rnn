@@ -1,8 +1,0 @@
-- num_workers=0
-- seed=1
-- model=Transformer
-- dataset=Qswap
-- use_wandb=true
-- group_name=Transformer
-- model_args.num_layers=4
-- model_args.hidden_size=64

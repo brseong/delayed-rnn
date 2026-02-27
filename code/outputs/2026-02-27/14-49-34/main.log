@@ -1,3 +1,0 @@
-[2026-02-27 14:49:37,650][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::_thnn_fused_gru_cell encountered 32 time(s)
-[2026-02-27 14:49:37,651][fvcore.nn.jit_analysis][WARNING] - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
-loss_fn

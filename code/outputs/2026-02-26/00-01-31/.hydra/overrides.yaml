@@ -1,5 +1,0 @@
-- seed=1
-- model=RNN
-- dataset=sMNIST
-- use_wandb=true
-- group_name=GRU

@@ -1,5 +1,0 @@
-- seed=4
-- model=RNN
-- dataset=psMNIST
-- use_wandb=true
-- group_name=RNN

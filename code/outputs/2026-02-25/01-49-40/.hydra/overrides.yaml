@@ -1,5 +1,0 @@
-- seed=4
-- model=RNN
-- dataset=Qswap
-- use_wandb=false
-- group_name=default
