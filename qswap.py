@@ -4,10 +4,11 @@ from pathlib import Path
 import torch, wandb
 import torch.nn as nn
 import torch.optim as optim
+from torch.nn.functional import softplus
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from utils.config import Config, ModelType, get_args
-from utils.model.seq2seq import get_model, Seq2SeqOutput, ThinkingRNN, ThinkingLSTM, ThinkingLearnableDelayRNN
+from utils.model.seq2seq import get_model, Seq2SeqOutput, FastThinkingLearnableDelayRNN
 from utils.data import SwapDataset, collate_fn
 from utils.io import save_model, load_model
 from tqdm.auto import tqdm
@@ -103,6 +104,9 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
                 "Accuracy/Train": accuracy,
                 "Think_Steps/Train": think_steps.float().mean().item(),
                 "Learning_Rate": scheduler.get_last_lr()[0]})
+        if isinstance(model, FastThinkingLearnableDelayRNN):
+            wandb.log({"Scale_Exponent/Bias": softplus(model.scale_exponent.data).mean().item(),
+                        "Scale_Exponent/Variance": softplus(model.scale_exponent.data).var().item()})
                 
         if (i+1) % 300 == 0:
             print(f'Epoch [{epoch+1}/{config.epochs}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}, Acc: {accuracy:.4f}')

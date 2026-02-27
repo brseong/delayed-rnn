@@ -13,6 +13,7 @@ from utils.random import clipped_gamma_sample
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.functional import softplus
 from torch.nn.utils.rnn import pack_padded_sequence
 
 
@@ -75,7 +76,7 @@ presets={
         epochs=100),
 }
 
-def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN | FastThinkingLearnableDelayRNN | ThinkingGRU:
+def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | FastThinkingLearnableDelayRNN | ThinkingGRU:
     if config is None:
         config = presets[model_class]
         config.device = device  # Set the device in the config for later use in model initialization
@@ -345,174 +346,178 @@ class ThinkingGRU(nn.Module):
         # '생각 끝' 토큰을 제외한 실제 클래스의 Logits만 반환
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
 
-class ThinkingLearnableDelayRNN(nn.Module):
-    def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
-        super().__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.max_think_steps = config.max_think_steps
-        self.config = config
-        self.max_delay = max_delay
-        self.device = config.device
+# class ThinkingLearnableDelayRNN(nn.Module):
+#     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
+#         super().__init__()
+#         self.input_size = input_size
+#         self.hidden_size = hidden_size
+#         self.max_think_steps = config.max_think_steps
+#         self.config = config
+#         self.max_delay = max_delay
+#         self.device = config.device
         
-        # 단어장 크기 설정 (기존 클래스 + 생각 끝 토큰)
-        self.vocab_size = num_classes + 1
-        self.think_end_token = num_classes
+#         # 단어장 크기 설정 (기존 클래스 + 생각 끝 토큰)
+#         self.vocab_size = num_classes + 1
+#         self.think_end_token = num_classes
         
-        # 입출력 크기를 vocab_size로 통일
-        self.output_size = self.vocab_size
+#         # 입출력 크기를 vocab_size로 통일
+#         self.output_size = self.vocab_size
         
-        # 기본 가중치
-        self.afferent = nn.Linear(self.input_size, hidden_size)
-        self.lateral = nn.Parameter(
-            torch.nn.init.xavier_uniform_(
-                torch.empty(hidden_size, hidden_size)) # hidden_out, hidden_in
-            )
-        self.efferent = nn.Linear(hidden_size, self.output_size)
+#         # 기본 가중치
+#         self.afferent = nn.Linear(self.input_size, hidden_size)
+#         self.lateral = nn.Parameter(
+#             torch.nn.init.xavier_uniform_(
+#                 torch.empty(hidden_size, hidden_size)) # hidden_out, hidden_in
+#             )
+#         self.efferent = nn.Linear(hidden_size, self.output_size)
         
-        # time_horizon = 128
-        # tau = torch.empty_like(self.lateral).uniform_(0, log(time_horizon)).clamp_(0, log(max_delay))
-        # self.tau = nn.Parameter(tau)
-        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        self.sigma = max_delay / 2
+#         # time_horizon = 128
+#         # tau = torch.empty_like(self.lateral).uniform_(0, log(time_horizon)).clamp_(0, log(max_delay))
+#         # self.tau = nn.Parameter(tau)
+#         self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
+#         # self.sigma = max_delay / 2
+#         self.scale_exponent = nn.Parameter(torch.zeros(hidden_size))
 
-    @staticmethod
-    @torch.jit.script
-    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
-        # (기존 코드와 동일)
-        credit_matrix = torch.arange(max_delay + 1, device=tau_clipped.device).float()  # shape: (max_delay+1,)
-        credit_matrix = credit_matrix[:, None, None]
-        distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
+#     @staticmethod
+#     @torch.jit.script
+#     def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, scale_exponent:torch.Tensor) -> torch.Tensor:
+#         # (기존 코드와 동일)
+#         credit_matrix = torch.arange(max_delay + 1, device=tau_clipped.device).float()  # shape: (max_delay+1,)
+#         credit_matrix = credit_matrix[:, None, None]
+#         distance = 1.0 + torch.abs(credit_matrix - tau_clipped) # shape: (max_delay+1, hidden_size, hidden_size)
 
-        # inv_sigma = 1 / sigma
-        # credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma)
-        # raw_credit = distance.rsqrt() / distance # Equivalent to distance^(-1.5) but more stable, faster.
-        raw_credit = distance.reciprocal() # Equivalent to distance^(-1) but more stable, faster.
-        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Normalize so that sum of credits across delays equals 1 for each hidden unit
+#         # inv_sigma = 1 / sigma
+#         # credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma)
+#         # raw_credit = distance.rsqrt() / distance # Equivalent to distance^(-1.5) but more stable, faster.
         
-        return credit_matrix
+#         scale_exponent = scale_exponent[None, :, None].sigmoid()  # shape: (1, hidden_size, 1)
+#         # raw_credit = distance.reciprocal() # Equivalent to distance^(-1) but more stable, faster.
+#         raw_credit = distance.pow(-scale_exponent)
+#         credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Normalize so that sum of credits across delays equals 1 for each hidden unit
+        
+#         return credit_matrix
     
-    def calc_credit_matrix(self): # -> Float[torch.Tensor, "max_delay+1 hidden_out hidden_in"]:
-        return ThinkingLearnableDelayRNN.calc_credit_matrix_jit(
-            torch.clamp(self.tau, 1, self.max_delay)[None,...],
-            self.max_delay,
-            self.hidden_size,
-            self.sigma)
+#     def calc_credit_matrix(self): # -> Float[torch.Tensor, "max_delay+1 hidden_out hidden_in"]:
+#         return ThinkingLearnableDelayRNN.calc_credit_matrix_jit(
+#             torch.clamp(self.tau, 1, self.max_delay)[None,...],
+#             self.max_delay,
+#             self.hidden_size,
+#             self.scale_exponent)
     
-    @staticmethod
-    @torch.jit.script
-    def step_jit(x_t:torch.Tensor,
-                 credit_matrix:torch.Tensor,
-                 buffer:torch.Tensor,
-                 buffer_ptr:int,
-                 lateral:torch.Tensor,
-                 max_delay:int,
-                 w_afferent:torch.Tensor,
-                 b_afferent:torch.Tensor,
-                 w_efferent:torch.Tensor,
-                 b_efferent:torch.Tensor):
-        # (기존 코드와 동일 - JIT 컴파일 유지)
-        h_delayed = buffer[buffer_ptr]  
-        h_to_delay = torch.tanh(torch.nn.functional.linear(x_t, w_afferent, b_afferent) + h_delayed) 
+#     @staticmethod
+#     @torch.jit.script
+#     def step_jit(x_t:torch.Tensor,
+#                  credit_matrix:torch.Tensor,
+#                  buffer:torch.Tensor,
+#                  buffer_ptr:int,
+#                  lateral:torch.Tensor,
+#                  max_delay:int,
+#                  w_afferent:torch.Tensor,
+#                  b_afferent:torch.Tensor,
+#                  w_efferent:torch.Tensor,
+#                  b_efferent:torch.Tensor):
+#         # (기존 코드와 동일 - JIT 컴파일 유지)
+#         h_delayed = buffer[buffer_ptr]  
+#         h_to_delay = torch.tanh(torch.nn.functional.linear(x_t, w_afferent, b_afferent) + h_delayed) 
         
-        credit_matrix = credit_matrix * lateral[None, :, :]  
-        scattered = torch.einsum('dhi,bi->dbh', credit_matrix, h_to_delay)  
+#         credit_matrix = credit_matrix * lateral[None, :, :]  
+#         scattered = torch.einsum('dhi,bi->dbh', credit_matrix, h_to_delay)  
         
-        shifted_scattered = torch.roll(scattered, shifts=buffer_ptr, dims=0)
+#         shifted_scattered = torch.roll(scattered, shifts=buffer_ptr, dims=0)
         
-        buffer = buffer + shifted_scattered
-        mask = torch.arange(max_delay + 1, device=buffer.device) == buffer_ptr 
-        buffer = buffer * (~mask[:, None, None])  
-        buffer_ptr = (buffer_ptr + 1) % (max_delay + 1)  
+#         buffer = buffer + shifted_scattered
+#         mask = torch.arange(max_delay + 1, device=buffer.device) == buffer_ptr 
+#         buffer = buffer * (~mask[:, None, None])  
+#         buffer_ptr = (buffer_ptr + 1) % (max_delay + 1)  
         
-        y_t = torch.nn.functional.linear(h_delayed, w_efferent, b_efferent)
-        return buffer, buffer_ptr, y_t 
+#         y_t = torch.nn.functional.linear(h_delayed, w_efferent, b_efferent)
+#         return buffer, buffer_ptr, y_t 
     
-    def step(self, x_t, credit_matrix, buffer, buffer_ptr):
-        w_afferent, b_afferent = self.afferent.weight, self.afferent.bias
-        w_efferent, b_efferent = self.efferent.weight, self.efferent.bias
-        return ThinkingLearnableDelayRNN.step_jit(x_t, credit_matrix, buffer, buffer_ptr, self.lateral, self.max_delay, w_afferent, b_afferent, w_efferent, b_efferent)
+#     def step(self, x_t, credit_matrix, buffer, buffer_ptr):
+#         w_afferent, b_afferent = self.afferent.weight, self.afferent.bias
+#         w_efferent, b_efferent = self.efferent.weight, self.efferent.bias
+#         return ThinkingLearnableDelayRNN.step_jit(x_t, credit_matrix, buffer, buffer_ptr, self.lateral, self.max_delay, w_afferent, b_afferent, w_efferent, b_efferent)
     
-    def forward(self,
-                x:Float[torch.Tensor, "batch_size time_steps input_size"],
-                lengths:Int[torch.Tensor, "batch_size"],
-                N=None) -> Seq2SeqOutput:
-        """
-        x shape: (batch_size, time_steps, input_size)
-        lengths shape: (batch_size,)
-        """
-        batch_size = x.size(0)
-        if N is None:
-            N = x.size(1) - 3  # N 유추
+#     def forward(self,
+#                 x:Float[torch.Tensor, "batch_size time_steps input_size"],
+#                 lengths:Int[torch.Tensor, "batch_size"],
+#                 N=None) -> Seq2SeqOutput:
+#         """
+#         x shape: (batch_size, time_steps, input_size)
+#         lengths shape: (batch_size,)
+#         """
+#         batch_size = x.size(0)
+#         if N is None:
+#             N = x.size(1) - 3  # N 유추
 
-        credit_matrix = self.calc_credit_matrix()
+#         credit_matrix = self.calc_credit_matrix()
         
-        # 1. 초기화 및 인코딩(Encoding) 단계
-        # 전체 배치에 대한 buffer 초기화
-        buffer = x.new_zeros(self.max_delay + 1, batch_size, self.hidden_size)
-        buffer_ptr = 0 
+#         # 1. 초기화 및 인코딩(Encoding) 단계
+#         # 전체 배치에 대한 buffer 초기화
+#         buffer = x.new_zeros(self.max_delay + 1, batch_size, self.hidden_size)
+#         buffer_ptr = 0 
         
-        # [핵심 로직 1] 패딩에 오염되기 전의 상태를 저장할 빈 텐서 준비
-        saved_buffers = buffer.new_zeros(buffer.size())
-        saved_buffer_ptrs = buffer.new_zeros(batch_size, dtype=torch.long)
+#         # [핵심 로직 1] 패딩에 오염되기 전의 상태를 저장할 빈 텐서 준비
+#         saved_buffers = buffer.new_zeros(buffer.size())
+#         saved_buffer_ptrs = buffer.new_zeros(batch_size, dtype=torch.long)
         
-        # 입력 시퀀스를 순차적으로 읽으며 buffer에 문맥 축적
-        for t in range(x.size(1)):
-            x_t = x[:, t, :]
-            buffer, buffer_ptr, _ = self.step(x_t, credit_matrix, buffer, buffer_ptr)
+#         # 입력 시퀀스를 순차적으로 읽으며 buffer에 문맥 축적
+#         for t in range(x.size(1)):
+#             x_t = x[:, t, :]
+#             buffer, buffer_ptr, _ = self.step(x_t, credit_matrix, buffer, buffer_ptr)
             
-            # [핵심 로직 2] 방금 계산한 t가 어떤 배치의 '진짜 마지막 단어'인지 확인
-            is_last_token:torch.Tensor = (t == lengths - 1) # type: ignore # shape: (batch_size,)
+#             # [핵심 로직 2] 방금 계산한 t가 어떤 배치의 '진짜 마지막 단어'인지 확인
+#             is_last_token:torch.Tensor = (t == lengths - 1) # type: ignore # shape: (batch_size,)
             
-            if is_last_token.any():
-                # 문장이 끝난 배치들만 현재의 깨끗한 buffer와 포인터를 복사해 둡니다.
-                mask = is_last_token.view(1, batch_size, 1) # broadcasting을 위해 형태 변경
-                saved_buffers = torch.where(mask, buffer, saved_buffers)
-                saved_buffer_ptrs[is_last_token] = buffer_ptr
+#             if is_last_token.any():
+#                 # 문장이 끝난 배치들만 현재의 깨끗한 buffer와 포인터를 복사해 둡니다.
+#                 mask = is_last_token.view(1, batch_size, 1) # broadcasting을 위해 형태 변경
+#                 saved_buffers = torch.where(mask, buffer, saved_buffers)
+#                 saved_buffer_ptrs[is_last_token] = buffer_ptr
             
-        # 디코더의 첫 입력 (진짜 마지막 토큰 추출)
-        batch_indices = torch.arange(batch_size, out=x.new_empty(batch_size, dtype=torch.long))
-        dec_input = x[batch_indices, lengths - 1, :]
+#         # 디코더의 첫 입력 (진짜 마지막 토큰 추출)
+#         batch_indices = torch.arange(batch_size, out=x.new_empty(batch_size, dtype=torch.long))
+#         dec_input = x[batch_indices, lengths - 1, :]
         
-        # 최종 결과를 저장할 텐서 (Logits 유지)
-        final_outputs = x.new_zeros(batch_size, N, self.vocab_size)
-        think_steps_list = []
+#         # 최종 결과를 저장할 텐서 (Logits 유지)
+#         final_outputs = x.new_zeros(batch_size, N, self.vocab_size)
+#         think_steps_list = []
         
-        # 배치별로 생각하는(Thinking) 시간이 다르므로 독립적으로 분리하여 연산
-        for i in range(batch_size):
-            # [핵심 로직 3] 루프를 끝까지 돌아 패딩에 오염된 원래 buffer 대신, 
-            # 아까 저장해둔 깨끗한 saved_buffers에서 상태를 불러와 생각을 시작합니다.
-            buffer_i = saved_buffers[:, i:i+1, :]     
-            buffer_ptr_i = saved_buffer_ptrs[i].item() # 저장된 정수형 포인터
-            curr_input = dec_input[i:i+1, :]
+#         # 배치별로 생각하는(Thinking) 시간이 다르므로 독립적으로 분리하여 연산
+#         for i in range(batch_size):
+#             # [핵심 로직 3] 루프를 끝까지 돌아 패딩에 오염된 원래 buffer 대신, 
+#             # 아까 저장해둔 깨끗한 saved_buffers에서 상태를 불러와 생각을 시작합니다.
+#             buffer_i = saved_buffers[:, i:i+1, :]     
+#             buffer_ptr_i = saved_buffer_ptrs[i].item() # 저장된 정수형 포인터
+#             curr_input = dec_input[i:i+1, :]
             
-            # --- 2. 생각(Thinking) 단계 ---
-            think_steps = 0
-            while True:
-                # step 함수 호출
-                buffer_i, buffer_ptr_i, y_t = self.step(curr_input, credit_matrix, buffer_i, buffer_ptr_i)
+#             # --- 2. 생각(Thinking) 단계 ---
+#             think_steps = 0
+#             while True:
+#                 # step 함수 호출
+#                 buffer_i, buffer_ptr_i, y_t = self.step(curr_input, credit_matrix, buffer_i, buffer_ptr_i)
                 
-                # Gumbel-Softmax 샘플링 (미분 가능)
-                curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+#                 # Gumbel-Softmax 샘플링 (미분 가능)
+#                 curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
                 
-                sampled_idx = curr_input.argmax(dim=-1).item()
-                think_steps += 1
+#                 sampled_idx = curr_input.argmax(dim=-1).item()
+#                 think_steps += 1
                 
-                if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
-                    break  
-            think_steps_list.append(think_steps)
+#                 if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
+#                     break  
+#             think_steps_list.append(think_steps)
             
-            # --- 3. 출력(Output) 단계 ---
-            for j in range(N):
-                buffer_i, buffer_ptr_i, y_t = self.step(curr_input, credit_matrix, buffer_i, buffer_ptr_i)
+#             # --- 3. 출력(Output) 단계 ---
+#             for j in range(N):
+#                 buffer_i, buffer_ptr_i, y_t = self.step(curr_input, credit_matrix, buffer_i, buffer_ptr_i)
                 
-                # 정답 계산(Loss)을 위해 Logits 자체를 저장
-                final_outputs[i, j, :] = y_t.squeeze(0)
+#                 # 정답 계산(Loss)을 위해 Logits 자체를 저장
+#                 final_outputs[i, j, :] = y_t.squeeze(0)
                 
-                # 다음 스텝 입력을 위한 샘플링
-                curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+#                 # 다음 스텝 입력을 위한 샘플링
+#                 curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
                 
-        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
+#         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
 
 class FastThinkingLearnableDelayRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
@@ -540,29 +545,20 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         # tau = clipped_gamma_sample(self.lateral.new_empty(self.lateral.size()), max_delay)
         # self.tau = nn.Parameter(tau)
         self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        self.sigma = max_delay / 2
+        # self.sigma = max_delay / 2
         # self.sigma = nn.Parameter(torch.full((hidden_size,), max_delay / 4.0, device=self.device))
+        self.scale_exponent = nn.Parameter(torch.zeros(hidden_size, device=self.device))
 
     @staticmethod
     @torch.jit.script
-    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
+    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, scale_exponent:torch.Tensor) -> torch.Tensor:
         # 기존과 동일
         credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) 
         credit_matrix = credit_matrix[:, None, None]
         distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
 
-        raw_credit = distance.rsqrt() 
-        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) 
-        
-        # # 2. 목표 딜레이(tau)와의 시간 차이(dt)
-        # dt = credit_matrix - tau_clipped
-        
-        # # 3. 대칭형 STDP (Mexican Hat / Ricker Wavelet) 커널 적용
-        # variance = sigma ** 2
-        
-        # dt_sq = dt.square()
-        
-        # credit_matrix = (1.0 - dt_sq / variance) * torch.exp(-0.5 * dt_sq / variance)
+        raw_credit = distance.pow(-softplus(scale_exponent[None, :, None]))
+        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True))
         
         return credit_matrix
     
@@ -571,7 +567,7 @@ class FastThinkingLearnableDelayRNN(nn.Module):
             torch.clamp(self.tau, 1, self.max_delay)[None,...],
             self.max_delay,
             self.hidden_size,
-            self.sigma
+            self.scale_exponent
         )
     
     def _adjust_dim(self, tensor: torch.Tensor) -> torch.Tensor:
@@ -628,7 +624,7 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         history = x.new_zeros(self.max_delay, batch_size, self.hidden_size)
         ptr = 0 
         
-        saved_history = history.new_zeros(history.size())
+        saved_history = history.new_zeros(history.size()) # (max_delay, batch_size, hidden_size)
         saved_ptrs = torch.zeros(batch_size, dtype=torch.long, device=device)
         
         for t in range(x.size(1)):
@@ -642,13 +638,12 @@ class FastThinkingLearnableDelayRNN(nn.Module):
                 saved_ptrs = torch.where(is_last_token, torch.tensor(ptr, device=device), saved_ptrs)
             
         # --- Alignment 트릭 (Thinking 시작 전 포인터 동기화) ---
-        D = self.max_delay
-        idx = torch.arange(D, device=device).unsqueeze(1)
-        gather_idx = (idx + saved_ptrs.unsqueeze(0)) % D
-        gather_idx = gather_idx.unsqueeze(-1).expand(D, batch_size, self.hidden_size)
+        idx = torch.arange(self.max_delay, device=device).unsqueeze(1) # (max_delay, 1)
+        gather_idx = (idx + saved_ptrs.unsqueeze(0)) % self.max_delay # (max_delay, batch_size)
+        gather_idx = gather_idx.unsqueeze(-1).expand(self.max_delay, batch_size, self.hidden_size) # (max_delay, batch_size, hidden_size)
         
         # 모든 배치의 히스토리를 정렬하여 포인터를 0으로 통일
-        aligned_history = torch.gather(saved_history, 0, gather_idx)
+        aligned_history = torch.gather(saved_history, 0, gather_idx) # (max_delay, batch_size, hidden_size)
         
         # --- 2. 생각(Thinking) 단계 ---
         history = aligned_history
