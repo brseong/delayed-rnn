@@ -1,0 +1,6 @@
+_target_: datasets.Qswap.Qswap
+train_size: 10000
+eval_size: 1000
+one_hot_dim: 10
+min_seq_len: 40
+max_seq_len: 50

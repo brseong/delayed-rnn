@@ -1,0 +1,9 @@
+seed: 1
+batch_size: 128
+num_workers: 4
+use_wandb: false
+dataset:
+  _target_: datasets.sMNIST.SequentialMNIST
+  permute: true
+model:
+  model_name: RNN

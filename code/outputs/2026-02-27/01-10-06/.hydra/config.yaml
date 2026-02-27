@@ -1,0 +1,20 @@
+seed: 1
+num_epochs: 100
+batch_size: 128
+num_workers: 0
+lr: 0.001
+use_lr_scheduler: true
+use_wandb: true
+group_name: Transformer
+model_args:
+  num_layers: 2
+  hidden_size: 256
+dataset:
+  _target_: datasets.Qswap.Qswap
+  one_hot_dim: 10
+  min_seq_len: 5
+  max_seq_len: 10
+model:
+  _target_: models.Transformer.Transformer
+  nhead: 4
+  encoding_method: positional

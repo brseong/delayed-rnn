@@ -1,0 +1,6 @@
+- num_workers=0
+- seed=2
+- model=RNN
+- dataset=Qswap
+- use_wandb=true
+- group_name=RNN

@@ -1,0 +1,23 @@
+{
+  "os":  "Linux-4.18.0-553.5.1.el8_10.x86_64-x86_64-with-glibc2.28",
+  "python":  "CPython 3.11.14",
+  "startedAt":  "2026-02-26T16:33:42.811199Z",
+  "args":  [
+    "num_workers=0",
+    "seed=1",
+    "model=LSTM",
+    "dataset=Qswap",
+    "use_wandb=true",
+    "wandb.group_name=LSTM",
+    "num_epochs=100",
+    "model_args.hidden_size=512"
+  ],
+  "program":  "/gpfs/home1/aiphw227/Delay_RNN/code/main.py",
+  "codePath":  "main.py",
+  "codePathLocal":  "main.py",
+  "email":  "singfor7012@gmail.com",
+  "root":  "/gpfs/home1/aiphw227/Delay_RNN/code",
+  "host":  "n003.hpc",
+  "executable":  "/home1/aiphw227/miniconda3/envs/rnn/bin/python",
+  "writerId":  "l84klc1aifnyxyudicioaocod6w40vbp"
+}

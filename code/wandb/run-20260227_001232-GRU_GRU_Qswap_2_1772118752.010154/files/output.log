@@ -1,0 +1,201 @@
+Epochs [Qswap]:  15%|███████████████████████████████▊                                                                                                                                                                                    | 15/100 [00:12<01:07,  1.26it/s]
+Epoch [1/100] - Loss: 31.5739, Accuracy: 0.0985
+Eval - Loss: 2.8553, Accuracy: 0.0984
+Epoch [2/100] - Loss: 28.1200, Accuracy: 0.0981
+Eval - Loss: 2.9040, Accuracy: 0.0964
+Epoch [3/100] - Loss: 28.2315, Accuracy: 0.1012
+Eval - Loss: 2.9350, Accuracy: 0.0972
+Epoch [4/100] - Loss: 28.1244, Accuracy: 0.1001
+Eval - Loss: 2.8766, Accuracy: 0.0984
+Epoch [5/100] - Loss: 28.6333, Accuracy: 0.0962
+Eval - Loss: 2.7401, Accuracy: 0.1070
+Epoch [6/100] - Loss: 28.3064, Accuracy: 0.1002
+Eval - Loss: 2.9191, Accuracy: 0.0939
+Epoch [7/100] - Loss: 28.6869, Accuracy: 0.1018
+Eval - Loss: 2.8617, Accuracy: 0.1019
+Epoch [8/100] - Loss: 28.8385, Accuracy: 0.1000
+Eval - Loss: 2.7980, Accuracy: 0.0885
+Epoch [9/100] - Loss: 28.1124, Accuracy: 0.1009
+Eval - Loss: 2.7701, Accuracy: 0.1045
+Epoch [10/100] - Loss: 28.2631, Accuracy: 0.0962
+Eval - Loss: 2.7852, Accuracy: 0.1047
+Epoch [11/100] - Loss: 28.1185, Accuracy: 0.0986
+Eval - Loss: 2.9602, Accuracy: 0.1083
+Epoch [12/100] - Loss: 28.6435, Accuracy: 0.1010
+Eval - Loss: 2.8703, Accuracy: 0.1083
+Epoch [13/100] - Loss: 28.4665, Accuracy: 0.0998
+Eval - Loss: 2.8582, Accuracy: 0.0979
+Epoch [14/100] - Loss: 28.7328, Accuracy: 0.0943
+Eval - Loss: 2.6184, Accuracy: 0.1057
+Epoch [15/100] - Loss: 28.5524, Accuracy: 0.0986
+Eval - Loss: 2.8851, Accuracy: 0.0989
+Epoch [16/100] - Loss: 29.0597, Accuracy: 0.0988
+Eval - Loss: 2.7664, Accuracy: 0.0970
+Epoch [17/100] - Loss: 28.2787, Accuracy: 0.0990
+Eval - Loss: 2.8716, Accuracy: 0.1033
+Epoch [18/100] - Loss: 27.7778, Accuracy: 0.1024
+Eval - Loss: 2.9598, Accuracy: 0.1266
+Epoch [19/100] - Loss: 27.7333, Accuracy: 0.1174
+Eval - Loss: 2.7814, Accuracy: 0.1191
+Epoch [20/100] - Loss: 27.3758, Accuracy: 0.1106
+Eval - Loss: 2.7370, Accuracy: 0.1212
+Epoch [21/100] - Loss: 27.6065, Accuracy: 0.1080
+Eval - Loss: 2.7898, Accuracy: 0.1041
+Epoch [22/100] - Loss: 27.5445, Accuracy: 0.1150
+Eval - Loss: 2.7765, Accuracy: 0.1256
+Epoch [23/100] - Loss: 27.5795, Accuracy: 0.1054
+Eval - Loss: 2.7366, Accuracy: 0.1182
+Epoch [24/100] - Loss: 27.5599, Accuracy: 0.1285
+Eval - Loss: 2.6676, Accuracy: 0.1227
+Epoch [25/100] - Loss: 26.9373, Accuracy: 0.1296
+Eval - Loss: 2.7187, Accuracy: 0.1304
+Epoch [26/100] - Loss: 27.0596, Accuracy: 0.1365
+Eval - Loss: 2.6461, Accuracy: 0.1320
+Epoch [27/100] - Loss: 27.0752, Accuracy: 0.1463
+Eval - Loss: 2.7017, Accuracy: 0.1388
+Epoch [28/100] - Loss: 26.9911, Accuracy: 0.1392
+Eval - Loss: 2.6213, Accuracy: 0.1268
+Epoch [29/100] - Loss: 27.1364, Accuracy: 0.1295
+Eval - Loss: 2.7111, Accuracy: 0.1292
+Epoch [30/100] - Loss: 26.4168, Accuracy: 0.1303
+Eval - Loss: 2.6075, Accuracy: 0.1585
+Epoch [31/100] - Loss: 26.6933, Accuracy: 0.1389
+Eval - Loss: 2.6790, Accuracy: 0.1567
+Epoch [32/100] - Loss: 26.6807, Accuracy: 0.1491
+Eval - Loss: 2.6453, Accuracy: 0.1599
+Epoch [33/100] - Loss: 26.7176, Accuracy: 0.1683
+Eval - Loss: 2.6551, Accuracy: 0.1634
+Epoch [34/100] - Loss: 26.2685, Accuracy: 0.1693
+Eval - Loss: 2.6597, Accuracy: 0.1789
+Epoch [35/100] - Loss: 26.2649, Accuracy: 0.1686
+Eval - Loss: 2.5853, Accuracy: 0.1700
+Epoch [36/100] - Loss: 26.3622, Accuracy: 0.1453
+Eval - Loss: 2.5799, Accuracy: 0.1535
+Epoch [37/100] - Loss: 25.8923, Accuracy: 0.1509
+Eval - Loss: 2.6199, Accuracy: 0.1707
+Epoch [38/100] - Loss: 26.0904, Accuracy: 0.1421
+Eval - Loss: 2.5991, Accuracy: 0.1550
+Epoch [39/100] - Loss: 25.7332, Accuracy: 0.1433
+Eval - Loss: 2.4798, Accuracy: 0.1371
+Epoch [40/100] - Loss: 26.0087, Accuracy: 0.1474
+Eval - Loss: 2.5424, Accuracy: 0.1532
+Epoch [41/100] - Loss: 25.7116, Accuracy: 0.1585
+Eval - Loss: 2.6419, Accuracy: 0.1593
+Epoch [42/100] - Loss: 25.2875, Accuracy: 0.1562
+Eval - Loss: 2.5867, Accuracy: 0.1442
+Epoch [43/100] - Loss: 25.3738, Accuracy: 0.1468
+Eval - Loss: 2.5283, Accuracy: 0.1524
+Epoch [44/100] - Loss: 25.0091, Accuracy: 0.1679
+Eval - Loss: 2.4369, Accuracy: 0.1860
+Epoch [45/100] - Loss: 25.1218, Accuracy: 0.1733
+Eval - Loss: 2.5646, Accuracy: 0.1832
+Epoch [46/100] - Loss: 24.8080, Accuracy: 0.1872
+Eval - Loss: 2.4336, Accuracy: 0.1738
+Epoch [47/100] - Loss: 25.0134, Accuracy: 0.1485
+Eval - Loss: 2.5661, Accuracy: 0.1824
+Epoch [48/100] - Loss: 24.9426, Accuracy: 0.1445
+Eval - Loss: 2.4147, Accuracy: 0.1665
+Epoch [49/100] - Loss: 24.6218, Accuracy: 0.1517
+Eval - Loss: 2.3888, Accuracy: 0.1672
+Epoch [50/100] - Loss: 24.3453, Accuracy: 0.1631
+Eval - Loss: 2.4482, Accuracy: 0.1545
+Epoch [51/100] - Loss: 24.1407, Accuracy: 0.1719
+Eval - Loss: 2.4969, Accuracy: 0.1535
+Epoch [52/100] - Loss: 24.0934, Accuracy: 0.1825
+Eval - Loss: 2.3123, Accuracy: 0.1607
+Epoch [53/100] - Loss: 24.0995, Accuracy: 0.1862
+Eval - Loss: 2.2846, Accuracy: 0.1661
+Epoch [54/100] - Loss: 24.2392, Accuracy: 0.1397
+Eval - Loss: 2.3625, Accuracy: 0.1346
+Epoch [55/100] - Loss: 23.5365, Accuracy: 0.1306
+Eval - Loss: 2.4042, Accuracy: 0.1143
+Epoch [56/100] - Loss: 23.7880, Accuracy: 0.1187
+Eval - Loss: 2.4076, Accuracy: 0.1048
+Epoch [57/100] - Loss: 23.3217, Accuracy: 0.1100
+Eval - Loss: 2.3225, Accuracy: 0.1169
+Epoch [58/100] - Loss: 23.3755, Accuracy: 0.1164
+Eval - Loss: 2.2873, Accuracy: 0.1060
+Epoch [59/100] - Loss: 23.3112, Accuracy: 0.1107
+Eval - Loss: 2.2565, Accuracy: 0.1025
+Epoch [60/100] - Loss: 23.0338, Accuracy: 0.1085
+Eval - Loss: 2.3115, Accuracy: 0.1047
+Epoch [61/100] - Loss: 22.9986, Accuracy: 0.1039
+Eval - Loss: 2.2018, Accuracy: 0.1263
+Epoch [62/100] - Loss: 23.3354, Accuracy: 0.1175
+Eval - Loss: 2.2931, Accuracy: 0.1152
+Epoch [63/100] - Loss: 22.9642, Accuracy: 0.1105
+Eval - Loss: 2.2838, Accuracy: 0.1096
+Epoch [64/100] - Loss: 22.9087, Accuracy: 0.1129
+Eval - Loss: 2.3160, Accuracy: 0.1157
+Epoch [65/100] - Loss: 22.6411, Accuracy: 0.1211
+Eval - Loss: 2.2501, Accuracy: 0.1226
+Epoch [66/100] - Loss: 22.7863, Accuracy: 0.1222
+Eval - Loss: 2.2884, Accuracy: 0.1178
+Epoch [67/100] - Loss: 22.3965, Accuracy: 0.1265
+Eval - Loss: 2.2276, Accuracy: 0.1389
+Epoch [68/100] - Loss: 22.3809, Accuracy: 0.1217
+Eval - Loss: 2.2304, Accuracy: 0.1140
+Epoch [69/100] - Loss: 22.5887, Accuracy: 0.1142
+Eval - Loss: 2.3232, Accuracy: 0.1189
+Epoch [70/100] - Loss: 22.2132, Accuracy: 0.1267
+Eval - Loss: 2.3885, Accuracy: 0.1266
+Epoch [71/100] - Loss: 22.1328, Accuracy: 0.1298
+Eval - Loss: 2.1844, Accuracy: 0.1287
+Epoch [72/100] - Loss: 22.2515, Accuracy: 0.1220
+Eval - Loss: 2.2479, Accuracy: 0.1274
+Epoch [73/100] - Loss: 22.3007, Accuracy: 0.1349
+Eval - Loss: 2.1976, Accuracy: 0.1585
+Epoch [74/100] - Loss: 22.4992, Accuracy: 0.1341
+Eval - Loss: 2.2652, Accuracy: 0.1363
+Epoch [75/100] - Loss: 21.9495, Accuracy: 0.1294
+Eval - Loss: 2.1699, Accuracy: 0.1319
+Epoch [76/100] - Loss: 22.4146, Accuracy: 0.1328
+Eval - Loss: 2.1885, Accuracy: 0.1394
+Epoch [77/100] - Loss: 21.5941, Accuracy: 0.1410
+Eval - Loss: 2.0819, Accuracy: 0.1393
+Epoch [78/100] - Loss: 21.7850, Accuracy: 0.1368
+Eval - Loss: 2.1212, Accuracy: 0.1504
+Epoch [79/100] - Loss: 21.9879, Accuracy: 0.1407
+Eval - Loss: 2.2491, Accuracy: 0.1411
+Epoch [80/100] - Loss: 21.7153, Accuracy: 0.1511
+Eval - Loss: 2.1848, Accuracy: 0.1518
+Epoch [81/100] - Loss: 21.7804, Accuracy: 0.1599
+Eval - Loss: 2.2329, Accuracy: 0.1730
+Epoch [82/100] - Loss: 21.3941, Accuracy: 0.1655
+Eval - Loss: 2.2509, Accuracy: 0.1683
+Epoch [83/100] - Loss: 22.0335, Accuracy: 0.1604
+Eval - Loss: 2.1172, Accuracy: 0.1771
+Epoch [84/100] - Loss: 21.6345, Accuracy: 0.1601
+Eval - Loss: 2.1778, Accuracy: 0.1733
+Epoch [85/100] - Loss: 21.6368, Accuracy: 0.1605
+Eval - Loss: 2.1519, Accuracy: 0.1865
+Epoch [86/100] - Loss: 21.0822, Accuracy: 0.1669
+Eval - Loss: 2.2835, Accuracy: 0.1599
+Epoch [87/100] - Loss: 21.2517, Accuracy: 0.1644
+Eval - Loss: 2.1102, Accuracy: 0.1659
+Epoch [88/100] - Loss: 21.5489, Accuracy: 0.1615
+Eval - Loss: 2.1949, Accuracy: 0.1635
+Epoch [89/100] - Loss: 21.5171, Accuracy: 0.1704
+Eval - Loss: 2.1275, Accuracy: 0.1881
+Epoch [90/100] - Loss: 21.7130, Accuracy: 0.1583
+Eval - Loss: 2.1425, Accuracy: 0.1691
+Epoch [91/100] - Loss: 21.1397, Accuracy: 0.1645
+Eval - Loss: 2.1076, Accuracy: 0.1667
+Epoch [92/100] - Loss: 21.0467, Accuracy: 0.1732
+Eval - Loss: 2.1115, Accuracy: 0.1785
+Epoch [93/100] - Loss: 21.3443, Accuracy: 0.1759
+Eval - Loss: 2.0826, Accuracy: 0.1646
+Epoch [94/100] - Loss: 20.9552, Accuracy: 0.1755
+Eval - Loss: 2.1605, Accuracy: 0.1611
+Epoch [95/100] - Loss: 20.7174, Accuracy: 0.1780
+Eval - Loss: 2.1808, Accuracy: 0.1772
+Epoch [96/100] - Loss: 21.3928, Accuracy: 0.1678
+Eval - Loss: 2.0954, Accuracy: 0.1654
+Epoch [97/100] - Loss: 21.1684, Accuracy: 0.1561
+Eval - Loss: 2.0802, Accuracy: 0.1548
+Epoch [98/100] - Loss: 21.2738, Accuracy: 0.1671
+Eval - Loss: 2.0319, Accuracy: 0.1766
+Epoch [99/100] - Loss: 21.3524, Accuracy: 0.1638
+Eval - Loss: 2.0384, Accuracy: 0.1714
+Epoch [100/100] - Loss: 20.9425, Accuracy: 0.1662
+Eval - Loss: 2.2234, Accuracy: 0.1508

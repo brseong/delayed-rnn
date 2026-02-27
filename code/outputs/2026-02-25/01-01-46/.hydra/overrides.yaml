@@ -1,0 +1,6 @@
+- seed=1
+- model=MAMBA
+- dataset=psMNIST
+- use_wandb=true
+- group_name=MAMBA
+- model_args.hidden_size=64

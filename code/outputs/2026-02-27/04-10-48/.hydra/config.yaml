@@ -1,0 +1,24 @@
+seed: 5
+num_epochs: 50
+batch_size: 512
+num_workers: 0
+lr: 0.001
+use_lr_scheduler: true
+use_wandb: true
+wandb:
+  entity: CIDA
+  group_name: Transformer
+model_args:
+  num_layers: 1
+  hidden_size: 128
+dataset:
+  _target_: datasets.Qswap.Qswap
+  train_size: 10000
+  eval_size: 1000
+  one_hot_dim: 10
+  min_seq_len: 5
+  max_seq_len: 50
+model:
+  _target_: models.Transformer.Transformer
+  nhead: 4
+  encoding_method: positional

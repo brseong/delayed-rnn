@@ -1,0 +1,11 @@
+{"time":"2026-02-25T08:25:26.56853999+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-25T08:25:26.95990379+09:00","level":"INFO","msg":"stream: created new stream","id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T08:25:26.959972463+09:00","level":"INFO","msg":"handler: started","stream_id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T08:25:26.960486443+09:00","level":"INFO","msg":"stream: started","id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T08:25:26.960491092+09:00","level":"INFO","msg":"writer: started","stream_id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T08:25:26.960495217+09:00","level":"INFO","msg":"sender: started","stream_id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T09:36:59.145794386+09:00","level":"INFO","msg":"stream: closing","id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T09:37:00.016428054+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-25T09:37:00.367240393+09:00","level":"INFO","msg":"handler: closed","stream_id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T09:37:00.367788006+09:00","level":"INFO","msg":"sender: closed","stream_id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}
+{"time":"2026-02-25T09:37:00.367807246+09:00","level":"INFO","msg":"stream: closed","id":"MAMBA_MAMBA_psMNIST_7_1771975525.7888894"}

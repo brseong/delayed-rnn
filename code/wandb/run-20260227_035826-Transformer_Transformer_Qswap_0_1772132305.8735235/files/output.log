@@ -1,0 +1,83 @@
+Epochs [Qswap]:  18%|█████████████████████████████████████████▉                                                                                                                                                                                               | 9/50 [01:15<05:44,  8.39s/it]
+Epoch [1/50] - Loss: 45.7675, Accuracy: 0.1274
+Eval - Loss: 4.4908, Accuracy: 0.1633
+Epoch [2/50] - Loss: 44.1261, Accuracy: 0.1768
+Eval - Loss: 4.3204, Accuracy: 0.1943
+Epoch [3/50] - Loss: 42.1060, Accuracy: 0.2159
+Eval - Loss: 3.9795, Accuracy: 0.2516
+Epoch [4/50] - Loss: 37.5557, Accuracy: 0.2903
+Eval - Loss: 3.2049, Accuracy: 0.3848
+Epoch [5/50] - Loss: 31.7147, Accuracy: 0.3904
+Eval - Loss: 2.5644, Accuracy: 0.5375
+Epoch [6/50] - Loss: 27.5847, Accuracy: 0.4744
+Eval - Loss: 2.0864, Accuracy: 0.6686
+Epoch [7/50] - Loss: 22.8546, Accuracy: 0.5851
+Eval - Loss: 1.6159, Accuracy: 0.7802
+Epoch [8/50] - Loss: 19.5820, Accuracy: 0.6625
+Eval - Loss: 1.3551, Accuracy: 0.8277
+Epoch [9/50] - Loss: 15.6889, Accuracy: 0.7585
+Eval - Loss: 1.0261, Accuracy: 0.8933
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 138, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 100, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 95, in train
+    out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/models/Transformer.py", line 126, in forward
+    decoder_output = layer(
+                     ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/transformer.py", line 1091, in forward
+    + self._mha_block(
+      ^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/transformer.py", line 1127, in _mha_block
+    x = self.multihead_attn(
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/activation.py", line 1368, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/functional.py", line 6097, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/functional.py", line 5524, in _in_projection_packed
+    .transpose(0, -2)
+     ^^^^^^^^^^^^^^^^
+KeyboardInterrupt

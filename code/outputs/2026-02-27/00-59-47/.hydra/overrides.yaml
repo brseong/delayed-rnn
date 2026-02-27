@@ -1,0 +1,10 @@
+- num_workers=0
+- seed=1
+- model=Transformer
+- dataset=Qswap
+- use_wandb=true
+- group_name=Transformer
+- num_epochs=100
+- model_args.hidden_size=256
+- model_args.num_layers=1
+- model_args.hidden_size=128

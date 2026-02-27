@@ -1,0 +1,5 @@
+- seed=2
+- model=Transformer
+- dataset=psMNIST
+- use_wandb=true
+- group_name=Transformer

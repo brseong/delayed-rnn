@@ -1,0 +1,6 @@
+- num_workers=0
+- seed=1
+- model=GRU
+- dataset=Qswap
+- use_wandb=true
+- group_name=GRU

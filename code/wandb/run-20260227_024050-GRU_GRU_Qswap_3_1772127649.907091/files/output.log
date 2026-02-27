@@ -1,0 +1,110 @@
+Epochs [Qswap]:  15%|███████████████████████████████▊                                                                                                                                                                                    | 15/100 [00:05<00:27,  3.07it/s]
+Epoch [1/100] - Loss: 23.0243, Accuracy: 0.1016
+Eval - Loss: 2.3010, Accuracy: 0.1075
+Epoch [2/100] - Loss: 22.9535, Accuracy: 0.1381
+Eval - Loss: 2.2816, Accuracy: 0.1771
+Epoch [3/100] - Loss: 22.3416, Accuracy: 0.2058
+Eval - Loss: 2.1613, Accuracy: 0.2340
+Epoch [4/100] - Loss: 21.4382, Accuracy: 0.2483
+Eval - Loss: 2.0752, Accuracy: 0.2614
+Epoch [5/100] - Loss: 20.3966, Accuracy: 0.2764
+Eval - Loss: 1.9829, Accuracy: 0.3060
+Epoch [6/100] - Loss: 19.5636, Accuracy: 0.3016
+Eval - Loss: 1.9295, Accuracy: 0.2981
+Epoch [7/100] - Loss: 18.8945, Accuracy: 0.3118
+Eval - Loss: 1.8359, Accuracy: 0.3220
+Epoch [8/100] - Loss: 18.4127, Accuracy: 0.3146
+Eval - Loss: 1.8244, Accuracy: 0.3257
+Epoch [9/100] - Loss: 17.9987, Accuracy: 0.3277
+Eval - Loss: 1.7657, Accuracy: 0.3462
+Epoch [10/100] - Loss: 17.6739, Accuracy: 0.3292
+Eval - Loss: 1.7305, Accuracy: 0.3321
+Epoch [11/100] - Loss: 17.2766, Accuracy: 0.3339
+Eval - Loss: 1.7278, Accuracy: 0.3452
+Epoch [12/100] - Loss: 16.9426, Accuracy: 0.3372
+Eval - Loss: 1.6692, Accuracy: 0.3439
+Epoch [13/100] - Loss: 16.6150, Accuracy: 0.3418
+Eval - Loss: 1.6566, Accuracy: 0.3360
+Epoch [14/100] - Loss: 16.4690, Accuracy: 0.3416
+Eval - Loss: 1.6115, Accuracy: 0.3532
+Epoch [15/100] - Loss: 16.1520, Accuracy: 0.3463
+Eval - Loss: 1.5975, Accuracy: 0.3464
+Epoch [16/100] - Loss: 16.0892, Accuracy: 0.3463
+Eval - Loss: 1.6010, Accuracy: 0.3452
+Epoch [17/100] - Loss: 15.8709, Accuracy: 0.3492
+Eval - Loss: 1.6162, Accuracy: 0.3304
+Epoch [18/100] - Loss: 15.7732, Accuracy: 0.3500
+Eval - Loss: 1.5910, Accuracy: 0.3425
+Epoch [19/100] - Loss: 15.6722, Accuracy: 0.3550
+Eval - Loss: 1.5558, Accuracy: 0.3555
+Epoch [20/100] - Loss: 15.6361, Accuracy: 0.3534
+Eval - Loss: 1.5558, Accuracy: 0.3542
+Epoch [21/100] - Loss: 15.5159, Accuracy: 0.3552
+Eval - Loss: 1.5496, Accuracy: 0.3586
+Epoch [22/100] - Loss: 15.5516, Accuracy: 0.3558
+Eval - Loss: 1.5195, Accuracy: 0.3547
+Epoch [23/100] - Loss: 15.3402, Accuracy: 0.3611
+Eval - Loss: 1.5346, Accuracy: 0.3533
+Epoch [24/100] - Loss: 15.3893, Accuracy: 0.3602
+Eval - Loss: 1.5251, Accuracy: 0.3638
+Epoch [25/100] - Loss: 15.2646, Accuracy: 0.3582
+Eval - Loss: 1.5745, Accuracy: 0.3510
+Epoch [26/100] - Loss: 15.1627, Accuracy: 0.3638
+Eval - Loss: 1.4929, Accuracy: 0.3775
+Epoch [27/100] - Loss: 15.2452, Accuracy: 0.3603
+Eval - Loss: 1.5241, Accuracy: 0.3576
+Epoch [28/100] - Loss: 15.1394, Accuracy: 0.3628
+Eval - Loss: 1.5231, Accuracy: 0.3629
+Epoch [29/100] - Loss: 15.1769, Accuracy: 0.3669
+Eval - Loss: 1.5041, Accuracy: 0.3744
+Epoch [30/100] - Loss: 15.1462, Accuracy: 0.3665
+Eval - Loss: 1.5042, Accuracy: 0.3749
+Epoch [31/100] - Loss: 15.0668, Accuracy: 0.3669
+Eval - Loss: 1.5223, Accuracy: 0.3546
+Epoch [32/100] - Loss: 15.1016, Accuracy: 0.3673
+Eval - Loss: 1.5141, Accuracy: 0.3573
+Epoch [33/100] - Loss: 15.1192, Accuracy: 0.3667
+Eval - Loss: 1.5243, Accuracy: 0.3676
+Epoch [34/100] - Loss: 15.0474, Accuracy: 0.3657
+Eval - Loss: 1.4872, Accuracy: 0.3684
+Epoch [35/100] - Loss: 15.0633, Accuracy: 0.3664
+Eval - Loss: 1.4839, Accuracy: 0.3651
+Epoch [36/100] - Loss: 15.0026, Accuracy: 0.3724
+Eval - Loss: 1.5044, Accuracy: 0.3682
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 138, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 100, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 96, in train
+    loss, num_correct = model.compute_loss(
+                        ^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/models/__init__.py", line 30, in compute_loss
+    loss.backward()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/_tensor.py", line 581, in backward
+    torch.autograd.backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

@@ -1,0 +1,12 @@
+- num_workers=0
+- seed=13
+- model=Transformer
+- dataset=Qswap
+- use_wandb=true
+- wandb.group_name=Transformer
+- num_epochs=50
+- model_args.hidden_size=256
+- dataset.min_seq_len=5
+- dataset.max_seq_len=50
+- model_args.num_layers=1
+- model_args.hidden_size=128

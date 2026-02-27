@@ -1,0 +1,100 @@
+Epoch [1/50] - Loss: 0.0164, Accuracy: 0.2225
+Eval - Loss: 0.0160, Accuracy: 0.2673
+Epoch [2/50] - Loss: 0.0139, Accuracy: 0.3709
+Eval - Loss: 0.0123, Accuracy: 0.4502
+Epoch [3/50] - Loss: 0.0112, Accuracy: 0.4995
+Eval - Loss: 0.0098, Accuracy: 0.5737
+Epoch [4/50] - Loss: 0.0091, Accuracy: 0.6062
+Eval - Loss: 0.0080, Accuracy: 0.6676
+Epoch [5/50] - Loss: 0.0075, Accuracy: 0.6801
+Eval - Loss: 0.0069, Accuracy: 0.7060
+Epoch [6/50] - Loss: 0.0065, Accuracy: 0.7230
+Eval - Loss: 0.0060, Accuracy: 0.7497
+Epoch [7/50] - Loss: 0.0058, Accuracy: 0.7575
+Eval - Loss: 0.0054, Accuracy: 0.7782
+Epoch [8/50] - Loss: 0.0052, Accuracy: 0.7827
+Eval - Loss: 0.0051, Accuracy: 0.7891
+Epoch [9/50] - Loss: 0.0048, Accuracy: 0.8028
+Eval - Loss: 0.0050, Accuracy: 0.7985
+Epoch [10/50] - Loss: 0.0043, Accuracy: 0.8198
+Eval - Loss: 0.0044, Accuracy: 0.8235
+Epoch [11/50] - Loss: 0.0040, Accuracy: 0.8360
+Eval - Loss: 0.0040, Accuracy: 0.8388
+Epoch [12/50] - Loss: 0.0037, Accuracy: 0.8463
+Eval - Loss: 0.0036, Accuracy: 0.8558
+Epoch [13/50] - Loss: 0.0035, Accuracy: 0.8580
+Eval - Loss: 0.0035, Accuracy: 0.8606
+Epoch [14/50] - Loss: 0.0033, Accuracy: 0.8667
+Eval - Loss: 0.0034, Accuracy: 0.8642
+Epoch [15/50] - Loss: 0.0031, Accuracy: 0.8744
+Eval - Loss: 0.0034, Accuracy: 0.8661
+Epoch [16/50] - Loss: 0.0029, Accuracy: 0.8805
+Eval - Loss: 0.0034, Accuracy: 0.8662
+Epoch [17/50] - Loss: 0.0028, Accuracy: 0.8855
+Eval - Loss: 0.0029, Accuracy: 0.8838
+Epoch [18/50] - Loss: 0.0026, Accuracy: 0.8934
+Eval - Loss: 0.0030, Accuracy: 0.8862
+Epoch [19/50] - Loss: 0.0025, Accuracy: 0.8987
+Eval - Loss: 0.0029, Accuracy: 0.8873
+Epoch [20/50] - Loss: 0.0024, Accuracy: 0.9012
+Eval - Loss: 0.0028, Accuracy: 0.8879
+Epoch [21/50] - Loss: 0.0023, Accuracy: 0.9059
+Eval - Loss: 0.0027, Accuracy: 0.8914
+Epoch [22/50] - Loss: 0.0022, Accuracy: 0.9116
+Eval - Loss: 0.0027, Accuracy: 0.8948
+Epoch [23/50] - Loss: 0.0021, Accuracy: 0.9147
+Eval - Loss: 0.0026, Accuracy: 0.8958
+Epoch [24/50] - Loss: 0.0020, Accuracy: 0.9168
+Eval - Loss: 0.0026, Accuracy: 0.8994
+Epoch [25/50] - Loss: 0.0019, Accuracy: 0.9207
+Eval - Loss: 0.0026, Accuracy: 0.8986
+Epoch [26/50] - Loss: 0.0018, Accuracy: 0.9254
+Eval - Loss: 0.0027, Accuracy: 0.8986
+Epoch [27/50] - Loss: 0.0018, Accuracy: 0.9274
+Eval - Loss: 0.0025, Accuracy: 0.8998
+Epoch [28/50] - Loss: 0.0017, Accuracy: 0.9300
+Eval - Loss: 0.0026, Accuracy: 0.9030
+Epoch [29/50] - Loss: 0.0016, Accuracy: 0.9329
+Eval - Loss: 0.0025, Accuracy: 0.9063
+Epoch [30/50] - Loss: 0.0016, Accuracy: 0.9361
+Eval - Loss: 0.0025, Accuracy: 0.9015
+Epoch [31/50] - Loss: 0.0015, Accuracy: 0.9388
+Eval - Loss: 0.0024, Accuracy: 0.9074
+Epoch [32/50] - Loss: 0.0015, Accuracy: 0.9407
+Eval - Loss: 0.0025, Accuracy: 0.9059
+Epoch [33/50] - Loss: 0.0014, Accuracy: 0.9432
+Eval - Loss: 0.0025, Accuracy: 0.9077
+Epoch [34/50] - Loss: 0.0014, Accuracy: 0.9451
+Eval - Loss: 0.0025, Accuracy: 0.9012
+Epoch [35/50] - Loss: 0.0013, Accuracy: 0.9474
+Eval - Loss: 0.0025, Accuracy: 0.9062
+Epoch [36/50] - Loss: 0.0012, Accuracy: 0.9506
+Eval - Loss: 0.0026, Accuracy: 0.9043
+Epoch [37/50] - Loss: 0.0012, Accuracy: 0.9516
+Eval - Loss: 0.0026, Accuracy: 0.9050
+Epoch [38/50] - Loss: 0.0012, Accuracy: 0.9543
+Eval - Loss: 0.0026, Accuracy: 0.9061
+Epoch [39/50] - Loss: 0.0011, Accuracy: 0.9562
+Eval - Loss: 0.0026, Accuracy: 0.9063
+Epoch [40/50] - Loss: 0.0011, Accuracy: 0.9577
+Eval - Loss: 0.0027, Accuracy: 0.9027
+Epoch [41/50] - Loss: 0.0010, Accuracy: 0.9597
+Eval - Loss: 0.0027, Accuracy: 0.9031
+Epoch [42/50] - Loss: 0.0010, Accuracy: 0.9608
+Eval - Loss: 0.0027, Accuracy: 0.9055
+Epoch [43/50] - Loss: 0.0010, Accuracy: 0.9623
+Eval - Loss: 0.0027, Accuracy: 0.9061
+Epoch [44/50] - Loss: 0.0009, Accuracy: 0.9641
+Eval - Loss: 0.0027, Accuracy: 0.9040
+Epoch [45/50] - Loss: 0.0009, Accuracy: 0.9657
+Eval - Loss: 0.0028, Accuracy: 0.9044
+Epoch [46/50] - Loss: 0.0009, Accuracy: 0.9666
+Eval - Loss: 0.0028, Accuracy: 0.9040
+Epoch [47/50] - Loss: 0.0009, Accuracy: 0.9671
+Eval - Loss: 0.0028, Accuracy: 0.9039
+Epoch [48/50] - Loss: 0.0008, Accuracy: 0.9683
+Eval - Loss: 0.0029, Accuracy: 0.9015
+Epoch [49/50] - Loss: 0.0008, Accuracy: 0.9687
+Eval - Loss: 0.0029, Accuracy: 0.9026
+Epoch [50/50] - Loss: 0.0008, Accuracy: 0.9701
+Eval - Loss: 0.0029, Accuracy: 0.9033

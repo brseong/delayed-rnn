@@ -1,0 +1,21 @@
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_setup.py:_flush():81] Current SDK version is 0.25.0
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_setup.py:_flush():81] Configure stats pid to 1740691
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_init.py:setup_run_log_directory():717] Logging user logs to /gpfs/home1/aiphw227/Delay_RNN/code/wandb/run-20260225_013158-GRU_GRU_psMNIST_2_1771950717.506455/logs/debug.log
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to /gpfs/home1/aiphw227/Delay_RNN/code/wandb/run-20260225_013158-GRU_GRU_psMNIST_2_1771950717.506455/logs/debug-internal.log
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_init.py:init():844] calling init triggers
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'seed': 2, 'num_epochs': 50, 'batch_size': 128, 'num_workers': 4, 'lr': 0.001, 'use_lr_scheduler': True, 'use_wandb': True, 'group_name': 'GRU', 'model_args': {'num_layers': 1, 'hidden_size': 128}, 'dataset': {'_target_': 'datasets.sMNIST.SequentialMNIST', 'permute': True, 'input_size': 1}, 'model': {'_target_': 'models.GRU.GRU'}, '_wandb': {}}
+2026-02-25 01:31:58,039 INFO    MainThread:1740691 [wandb_init.py:init():892] starting backend
+2026-02-25 01:31:58,292 INFO    MainThread:1740691 [wandb_init.py:init():895] sending inform_init request
+2026-02-25 01:31:58,295 INFO    MainThread:1740691 [wandb_init.py:init():903] backend started and connected
+2026-02-25 01:31:58,296 INFO    MainThread:1740691 [wandb_init.py:init():973] updated telemetry
+2026-02-25 01:31:58,297 INFO    MainThread:1740691 [wandb_init.py:init():997] communicating run to backend with 90.0 second timeout
+2026-02-25 01:31:59,178 INFO    MainThread:1740691 [wandb_init.py:init():1042] starting run threads in backend
+2026-02-25 01:31:59,234 INFO    MainThread:1740691 [wandb_run.py:_console_start():2524] atexit reg
+2026-02-25 01:31:59,235 INFO    MainThread:1740691 [wandb_run.py:_redirect():2373] redirect: wrap_raw
+2026-02-25 01:31:59,235 INFO    MainThread:1740691 [wandb_run.py:_redirect():2442] Wrapping output streams.
+2026-02-25 01:31:59,235 INFO    MainThread:1740691 [wandb_run.py:_redirect():2465] Redirects installed.
+2026-02-25 01:31:59,237 INFO    MainThread:1740691 [wandb_init.py:init():1082] run started, returning control to user process
+2026-02-25 01:34:51,529 INFO    wandb-AsyncioManager-main:1740691 [service_client.py:_forward_responses():134] Reached EOF.
+2026-02-25 01:34:51,529 INFO    wandb-AsyncioManager-main:1740691 [mailbox.py:close():155] Closing mailbox, abandoning 1 handles.

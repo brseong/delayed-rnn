@@ -1,0 +1,55 @@
+Epochs [Qswap]:   6%|█████████████▉                                                                                                                                                                                                                          | 6/100 [00:17<04:32,  2.90s/it]
+Epoch [1/100] - Loss: 28.6992, Accuracy: 0.0989
+Eval - Loss: 2.8601, Accuracy: 0.1024
+Epoch [2/100] - Loss: 28.1977, Accuracy: 0.0990
+Eval - Loss: 2.8341, Accuracy: 0.1019
+Epoch [3/100] - Loss: 28.2281, Accuracy: 0.0993
+Eval - Loss: 2.8388, Accuracy: 0.0981
+Epoch [4/100] - Loss: 28.4291, Accuracy: 0.1016
+Eval - Loss: 2.9711, Accuracy: 0.0973
+Epoch [5/100] - Loss: 28.4238, Accuracy: 0.1000
+Eval - Loss: 2.7548, Accuracy: 0.1056
+Epoch [6/100] - Loss: 28.4127, Accuracy: 0.1004
+Eval - Loss: 2.8291, Accuracy: 0.0975
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 137, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 99, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 86, in train
+    for _, batch in enumerate(dataloader):
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 701, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 757, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 59, in __getitem__
+    target_onehot = F.one_hot(target_tensor, num_classes=self.one_hot_dim).float()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

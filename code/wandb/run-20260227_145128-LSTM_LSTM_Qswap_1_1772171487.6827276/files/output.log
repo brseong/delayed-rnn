@@ -1,0 +1,51 @@
+[2026-02-27 14:51:29,403][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::_thnn_fused_lstm_cell encountered 32 time(s)
+[2026-02-27 14:51:29,403][fvcore.nn.jit_analysis][WARNING] - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+loss_fn
+FLOPs (1B): 4.514381824
+Epochs [Qswap]:   6%|█████████████▋                                                                                                                                                                                                                      | 3/50 [00:06<01:42,  2.18s/it]
+Epoch [1/50] - Loss: 46.0557, Accuracy: 0.1000
+Eval - Loss: 4.6053, Accuracy: 0.0992
+Epoch [2/50] - Loss: 46.0523, Accuracy: 0.1009
+Eval - Loss: 4.6053, Accuracy: 0.0975
+Epoch [3/50] - Loss: 46.0521, Accuracy: 0.0997
+Eval - Loss: 4.6050, Accuracy: 0.1058
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 149, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 111, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 96, in train
+    out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/models/LSTM.py", line 64, in forward
+    c_t = mask * next_c + (1 - mask) * state[1]
+                           ~~^~~~~~
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/_tensor.py", line 33, in wrapped
+    @functools.wraps(f, assigned=assigned)
+
+KeyboardInterrupt

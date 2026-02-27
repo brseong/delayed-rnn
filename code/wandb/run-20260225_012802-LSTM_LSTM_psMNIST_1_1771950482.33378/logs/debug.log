@@ -1,0 +1,36 @@
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_setup.py:_flush():81] Current SDK version is 0.25.0
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_setup.py:_flush():81] Configure stats pid to 1580431
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_init.py:setup_run_log_directory():717] Logging user logs to /gpfs/home1/aiphw227/Delay_RNN/code/wandb/run-20260225_012802-LSTM_LSTM_psMNIST_1_1771950482.33378/logs/debug.log
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to /gpfs/home1/aiphw227/Delay_RNN/code/wandb/run-20260225_012802-LSTM_LSTM_psMNIST_1_1771950482.33378/logs/debug-internal.log
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_init.py:init():844] calling init triggers
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'seed': 1, 'num_epochs': 50, 'batch_size': 128, 'num_workers': 4, 'lr': 0.001, 'use_lr_scheduler': True, 'use_wandb': True, 'group_name': 'LSTM', 'model_args': {'num_layers': 1, 'hidden_size': 128}, 'dataset': {'_target_': 'datasets.sMNIST.SequentialMNIST', 'permute': True, 'input_size': 1}, 'model': {'_target_': 'models.LSTM.LSTM'}, '_wandb': {}}
+2026-02-25 01:28:02,902 INFO    MainThread:1580431 [wandb_init.py:init():892] starting backend
+2026-02-25 01:28:03,223 INFO    MainThread:1580431 [wandb_init.py:init():895] sending inform_init request
+2026-02-25 01:28:03,228 INFO    MainThread:1580431 [wandb_init.py:init():903] backend started and connected
+2026-02-25 01:28:03,229 INFO    MainThread:1580431 [wandb_init.py:init():973] updated telemetry
+2026-02-25 01:28:03,229 INFO    MainThread:1580431 [wandb_init.py:init():997] communicating run to backend with 90.0 second timeout
+2026-02-25 01:28:04,114 INFO    MainThread:1580431 [wandb_init.py:init():1042] starting run threads in backend
+2026-02-25 01:28:04,200 INFO    MainThread:1580431 [wandb_run.py:_console_start():2524] atexit reg
+2026-02-25 01:28:04,201 INFO    MainThread:1580431 [wandb_run.py:_redirect():2373] redirect: wrap_raw
+2026-02-25 01:28:04,201 INFO    MainThread:1580431 [wandb_run.py:_redirect():2442] Wrapping output streams.
+2026-02-25 01:28:04,201 INFO    MainThread:1580431 [wandb_run.py:_redirect():2465] Redirects installed.
+2026-02-25 01:28:04,204 INFO    MainThread:1580431 [wandb_init.py:init():1082] run started, returning control to user process
+2026-02-25 01:29:19,756 INFO    wandb-AsyncioManager-main:1580431 [service_client.py:_forward_responses():134] Reached EOF.
+2026-02-25 01:29:19,756 INFO    wandb-AsyncioManager-main:1580431 [mailbox.py:close():155] Closing mailbox, abandoning 1 handles.
+2026-02-25 01:29:19,957 ERROR   wandb-AsyncioManager-main:1580431 [asyncio_manager.py:fn_wrap_exceptions():184] Uncaught exception in run_soon callback.
+Traceback (most recent call last):
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/wandb/sdk/lib/asyncio_manager.py", line 182, in fn_wrap_exceptions
+    await fn()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/wandb/sdk/lib/service/service_client.py", line 45, in publish
+    await self._send_server_request(request)
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/wandb/sdk/lib/service/service_client.py", line 87, in _send_server_request
+    await self._drain_writer()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/wandb/sdk/lib/service/service_client.py", line 96, in _drain_writer
+    await self._writer.drain()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/asyncio/streams.py", line 392, in drain
+    await self._protocol._drain_helper()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/asyncio/streams.py", line 166, in _drain_helper
+    raise ConnectionResetError('Connection lost')
+ConnectionResetError: Connection lost

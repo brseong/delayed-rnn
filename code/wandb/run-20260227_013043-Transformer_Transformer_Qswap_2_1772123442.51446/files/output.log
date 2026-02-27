@@ -1,0 +1,77 @@
+Epochs [Qswap]:  15%|██████████████████████████████████▋                                                                                                                                                                                                    | 15/100 [01:03<05:48,  4.10s/it]
+Epoch [1/100] - Loss: 28.7476, Accuracy: 0.0977
+Eval - Loss: 2.8558, Accuracy: 0.0999
+Epoch [2/100] - Loss: 28.1961, Accuracy: 0.0995
+Eval - Loss: 2.9042, Accuracy: 0.0921
+Epoch [3/100] - Loss: 28.3149, Accuracy: 0.1007
+Eval - Loss: 2.9364, Accuracy: 0.1017
+Epoch [4/100] - Loss: 28.2291, Accuracy: 0.0990
+Eval - Loss: 2.8768, Accuracy: 0.0924
+Epoch [5/100] - Loss: 28.7155, Accuracy: 0.1013
+Eval - Loss: 2.7416, Accuracy: 0.0995
+Epoch [6/100] - Loss: 28.3869, Accuracy: 0.0992
+Eval - Loss: 2.9193, Accuracy: 0.0972
+Epoch [7/100] - Loss: 28.7536, Accuracy: 0.1018
+Eval - Loss: 2.8623, Accuracy: 0.0978
+Epoch [8/100] - Loss: 28.9058, Accuracy: 0.0981
+Eval - Loss: 2.7982, Accuracy: 0.1108
+Epoch [9/100] - Loss: 28.1653, Accuracy: 0.0982
+Eval - Loss: 2.7703, Accuracy: 0.1066
+Epoch [10/100] - Loss: 28.3155, Accuracy: 0.0991
+Eval - Loss: 2.7856, Accuracy: 0.0845
+Epoch [11/100] - Loss: 28.1532, Accuracy: 0.0981
+Eval - Loss: 2.9606, Accuracy: 0.1100
+Epoch [12/100] - Loss: 28.7016, Accuracy: 0.0973
+Eval - Loss: 2.8714, Accuracy: 0.0973
+Epoch [13/100] - Loss: 28.4992, Accuracy: 0.1013
+Eval - Loss: 2.8582, Accuracy: 0.0907
+Epoch [14/100] - Loss: 28.7664, Accuracy: 0.1047
+Eval - Loss: 2.6195, Accuracy: 0.1034
+Epoch [15/100] - Loss: 28.5907, Accuracy: 0.0983
+Eval - Loss: 2.8872, Accuracy: 0.0967
+Epoch [16/100] - Loss: 29.1173, Accuracy: 0.0966
+Eval - Loss: 2.7705, Accuracy: 0.1031
+Epoch [17/100] - Loss: 28.3636, Accuracy: 0.1028
+Eval - Loss: 2.8862, Accuracy: 0.0974
+Epoch [18/100] - Loss: 28.1504, Accuracy: 0.0990
+Eval - Loss: 2.9941, Accuracy: 0.1013
+Epoch [19/100] - Loss: 28.3333, Accuracy: 0.1001
+Eval - Loss: 2.8453, Accuracy: 0.0910
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 137, in <module>
+    if __name__ == "__main__":
+        ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 99, in main
+    train_start_time = time.time()
+                         ^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 95, in train
+    loss, num_correct = model.compute_loss(out = out, output_lengths=output_lengths, targets = targets, optimizer = optimizer)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/models/Transformer.py", line 155, in compute_loss
+    loss.backward()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/_tensor.py", line 581, in backward
+    torch.autograd.backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

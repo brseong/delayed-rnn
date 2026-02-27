@@ -1,0 +1,5 @@
+- seed=6
+- model=GRU
+- dataset=psMNIST
+- use_wandb=true
+- group_name=GRU

@@ -1,0 +1,81 @@
+Epochs [Qswap]:  30%|████████████████████████████████████████████████████████████████████                                                                                                                                                               | 15/50 [00:29<01:08,  1.96s/it]
+Epoch [1/50] - Loss: 46.0558, Accuracy: 0.1000
+Eval - Loss: 4.6051, Accuracy: 0.1027, FLOPs (1B): 5.35
+Epoch [2/50] - Loss: 46.0530, Accuracy: 0.0998
+Eval - Loss: 4.6053, Accuracy: 0.1019, FLOPs (1B): 5.35
+Epoch [3/50] - Loss: 46.0515, Accuracy: 0.1011
+Eval - Loss: 4.6053, Accuracy: 0.1001, FLOPs (1B): 5.35
+Epoch [4/50] - Loss: 46.0780, Accuracy: 0.1034
+Eval - Loss: 4.6052, Accuracy: 0.1021, FLOPs (1B): 5.35
+Epoch [5/50] - Loss: 46.0522, Accuracy: 0.1005
+Eval - Loss: 4.6054, Accuracy: 0.0985, FLOPs (1B): 5.35
+Epoch [6/50] - Loss: 46.0495, Accuracy: 0.1022
+Eval - Loss: 4.6049, Accuracy: 0.1028, FLOPs (1B): 5.35
+Epoch [7/50] - Loss: 46.0083, Accuracy: 0.1123
+Eval - Loss: 4.5969, Accuracy: 0.1231, FLOPs (1B): 5.35
+Epoch [8/50] - Loss: 45.9518, Accuracy: 0.1179
+Eval - Loss: 4.6073, Accuracy: 0.0969, FLOPs (1B): 5.35
+Epoch [9/50] - Loss: 46.0532, Accuracy: 0.1009
+Eval - Loss: 4.6052, Accuracy: 0.1012, FLOPs (1B): 5.35
+Epoch [10/50] - Loss: 46.0519, Accuracy: 0.1008
+Eval - Loss: 4.6052, Accuracy: 0.1020, FLOPs (1B): 5.35
+Epoch [11/50] - Loss: 46.0519, Accuracy: 0.1008
+Eval - Loss: 4.6053, Accuracy: 0.0961, FLOPs (1B): 5.35
+Epoch [12/50] - Loss: 46.0514, Accuracy: 0.0996
+Eval - Loss: 4.6050, Accuracy: 0.1054, FLOPs (1B): 5.35
+Epoch [13/50] - Loss: 46.0516, Accuracy: 0.1007
+Eval - Loss: 4.6050, Accuracy: 0.0996, FLOPs (1B): 5.35
+Epoch [14/50] - Loss: 46.0512, Accuracy: 0.1017
+Eval - Loss: 4.6050, Accuracy: 0.1018, FLOPs (1B): 5.35
+Epoch [15/50] - Loss: 46.0505, Accuracy: 0.1011
+Eval - Loss: 4.6049, Accuracy: 0.0992, FLOPs (1B): 5.35
+Epoch [16/50] - Loss: 46.0032, Accuracy: 0.1121
+Eval - Loss: 4.5857, Accuracy: 0.1283, FLOPs (1B): 5.35
+Epoch [17/50] - Loss: 45.9723, Accuracy: 0.1107
+Eval - Loss: 4.6050, Accuracy: 0.0999, FLOPs (1B): 5.35
+Epoch [18/50] - Loss: 46.0526, Accuracy: 0.1003
+Eval - Loss: 4.6052, Accuracy: 0.1024, FLOPs (1B): 5.35
+Epoch [19/50] - Loss: 46.0509, Accuracy: 0.1006
+Eval - Loss: 4.6051, Accuracy: 0.1020, FLOPs (1B): 5.35
+Epoch [20/50] - Loss: 46.0520, Accuracy: 0.1003
+Eval - Loss: 4.6051, Accuracy: 0.1001, FLOPs (1B): 5.35
+Epoch [21/50] - Loss: 46.0511, Accuracy: 0.1006
+Eval - Loss: 4.6051, Accuracy: 0.1014, FLOPs (1B): 5.35
+Epoch [22/50] - Loss: 46.0512, Accuracy: 0.1004
+Eval - Loss: 4.6049, Accuracy: 0.1038, FLOPs (1B): 5.35
+Epoch [23/50] - Loss: 46.0498, Accuracy: 0.1015
+Eval - Loss: 4.6048, Accuracy: 0.1007, FLOPs (1B): 5.35
+Epoch [24/50] - Loss: 46.0153, Accuracy: 0.1083
+Eval - Loss: 4.6047, Accuracy: 0.1030, FLOPs (1B): 5.35
+Epoch [25/50] - Loss: 46.0359, Accuracy: 0.1044
+Eval - Loss: 4.6048, Accuracy: 0.1017, FLOPs (1B): 5.35
+Epoch [26/50] - Loss: 46.0496, Accuracy: 0.1013
+Eval - Loss: 4.6049, Accuracy: 0.0987, FLOPs (1B): 5.35
+Epoch [27/50] - Loss: 46.0483, Accuracy: 0.1020
+Eval - Loss: 4.6047, Accuracy: 0.1032, FLOPs (1B): 5.35
+Epoch [28/50] - Loss: 46.0068, Accuracy: 0.1081
+Eval - Loss: 4.5879, Accuracy: 0.1240, FLOPs (1B): 5.35
+Epoch [29/50] - Loss: 45.8491, Accuracy: 0.1214
+Eval - Loss: 4.5895, Accuracy: 0.1244, FLOPs (1B): 5.35
+Epoch [30/50] - Loss: 45.7916, Accuracy: 0.1234
+Eval - Loss: 4.5795, Accuracy: 0.1204, FLOPs (1B): 5.35
+Epoch [31/50] - Loss: 45.7854, Accuracy: 0.1243
+Eval - Loss: 4.5776, Accuracy: 0.1219, FLOPs (1B): 5.35
+Epoch [32/50] - Loss: 45.7770, Accuracy: 0.1250
+Eval - Loss: 4.5790, Accuracy: 0.1253, FLOPs (1B): 5.35
+Epoch [33/50] - Loss: 45.7741, Accuracy: 0.1254
+Eval - Loss: 4.5773, Accuracy: 0.1246, FLOPs (1B): 5.35
+Epoch [34/50] - Loss: 45.7677, Accuracy: 0.1257
+Eval - Loss: 4.5753, Accuracy: 0.1302, FLOPs (1B): 5.35
+Epoch [35/50] - Loss: 45.7700, Accuracy: 0.1263
+Eval - Loss: 4.5758, Accuracy: 0.1280, FLOPs (1B): 5.35
+Epoch [36/50] - Loss: 45.7647, Accuracy: 0.1271
+Eval - Loss: 4.5731, Accuracy: 0.1267, FLOPs (1B): 5.35
+Epoch [37/50] - Loss: 45.7674, Accuracy: 0.1260
+Eval - Loss: 4.5795, Accuracy: 0.1224, FLOPs (1B): 5.35
+Epoch [38/50] - Loss: 45.7589, Accuracy: 0.1271
+Eval - Loss: 4.5765, Accuracy: 0.1271, FLOPs (1B): 5.35
+Epoch [39/50] - Loss: 45.7611, Accuracy: 0.1268
+Eval - Loss: 4.5748, Accuracy: 0.1265, FLOPs (1B): 5.35
+Epoch [40/50] - Loss: 45.7620, Accuracy: 0.1269
+Eval - Loss: 4.5779, Accuracy: 0.1245, FLOPs (1B): 5.35

@@ -1,0 +1,64 @@
+Epoch [1/50] - Loss: 0.0177, Accuracy: 0.1369
+Eval - Loss: 0.0173, Accuracy: 0.1668
+Epoch [2/50] - Loss: 0.0169, Accuracy: 0.1870
+Eval - Loss: 0.0170, Accuracy: 0.1872
+Epoch [3/50] - Loss: 0.0167, Accuracy: 0.1949
+Eval - Loss: 0.0170, Accuracy: 0.1996
+Epoch [4/50] - Loss: 0.0167, Accuracy: 0.1923
+Eval - Loss: 0.0178, Accuracy: 0.1373
+Epoch [5/50] - Loss: 0.0169, Accuracy: 0.1878
+Eval - Loss: 0.0167, Accuracy: 0.2027
+Epoch [6/50] - Loss: 0.0167, Accuracy: 0.1964
+Eval - Loss: 0.0168, Accuracy: 0.1930
+Epoch [7/50] - Loss: 0.0166, Accuracy: 0.2030
+Eval - Loss: 0.0167, Accuracy: 0.2128
+Epoch [8/50] - Loss: 0.0164, Accuracy: 0.2090
+Eval - Loss: 0.0167, Accuracy: 0.1842
+Epoch [9/50] - Loss: 0.0166, Accuracy: 0.2045
+Eval - Loss: 0.0167, Accuracy: 0.2051
+Epoch [10/50] - Loss: 0.0164, Accuracy: 0.2101
+Eval - Loss: 0.0166, Accuracy: 0.2106
+Epoch [11/50] - Loss: 0.0166, Accuracy: 0.2043
+Eval - Loss: 0.0167, Accuracy: 0.2138
+Epoch [12/50] - Loss: 0.0164, Accuracy: 0.2111
+Eval - Loss: 0.0166, Accuracy: 0.1975
+Epoch [13/50] - Loss: 0.0165, Accuracy: 0.2047
+Eval - Loss: 0.0166, Accuracy: 0.2141
+Epoch [14/50] - Loss: 0.0164, Accuracy: 0.2081
+Eval - Loss: 0.0166, Accuracy: 0.2138
+Epoch [15/50] - Loss: 0.0164, Accuracy: 0.2111
+Eval - Loss: 0.0166, Accuracy: 0.2014
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 118, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 79, in main
+    avg_loss, accuracy = train(
+                         ^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/utils.py", line 37, in train
+    loss.backward()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/_tensor.py", line 630, in backward
+    torch.autograd.backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/__init__.py", line 364, in backward
+    _engine_run_backward(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/autograd/graph.py", line 865, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

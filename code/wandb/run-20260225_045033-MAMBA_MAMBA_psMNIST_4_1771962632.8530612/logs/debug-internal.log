@@ -1,0 +1,12 @@
+{"time":"2026-02-25T04:50:33.650348139+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-25T04:50:34.035763006+09:00","level":"INFO","msg":"stream: created new stream","id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T04:50:34.035844825+09:00","level":"INFO","msg":"handler: started","stream_id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T04:50:34.036448797+09:00","level":"INFO","msg":"stream: started","id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T04:50:34.036455841+09:00","level":"INFO","msg":"sender: started","stream_id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T04:50:34.0364554+09:00","level":"INFO","msg":"writer: started","stream_id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T04:58:34.979605891+09:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/singfor7012/psMNIST/MAMBA_MAMBA_psMNIST_4_1771962632.8530612/file_stream","body":"\n<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<title>502 Server Error</title>\n</head>\n<body text=#000000 bgcolor=#ffffff>\n<h1>Error: Server Error</h1>\n<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>\n<h2></h2>\n</body></html>\n"}
+{"time":"2026-02-25T06:02:03.273214022+09:00","level":"INFO","msg":"stream: closing","id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T06:02:04.170343252+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-25T06:02:04.45839409+09:00","level":"INFO","msg":"handler: closed","stream_id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T06:02:04.458925047+09:00","level":"INFO","msg":"sender: closed","stream_id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}
+{"time":"2026-02-25T06:02:04.458943301+09:00","level":"INFO","msg":"stream: closed","id":"MAMBA_MAMBA_psMNIST_4_1771962632.8530612"}

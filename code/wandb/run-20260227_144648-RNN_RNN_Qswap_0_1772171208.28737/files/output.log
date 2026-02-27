@@ -1,0 +1,54 @@
+[2026-02-27 14:46:50,120][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 32 time(s)
+[2026-02-27 14:46:50,121][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 32 time(s)
+Total FLOPs: 1154.74432
+Epochs [Qswap]:   8%|██████████████████▏                                                                                                                                                                                                                 | 4/50 [00:08<01:35,  2.07s/it]
+Epoch [1/50] - Loss: 46.0552, Accuracy: 0.1005
+Eval - Loss: 4.6054, Accuracy: 0.1010
+Epoch [2/50] - Loss: 46.0529, Accuracy: 0.1009
+Eval - Loss: 4.6054, Accuracy: 0.0966
+Epoch [3/50] - Loss: 46.0540, Accuracy: 0.1030
+Eval - Loss: 4.6053, Accuracy: 0.0998
+Epoch [4/50] - Loss: 46.0539, Accuracy: 0.0992
+Eval - Loss: 4.6052, Accuracy: 0.1022
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 149, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 111, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 88, in train
+    for _, batch in enumerate(dataloader):
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 701, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 757, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 62, in __getitem__
+    input_tensor = torch.tensor(input_vectors, dtype=torch.float32)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

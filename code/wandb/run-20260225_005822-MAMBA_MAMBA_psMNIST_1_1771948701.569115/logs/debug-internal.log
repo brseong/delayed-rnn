@@ -1,0 +1,7 @@
+{"time":"2026-02-25T00:58:22.34554579+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-25T00:58:22.730059529+09:00","level":"INFO","msg":"stream: created new stream","id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}
+{"time":"2026-02-25T00:58:22.73011716+09:00","level":"INFO","msg":"handler: started","stream_id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}
+{"time":"2026-02-25T00:58:22.730548669+09:00","level":"INFO","msg":"stream: started","id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}
+{"time":"2026-02-25T00:58:22.730552082+09:00","level":"INFO","msg":"writer: started","stream_id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}
+{"time":"2026-02-25T00:58:22.730556156+09:00","level":"INFO","msg":"sender: started","stream_id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}
+{"time":"2026-02-25T01:00:25.214279605+09:00","level":"INFO","msg":"stream: closing","id":"MAMBA_MAMBA_psMNIST_1_1771948701.569115"}

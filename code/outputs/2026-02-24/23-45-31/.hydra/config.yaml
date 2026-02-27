@@ -1,0 +1,17 @@
+seed: 10
+num_epochs: 50
+batch_size: 128
+num_workers: 4
+lr: 0.001
+use_lr_scheduler: true
+use_wandb: true
+group_name: LSTM
+model_args:
+  num_layers: 1
+  hidden_size: 128
+dataset:
+  _target_: datasets.sMNIST.SequentialMNIST
+  permute: true
+  input_size: 1
+model:
+  _target_: models.LSTM.LSTM

@@ -1,0 +1,1 @@
+{"Flops(1B)":5.347868672,"eval_time":0.36070895195007324,"train_loss":45.76434135437012,"train_time":1.5800909996032715,"_timestamp":1.7721726700284266e+09,"_wandb":{"runtime":98},"learning_rate":0.0001,"num_params":137226,"_step":49,"train_accuracy":0.12302517890930176,"_runtime":98,"eval_loss":4.573674440383911,"eval_accuracy":0.12305384874343872}

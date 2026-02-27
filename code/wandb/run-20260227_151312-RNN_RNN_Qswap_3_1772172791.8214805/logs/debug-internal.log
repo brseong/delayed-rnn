@@ -1,0 +1,6 @@
+{"time":"2026-02-27T15:13:12.556436061+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-27T15:13:12.920489108+09:00","level":"INFO","msg":"stream: created new stream","id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:13:12.920549962+09:00","level":"INFO","msg":"handler: started","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:13:12.920996841+09:00","level":"INFO","msg":"stream: started","id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:13:12.921018543+09:00","level":"INFO","msg":"writer: started","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:13:12.921018242+09:00","level":"INFO","msg":"sender: started","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}

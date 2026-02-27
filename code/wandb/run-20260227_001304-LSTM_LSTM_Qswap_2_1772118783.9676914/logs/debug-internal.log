@@ -1,0 +1,11 @@
+{"time":"2026-02-27T00:13:04.754612308+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-27T00:13:05.135751786+09:00","level":"INFO","msg":"stream: created new stream","id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:13:05.135803989+09:00","level":"INFO","msg":"handler: started","stream_id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:13:05.136203569+09:00","level":"INFO","msg":"stream: started","id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:13:05.136207894+09:00","level":"INFO","msg":"writer: started","stream_id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:13:05.136212157+09:00","level":"INFO","msg":"sender: started","stream_id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:14:29.770591951+09:00","level":"INFO","msg":"stream: closing","id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:14:30.330293512+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-27T00:14:30.623292323+09:00","level":"INFO","msg":"handler: closed","stream_id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:14:30.623505589+09:00","level":"INFO","msg":"sender: closed","stream_id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}
+{"time":"2026-02-27T00:14:30.623518813+09:00","level":"INFO","msg":"stream: closed","id":"LSTM_LSTM_Qswap_2_1772118783.9676914"}

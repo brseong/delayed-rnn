@@ -1,0 +1,225 @@
+Epochs [Qswap]:  15%|██████████████████████████████████▋                                                                                                                                                                                                    | 15/100 [00:36<03:34,  2.52s/it]
+Epoch [1/100] - Loss: 29.0551, Accuracy: 0.1060
+Eval - Loss: 2.8599, Accuracy: 0.0929
+Epoch [2/100] - Loss: 28.1503, Accuracy: 0.1003
+Eval - Loss: 2.8345, Accuracy: 0.1000
+Epoch [3/100] - Loss: 28.1570, Accuracy: 0.1057
+Eval - Loss: 2.8394, Accuracy: 0.1087
+Epoch [4/100] - Loss: 28.3771, Accuracy: 0.0986
+Eval - Loss: 2.9701, Accuracy: 0.0973
+Epoch [5/100] - Loss: 28.0400, Accuracy: 0.1397
+Eval - Loss: 2.5817, Accuracy: 0.3430
+Epoch [6/100] - Loss: 26.5985, Accuracy: 0.2918
+Eval - Loss: 2.4887, Accuracy: 0.3501
+Epoch [7/100] - Loss: 25.2337, Accuracy: 0.3529
+Eval - Loss: 2.4658, Accuracy: 0.4506
+Epoch [8/100] - Loss: 24.1291, Accuracy: 0.4652
+Eval - Loss: 2.3606, Accuracy: 0.5161
+Epoch [9/100] - Loss: 22.3898, Accuracy: 0.5242
+Eval - Loss: 2.0592, Accuracy: 0.6372
+Epoch [10/100] - Loss: 20.9842, Accuracy: 0.6117
+Eval - Loss: 1.8923, Accuracy: 0.7008
+Epoch [11/100] - Loss: 20.2169, Accuracy: 0.6446
+Eval - Loss: 1.7773, Accuracy: 0.7166
+Epoch [12/100] - Loss: 19.1943, Accuracy: 0.6753
+Eval - Loss: 1.9220, Accuracy: 0.6967
+Epoch [13/100] - Loss: 18.6710, Accuracy: 0.6961
+Eval - Loss: 1.7850, Accuracy: 0.7265
+Epoch [14/100] - Loss: 18.0734, Accuracy: 0.7140
+Eval - Loss: 1.7183, Accuracy: 0.7537
+Epoch [15/100] - Loss: 18.3276, Accuracy: 0.7136
+Eval - Loss: 1.7433, Accuracy: 0.7466
+Epoch [16/100] - Loss: 17.8367, Accuracy: 0.7146
+Eval - Loss: 1.7625, Accuracy: 0.7537
+Epoch [17/100] - Loss: 17.7025, Accuracy: 0.7226
+Eval - Loss: 1.6297, Accuracy: 0.7426
+Epoch [18/100] - Loss: 18.0164, Accuracy: 0.7158
+Eval - Loss: 1.7364, Accuracy: 0.7393
+Epoch [19/100] - Loss: 18.0984, Accuracy: 0.7250
+Eval - Loss: 1.9648, Accuracy: 0.6917
+Epoch [20/100] - Loss: 19.8691, Accuracy: 0.6658
+Eval - Loss: 1.7978, Accuracy: 0.6976
+Epoch [21/100] - Loss: 21.9186, Accuracy: 0.5747
+Eval - Loss: 1.7658, Accuracy: 0.7088
+Epoch [22/100] - Loss: 17.9597, Accuracy: 0.7022
+Eval - Loss: 1.7883, Accuracy: 0.7294
+Epoch [23/100] - Loss: 17.9456, Accuracy: 0.7161
+Eval - Loss: 1.7449, Accuracy: 0.7274
+Epoch [24/100] - Loss: 18.1172, Accuracy: 0.7179
+Eval - Loss: 1.7498, Accuracy: 0.7471
+Epoch [25/100] - Loss: 17.8815, Accuracy: 0.7294
+Eval - Loss: 1.7025, Accuracy: 0.7491
+Epoch [26/100] - Loss: 17.9930, Accuracy: 0.7340
+Eval - Loss: 1.7068, Accuracy: 0.7387
+Epoch [27/100] - Loss: 17.4435, Accuracy: 0.7274
+Eval - Loss: 1.7919, Accuracy: 0.7397
+Epoch [28/100] - Loss: 17.4184, Accuracy: 0.7449
+Eval - Loss: 1.8633, Accuracy: 0.7259
+Epoch [29/100] - Loss: 18.2357, Accuracy: 0.7124
+Eval - Loss: 1.6407, Accuracy: 0.7584
+Epoch [30/100] - Loss: 17.2677, Accuracy: 0.7351
+Eval - Loss: 1.6856, Accuracy: 0.7380
+Epoch [31/100] - Loss: 17.3842, Accuracy: 0.7380
+Eval - Loss: 1.7167, Accuracy: 0.7513
+Epoch [32/100] - Loss: 17.0575, Accuracy: 0.7458
+Eval - Loss: 1.6876, Accuracy: 0.7478
+Epoch [33/100] - Loss: 17.3281, Accuracy: 0.7402
+Eval - Loss: 1.8944, Accuracy: 0.7143
+Epoch [34/100] - Loss: 21.1887, Accuracy: 0.6213
+Eval - Loss: 1.7728, Accuracy: 0.7264
+Epoch [35/100] - Loss: 18.0286, Accuracy: 0.7135
+Eval - Loss: 1.6217, Accuracy: 0.7420
+Epoch [36/100] - Loss: 17.4006, Accuracy: 0.7387
+Eval - Loss: 1.6733, Accuracy: 0.7492
+Epoch [37/100] - Loss: 17.4719, Accuracy: 0.7365
+Eval - Loss: 1.7032, Accuracy: 0.7552
+Epoch [38/100] - Loss: 16.8526, Accuracy: 0.7427
+Eval - Loss: 1.5641, Accuracy: 0.7518
+Epoch [39/100] - Loss: 17.0939, Accuracy: 0.7416
+Eval - Loss: 1.5843, Accuracy: 0.7580
+Epoch [40/100] - Loss: 16.9311, Accuracy: 0.7447
+Eval - Loss: 1.7712, Accuracy: 0.7408
+Epoch [41/100] - Loss: 17.5988, Accuracy: 0.7390
+Eval - Loss: 1.7087, Accuracy: 0.7443
+Epoch [42/100] - Loss: 16.9580, Accuracy: 0.7438
+Eval - Loss: 1.7529, Accuracy: 0.7549
+Epoch [43/100] - Loss: 17.0202, Accuracy: 0.7470
+Eval - Loss: 1.6884, Accuracy: 0.7444
+Epoch [44/100] - Loss: 17.1205, Accuracy: 0.7434
+Eval - Loss: 1.7100, Accuracy: 0.7346
+Epoch [45/100] - Loss: 17.1605, Accuracy: 0.7397
+Eval - Loss: 1.7085, Accuracy: 0.7494
+Epoch [46/100] - Loss: 17.0568, Accuracy: 0.7394
+Eval - Loss: 1.6866, Accuracy: 0.7425
+Epoch [47/100] - Loss: 17.1943, Accuracy: 0.7450
+Eval - Loss: 1.6667, Accuracy: 0.7498
+Epoch [48/100] - Loss: 16.7584, Accuracy: 0.7458
+Eval - Loss: 1.7093, Accuracy: 0.7483
+Epoch [49/100] - Loss: 17.3396, Accuracy: 0.7406
+Eval - Loss: 1.7088, Accuracy: 0.7334
+Epoch [50/100] - Loss: 17.0158, Accuracy: 0.7469
+Eval - Loss: 1.7247, Accuracy: 0.7376
+Epoch [51/100] - Loss: 17.0096, Accuracy: 0.7454
+Eval - Loss: 1.6533, Accuracy: 0.7444
+Epoch [52/100] - Loss: 17.0341, Accuracy: 0.7444
+Eval - Loss: 1.7672, Accuracy: 0.7529
+Epoch [53/100] - Loss: 17.2443, Accuracy: 0.7389
+Eval - Loss: 1.7596, Accuracy: 0.7363
+Epoch [54/100] - Loss: 16.8360, Accuracy: 0.7398
+Eval - Loss: 1.5960, Accuracy: 0.7697
+Epoch [55/100] - Loss: 17.2265, Accuracy: 0.7440
+Eval - Loss: 1.6862, Accuracy: 0.7482
+Epoch [56/100] - Loss: 16.8396, Accuracy: 0.7434
+Eval - Loss: 1.6749, Accuracy: 0.7501
+Epoch [57/100] - Loss: 17.1557, Accuracy: 0.7429
+Eval - Loss: 1.7724, Accuracy: 0.7346
+Epoch [58/100] - Loss: 17.2742, Accuracy: 0.7443
+Eval - Loss: 1.7303, Accuracy: 0.7408
+Epoch [59/100] - Loss: 17.1133, Accuracy: 0.7400
+Eval - Loss: 1.6866, Accuracy: 0.7334
+Epoch [60/100] - Loss: 16.9063, Accuracy: 0.7440
+Eval - Loss: 1.6488, Accuracy: 0.7424
+Epoch [61/100] - Loss: 16.8923, Accuracy: 0.7468
+Eval - Loss: 1.6784, Accuracy: 0.7591
+Epoch [62/100] - Loss: 16.9950, Accuracy: 0.7502
+Eval - Loss: 1.7328, Accuracy: 0.7484
+Epoch [63/100] - Loss: 16.8172, Accuracy: 0.7461
+Eval - Loss: 1.6624, Accuracy: 0.7411
+Epoch [64/100] - Loss: 16.9137, Accuracy: 0.7464
+Eval - Loss: 1.7408, Accuracy: 0.7335
+Epoch [65/100] - Loss: 16.9645, Accuracy: 0.7431
+Eval - Loss: 1.6333, Accuracy: 0.7511
+Epoch [66/100] - Loss: 16.5332, Accuracy: 0.7466
+Eval - Loss: 1.6720, Accuracy: 0.7356
+Epoch [67/100] - Loss: 16.6741, Accuracy: 0.7435
+Eval - Loss: 1.6090, Accuracy: 0.7579
+Epoch [68/100] - Loss: 16.9603, Accuracy: 0.7462
+Eval - Loss: 1.6306, Accuracy: 0.7532
+Epoch [69/100] - Loss: 17.2783, Accuracy: 0.7461
+Eval - Loss: 1.6151, Accuracy: 0.7545
+Epoch [70/100] - Loss: 16.9718, Accuracy: 0.7469
+Eval - Loss: 1.6538, Accuracy: 0.7302
+Epoch [71/100] - Loss: 18.2649, Accuracy: 0.7138
+Eval - Loss: 1.7389, Accuracy: 0.7363
+Epoch [72/100] - Loss: 17.1094, Accuracy: 0.7434
+Eval - Loss: 1.7720, Accuracy: 0.7502
+Epoch [73/100] - Loss: 17.2159, Accuracy: 0.7421
+Eval - Loss: 1.6968, Accuracy: 0.7384
+Epoch [74/100] - Loss: 17.4899, Accuracy: 0.7400
+Eval - Loss: 1.6133, Accuracy: 0.7379
+Epoch [75/100] - Loss: 16.8900, Accuracy: 0.7459
+Eval - Loss: 1.6362, Accuracy: 0.7379
+Epoch [76/100] - Loss: 17.0801, Accuracy: 0.7392
+Eval - Loss: 1.7386, Accuracy: 0.7439
+Epoch [77/100] - Loss: 16.9664, Accuracy: 0.7502
+Eval - Loss: 1.6234, Accuracy: 0.7495
+Epoch [78/100] - Loss: 16.9945, Accuracy: 0.7452
+Eval - Loss: 1.7684, Accuracy: 0.7423
+Epoch [79/100] - Loss: 16.8836, Accuracy: 0.7463
+Eval - Loss: 1.5994, Accuracy: 0.7479
+Epoch [80/100] - Loss: 16.9174, Accuracy: 0.7439
+Eval - Loss: 1.6860, Accuracy: 0.7479
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 136, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 99, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 94, in train
+    out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/models/Transformer.py", line 122, in forward
+    tgt_mask = nn.Transformer.generate_square_subsequent_mask(sz, device=self.device)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/transformer.py", line 1091, in forward
+    + self._mha_block(
+      ^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/transformer.py", line 1127, in _mha_block
+    x = self.multihead_attn(
+        ^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/modules/activation.py", line 1368, in forward
+    attn_output, attn_output_weights = F.multi_head_attention_forward(
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/functional.py", line 6097, in multi_head_attention_forward
+    q, k, v = _in_projection_packed(query, key, value, in_proj_weight, in_proj_bias)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/nn/functional.py", line 5519, in _in_projection_packed
+    kv_proj = linear(k, w_kv, b_kv)
+              ^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

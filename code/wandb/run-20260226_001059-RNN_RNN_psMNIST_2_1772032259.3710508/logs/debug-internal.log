@@ -1,0 +1,7 @@
+{"time":"2026-02-26T00:11:00.205908566+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-26T00:11:00.674262258+09:00","level":"INFO","msg":"stream: created new stream","id":"RNN_RNN_psMNIST_2_1772032259.3710508"}
+{"time":"2026-02-26T00:11:00.674425924+09:00","level":"INFO","msg":"handler: started","stream_id":"RNN_RNN_psMNIST_2_1772032259.3710508"}
+{"time":"2026-02-26T00:11:00.674771747+09:00","level":"INFO","msg":"stream: started","id":"RNN_RNN_psMNIST_2_1772032259.3710508"}
+{"time":"2026-02-26T00:11:00.674779258+09:00","level":"INFO","msg":"writer: started","stream_id":"RNN_RNN_psMNIST_2_1772032259.3710508"}
+{"time":"2026-02-26T00:11:00.674787408+09:00","level":"INFO","msg":"sender: started","stream_id":"RNN_RNN_psMNIST_2_1772032259.3710508"}
+{"time":"2026-02-26T00:11:01.589459673+09:00","level":"INFO","msg":"stream: closing","id":"RNN_RNN_psMNIST_2_1772032259.3710508"}

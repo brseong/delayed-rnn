@@ -1,0 +1,82 @@
+[2026-02-27 14:51:11,498][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::_thnn_fused_gru_cell encountered 32 time(s)
+[2026-02-27 14:51:11,499][fvcore.nn.jit_analysis][WARNING] - The following submodules of the model were never called during the trace of the graph. They may be unused, or they were accessed by direct calls to .forward() or via other python methods. In the latter case they will have zeros for statistics, though their statistics will still contribute to their parent calling module.
+loss_fn
+FLOPs (1B): 3.394502656
+Epochs [Qswap]:  30%|████████████████████████████████████████████████████████████████████                                                                                                                                                               | 15/50 [00:26<01:01,  1.76s/it]
+Epoch [1/50] - Loss: 46.0563, Accuracy: 0.0997
+Eval - Loss: 4.6050, Accuracy: 0.1000
+Epoch [2/50] - Loss: 46.0520, Accuracy: 0.1003
+Eval - Loss: 4.6051, Accuracy: 0.0975
+Epoch [3/50] - Loss: 46.0115, Accuracy: 0.1065
+Eval - Loss: 4.5987, Accuracy: 0.1086
+Epoch [4/50] - Loss: 45.8334, Accuracy: 0.1199
+Eval - Loss: 4.5778, Accuracy: 0.1222
+Epoch [5/50] - Loss: 45.7662, Accuracy: 0.1232
+Eval - Loss: 4.5758, Accuracy: 0.1236
+Epoch [6/50] - Loss: 45.7413, Accuracy: 0.1241
+Eval - Loss: 4.5764, Accuracy: 0.1254
+Epoch [7/50] - Loss: 45.7169, Accuracy: 0.1289
+Eval - Loss: 4.5607, Accuracy: 0.1427
+Epoch [8/50] - Loss: 45.5414, Accuracy: 0.1419
+Eval - Loss: 4.5452, Accuracy: 0.1436
+Epoch [9/50] - Loss: 45.3261, Accuracy: 0.1512
+Eval - Loss: 4.5217, Accuracy: 0.1571
+Epoch [10/50] - Loss: 45.2108, Accuracy: 0.1550
+Eval - Loss: 4.5134, Accuracy: 0.1577
+Epoch [11/50] - Loss: 45.1272, Accuracy: 0.1563
+Eval - Loss: 4.5099, Accuracy: 0.1583
+Epoch [12/50] - Loss: 45.0964, Accuracy: 0.1579
+Eval - Loss: 4.5112, Accuracy: 0.1566
+Epoch [13/50] - Loss: 45.0492, Accuracy: 0.1593
+Eval - Loss: 4.5027, Accuracy: 0.1598
+Epoch [14/50] - Loss: 44.9431, Accuracy: 0.1612
+Eval - Loss: 4.4788, Accuracy: 0.1627
+Epoch [15/50] - Loss: 44.7034, Accuracy: 0.1672
+Eval - Loss: 4.4613, Accuracy: 0.1685
+Traceback (most recent call last):
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 149, in <module>
+    main()
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+           ^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+            ^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/_internal/hydra.py", line 119, in run
+    ret = run_job(
+          ^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/main.py", line 111, in main
+    avg_loss, accuracy = train_dataset.train(
+                         ^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 88, in train
+    for _, batch in enumerate(dataloader):
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 701, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 757, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 52, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+            ~~~~~~~~~~~~^^^^^
+  File "/gpfs/home1/aiphw227/Delay_RNN/code/datasets/Qswap.py", line 38, in __getitem__
+    pos1, pos2 = random.sample(range(seq_len), 2)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home1/aiphw227/miniconda3/envs/rnn/lib/python3.11/random.py", line 438, in sample
+    if not isinstance(population, _Sequence):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen abc>", line 119, in __instancecheck__
+  File "<frozen abc>", line 123, in __subclasscheck__
+KeyboardInterrupt

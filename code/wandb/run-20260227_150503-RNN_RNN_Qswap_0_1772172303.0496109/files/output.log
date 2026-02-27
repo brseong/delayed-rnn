@@ -1,0 +1,451 @@
+Epochs [Qswap]:   6%|█████████████▋                                                                                                                                                                                                                      | 3/50 [00:06<01:34,  2.01s/it]
+Epoch [1/50] - Loss: 46.0552, Accuracy: 0.1005
+[2026-02-27 15:05:07,153][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:07,154][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:07,154][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:07,155][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:07,155][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:07,155][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:07,155][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6054, Accuracy: 0.1010, FLOPs (1B): 5.35
+Epoch [2/50] - Loss: 46.0529, Accuracy: 0.1009
+[2026-02-27 15:05:09,105][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:09,105][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:09,105][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:09,106][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:09,106][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:09,106][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:09,106][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6054, Accuracy: 0.0966, FLOPs (1B): 5.35
+Epoch [3/50] - Loss: 46.0540, Accuracy: 0.1030
+[2026-02-27 15:05:11,060][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:11,061][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:11,061][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:11,061][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:11,061][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:11,061][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:11,062][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.0998, FLOPs (1B): 5.35
+Epoch [4/50] - Loss: 46.0539, Accuracy: 0.0992
+[2026-02-27 15:05:13,121][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:13,122][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:13,122][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:13,123][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:13,123][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:13,123][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:13,123][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6052, Accuracy: 0.1022, FLOPs (1B): 5.35
+Epoch [5/50] - Loss: 46.0528, Accuracy: 0.0999
+[2026-02-27 15:05:15,084][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:15,084][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:15,084][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:15,084][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:15,084][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:15,085][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:15,085][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6051, Accuracy: 0.0997, FLOPs (1B): 5.35
+Epoch [6/50] - Loss: 46.0514, Accuracy: 0.1021
+[2026-02-27 15:05:17,044][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:17,045][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:17,045][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:17,045][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:17,045][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:17,045][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:17,046][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.1041, FLOPs (1B): 5.35
+Epoch [7/50] - Loss: 46.0808, Accuracy: 0.1007
+[2026-02-27 15:05:19,001][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:19,001][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:19,002][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:19,002][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:19,002][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:19,002][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:19,002][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.0986, FLOPs (1B): 5.35
+Epoch [8/50] - Loss: 46.0547, Accuracy: 0.1003
+[2026-02-27 15:05:20,960][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:20,960][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:20,961][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:20,961][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:20,961][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:20,961][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:20,961][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6056, Accuracy: 0.0971, FLOPs (1B): 5.35
+Epoch [9/50] - Loss: 46.0531, Accuracy: 0.0997
+[2026-02-27 15:05:22,916][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:22,916][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:22,916][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:22,917][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:22,917][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:22,917][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:22,917][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.1021, FLOPs (1B): 5.35
+Epoch [10/50] - Loss: 46.0524, Accuracy: 0.1007
+[2026-02-27 15:05:24,864][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:24,864][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:24,865][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:24,865][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:24,865][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:24,865][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:24,865][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6054, Accuracy: 0.0988, FLOPs (1B): 5.35
+Epoch [11/50] - Loss: 46.0523, Accuracy: 0.1015
+[2026-02-27 15:05:26,820][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:26,821][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6051, Accuracy: 0.0995, FLOPs (1B): 5.35
+Epoch [12/50] - Loss: 46.0514, Accuracy: 0.1013
+[2026-02-27 15:05:28,775][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:28,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:28,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:28,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:28,777][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:28,777][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:28,777][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6051, Accuracy: 0.1004, FLOPs (1B): 5.35
+Epoch [13/50] - Loss: 46.0515, Accuracy: 0.1011
+[2026-02-27 15:05:30,731][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:30,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6049, Accuracy: 0.1017, FLOPs (1B): 5.35
+Epoch [14/50] - Loss: 46.0501, Accuracy: 0.1026
+[2026-02-27 15:05:32,691][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:32,692][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.0992, FLOPs (1B): 5.35
+Epoch [15/50] - Loss: 46.0478, Accuracy: 0.1037
+[2026-02-27 15:05:34,650][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:34,651][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6049, Accuracy: 0.0996, FLOPs (1B): 5.35
+Epoch [16/50] - Loss: 46.0454, Accuracy: 0.1028
+[2026-02-27 15:05:36,613][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:36,613][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:36,614][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:36,614][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:36,614][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:36,614][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:36,614][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6052, Accuracy: 0.0996, FLOPs (1B): 5.35
+Epoch [17/50] - Loss: 46.0535, Accuracy: 0.1008
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:38,571][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:38,572][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6051, Accuracy: 0.1004, FLOPs (1B): 5.35
+Epoch [18/50] - Loss: 46.0507, Accuracy: 0.1004
+[2026-02-27 15:05:40,659][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:40,660][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:40,660][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:40,660][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:40,660][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:40,661][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:40,661][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6026, Accuracy: 0.1145, FLOPs (1B): 5.35
+Epoch [19/50] - Loss: 46.0596, Accuracy: 0.1034
+[2026-02-27 15:05:42,621][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:42,622][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6054, Accuracy: 0.0990, FLOPs (1B): 5.35
+Epoch [20/50] - Loss: 46.0528, Accuracy: 0.0990
+[2026-02-27 15:05:44,578][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:44,578][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:44,578][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:44,579][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:44,579][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:44,579][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:44,579][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.1007, FLOPs (1B): 5.35
+Epoch [21/50] - Loss: 46.0524, Accuracy: 0.1006
+[2026-02-27 15:05:46,533][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:46,533][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:46,533][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:46,534][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:46,534][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:46,534][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:46,534][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.0991, FLOPs (1B): 5.35
+Epoch [22/50] - Loss: 46.0517, Accuracy: 0.1011
+[2026-02-27 15:05:48,492][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:48,492][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:48,492][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:48,493][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:48,493][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:48,493][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:48,493][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.1028, FLOPs (1B): 5.35
+Epoch [23/50] - Loss: 46.0520, Accuracy: 0.1002
+[2026-02-27 15:05:50,452][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:50,453][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6052, Accuracy: 0.1003, FLOPs (1B): 5.35
+Epoch [24/50] - Loss: 46.0492, Accuracy: 0.1026
+[2026-02-27 15:05:52,409][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:52,409][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:52,409][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:52,410][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:52,410][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:52,410][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:52,410][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6051, Accuracy: 0.1001, FLOPs (1B): 5.35
+Epoch [25/50] - Loss: 46.0504, Accuracy: 0.1025
+[2026-02-27 15:05:54,375][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:54,376][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.1050, FLOPs (1B): 5.35
+Epoch [26/50] - Loss: 46.0503, Accuracy: 0.1013
+[2026-02-27 15:05:56,328][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:56,328][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:56,328][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:56,329][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:56,329][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:56,329][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:56,329][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.0989, FLOPs (1B): 5.35
+Epoch [27/50] - Loss: 46.0511, Accuracy: 0.1018
+[2026-02-27 15:05:58,284][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:05:58,284][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:05:58,285][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:05:58,285][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:05:58,285][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:05:58,285][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:05:58,285][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.0971, FLOPs (1B): 5.35
+Epoch [28/50] - Loss: 46.0518, Accuracy: 0.1005
+[2026-02-27 15:06:00,248][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:00,248][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:00,248][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:00,249][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:00,249][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:00,249][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:00,249][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6053, Accuracy: 0.0980, FLOPs (1B): 5.35
+Epoch [29/50] - Loss: 46.0511, Accuracy: 0.1018
+[2026-02-27 15:06:02,203][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:02,204][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6050, Accuracy: 0.1020, FLOPs (1B): 5.35
+Epoch [30/50] - Loss: 46.0507, Accuracy: 0.1016
+[2026-02-27 15:06:04,159][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:04,159][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:04,160][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:04,160][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:04,160][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:04,160][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:04,160][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6052, Accuracy: 0.1025, FLOPs (1B): 5.35
+Epoch [31/50] - Loss: 46.0477, Accuracy: 0.1027
+[2026-02-27 15:06:06,118][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:06,118][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:06,118][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:06,118][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:06,118][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:06,119][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:06,119][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6043, Accuracy: 0.1087, FLOPs (1B): 5.35
+Epoch [32/50] - Loss: 46.0394, Accuracy: 0.1067
+[2026-02-27 15:06:08,208][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:08,209][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:08,209][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:08,209][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:08,210][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:08,210][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:08,210][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6029, Accuracy: 0.1076, FLOPs (1B): 5.35
+Epoch [33/50] - Loss: 46.0336, Accuracy: 0.1073
+[2026-02-27 15:06:10,169][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:10,170][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:10,170][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:10,170][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:10,170][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:10,170][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:10,171][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6033, Accuracy: 0.1091, FLOPs (1B): 5.35
+Epoch [34/50] - Loss: 46.0320, Accuracy: 0.1074
+[2026-02-27 15:06:12,125][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:12,126][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6044, Accuracy: 0.1072, FLOPs (1B): 5.35
+Epoch [35/50] - Loss: 46.0403, Accuracy: 0.1039
+[2026-02-27 15:06:14,087][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:14,087][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:14,088][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:14,088][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:14,088][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:14,088][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:14,088][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6021, Accuracy: 0.1085, FLOPs (1B): 5.35
+Epoch [36/50] - Loss: 46.0291, Accuracy: 0.1065
+[2026-02-27 15:06:16,046][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:16,047][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:16,047][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:16,047][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:16,047][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:16,048][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:16,048][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6032, Accuracy: 0.1050, FLOPs (1B): 5.35
+Epoch [37/50] - Loss: 46.0284, Accuracy: 0.1083
+[2026-02-27 15:06:18,008][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:18,008][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:18,009][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:18,009][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:18,009][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:18,009][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:18,009][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6018, Accuracy: 0.1108, FLOPs (1B): 5.35
+Epoch [38/50] - Loss: 46.0276, Accuracy: 0.1081
+[2026-02-27 15:06:19,976][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:19,977][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6020, Accuracy: 0.1112, FLOPs (1B): 5.35
+Epoch [39/50] - Loss: 46.0172, Accuracy: 0.1093
+[2026-02-27 15:06:21,936][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:21,936][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:21,937][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:21,937][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:21,937][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:21,937][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:21,937][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6007, Accuracy: 0.1109, FLOPs (1B): 5.35
+Epoch [40/50] - Loss: 46.0136, Accuracy: 0.1106
+[2026-02-27 15:06:23,895][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:23,895][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:23,895][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:23,895][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:23,895][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:23,896][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:23,896][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6019, Accuracy: 0.1069, FLOPs (1B): 5.35
+Epoch [41/50] - Loss: 46.0095, Accuracy: 0.1093
+[2026-02-27 15:06:25,855][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:25,856][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:25,856][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:25,856][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:25,857][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:25,857][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:25,857][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6013, Accuracy: 0.1146, FLOPs (1B): 5.35
+Epoch [42/50] - Loss: 46.0053, Accuracy: 0.1118
+[2026-02-27 15:06:27,813][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:27,814][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6015, Accuracy: 0.1100, FLOPs (1B): 5.35
+Epoch [43/50] - Loss: 46.0074, Accuracy: 0.1099
+[2026-02-27 15:06:29,772][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:29,773][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:29,773][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:29,773][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:29,773][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:29,774][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:29,774][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.6000, Accuracy: 0.1150, FLOPs (1B): 5.35
+Epoch [44/50] - Loss: 45.9791, Accuracy: 0.1133
+[2026-02-27 15:06:31,726][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:31,726][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:31,727][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:31,727][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:31,727][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:31,727][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:31,727][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5940, Accuracy: 0.1202, FLOPs (1B): 5.35
+Epoch [45/50] - Loss: 45.8916, Accuracy: 0.1241
+[2026-02-27 15:06:33,681][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:33,682][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5827, Accuracy: 0.1250, FLOPs (1B): 5.35
+Epoch [46/50] - Loss: 45.8207, Accuracy: 0.1257
+[2026-02-27 15:06:35,775][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:35,775][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:35,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:35,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:35,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:35,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:35,776][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5803, Accuracy: 0.1268, FLOPs (1B): 5.35
+Epoch [47/50] - Loss: 45.7790, Accuracy: 0.1273
+[2026-02-27 15:06:37,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:37,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:37,732][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:37,733][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:37,733][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:37,733][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:37,733][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5783, Accuracy: 0.1287, FLOPs (1B): 5.35
+Epoch [48/50] - Loss: 45.7791, Accuracy: 0.1282
+[2026-02-27 15:06:39,693][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:39,694][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:39,694][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:39,694][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:39,694][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:39,694][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:39,695][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5752, Accuracy: 0.1295, FLOPs (1B): 5.35
+Epoch [49/50] - Loss: 45.7569, Accuracy: 0.1288
+[2026-02-27 15:06:41,654][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:41,654][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:41,654][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:41,654][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:41,654][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:41,655][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:41,655][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5747, Accuracy: 0.1294, FLOPs (1B): 5.35
+Epoch [50/50] - Loss: 45.7153, Accuracy: 0.1314
+[2026-02-27 15:06:43,609][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::lt encountered 1 time(s)
+[2026-02-27 15:06:43,609][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::repeat encountered 53 time(s)
+[2026-02-27 15:06:43,609][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add_ encountered 103 time(s)
+[2026-02-27 15:06:43,610][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::tanh encountered 103 time(s)
+[2026-02-27 15:06:43,610][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::mul encountered 106 time(s)
+[2026-02-27 15:06:43,610][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::rsub encountered 53 time(s)
+[2026-02-27 15:06:43,610][fvcore.nn.jit_analysis][WARNING] - Unsupported operator aten::add encountered 53 time(s)
+Eval - Loss: 4.5725, Accuracy: 0.1303, FLOPs (1B): 5.35

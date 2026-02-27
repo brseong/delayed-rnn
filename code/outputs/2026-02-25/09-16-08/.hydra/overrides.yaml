@@ -1,0 +1,7 @@
+- seed=8
+- model=Transformer
+- dataset=psMNIST
+- use_wandb=true
+- group_name=Transformer
+- model_args.num_layers=4
+- model_args.hidden_size=64

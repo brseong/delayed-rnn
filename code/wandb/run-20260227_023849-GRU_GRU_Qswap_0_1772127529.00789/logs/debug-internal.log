@@ -1,0 +1,11 @@
+{"time":"2026-02-27T02:38:50.004801373+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.0"}
+{"time":"2026-02-27T02:38:50.379969514+09:00","level":"INFO","msg":"stream: created new stream","id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:38:50.380018657+09:00","level":"INFO","msg":"handler: started","stream_id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:38:50.380271631+09:00","level":"INFO","msg":"stream: started","id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:38:50.380277658+09:00","level":"INFO","msg":"writer: started","stream_id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:38:50.380282205+09:00","level":"INFO","msg":"sender: started","stream_id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:39:23.747256203+09:00","level":"INFO","msg":"stream: closing","id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:39:24.391983249+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-27T02:39:24.917674778+09:00","level":"INFO","msg":"handler: closed","stream_id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:39:24.917891731+09:00","level":"INFO","msg":"sender: closed","stream_id":"GRU_GRU_Qswap_0_1772127529.00789"}
+{"time":"2026-02-27T02:39:24.917903044+09:00","level":"INFO","msg":"stream: closed","id":"GRU_GRU_Qswap_0_1772127529.00789"}

@@ -1,0 +1,3 @@
+_target_: datasets.sMNIST.SequentialMNIST
+permute: True
+input_size: 1

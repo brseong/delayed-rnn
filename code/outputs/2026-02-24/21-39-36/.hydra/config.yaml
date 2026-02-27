@@ -1,0 +1,8 @@
+seed: 1
+use_wandb: false
+dataset:
+  _target_: datasets.sMNIST.SequentialMNIST
+  permute: true
+  train: true
+model:
+  model_name: RNN

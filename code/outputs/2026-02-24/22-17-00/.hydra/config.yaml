@@ -1,0 +1,13 @@
+seed: 1
+batch_size: 128
+num_workers: 4
+use_wandb: false
+model_args:
+  num_layers: 1
+  hidden_size: 128
+dataset:
+  _target_: datasets.sMNIST.SequentialMNIST
+  permute: true
+  input_size: 1
+model:
+  _target_: models.RNN.RNN

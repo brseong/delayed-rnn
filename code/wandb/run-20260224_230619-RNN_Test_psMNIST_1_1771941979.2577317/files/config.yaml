@@ -1,0 +1,47 @@
+_wandb:
+    value:
+        cli_version: 0.25.0
+        m: []
+        python_version: 3.11.14
+        t:
+            "1":
+                - 1
+                - 41
+                - 50
+                - 51
+            "3":
+                - 13
+                - 14
+                - 16
+            "4": 3.11.14
+            "5": 0.25.0
+            "12": 0.25.0
+            "13": linux-x86_64
+batch_size:
+    value: 128
+dataset:
+    value:
+        _target_: datasets.sMNIST.SequentialMNIST
+        input_size: 1
+        permute: true
+group_name:
+    value: Test
+lr:
+    value: 0.001
+model:
+    value:
+        _target_: models.RNN.RNN
+model_args:
+    value:
+        hidden_size: 128
+        num_layers: 1
+num_epochs:
+    value: 50
+num_workers:
+    value: 4
+seed:
+    value: 1
+use_lr_scheduler:
+    value: true
+use_wandb:
+    value: true
