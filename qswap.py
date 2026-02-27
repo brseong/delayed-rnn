@@ -63,6 +63,7 @@ best_model_state = None
 # 5. 학습 루프
 for epoch in tqdm(range(config.epochs), desc="Epochs"):
     total_loss = 0
+    tf_ratio = max(0.0, 1.0 - (epoch / config.epochs))
     model.train()
     for i, (inputs, targets, lengths) in tqdm(enumerate(train_loader), total=len(train_loader), desc="Batches", leave=False):
         inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
@@ -70,7 +71,7 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         optimizer.zero_grad()
         
         # 모델 Forward
-        seq2seq_out:Seq2SeqOutput = model(inputs, lengths, N=targets.size(1))
+        seq2seq_out:Seq2SeqOutput = model(inputs, lengths, N=targets.size(1), targets=targets, teacher_forcing_ratio=tf_ratio)
         outputs = seq2seq_out.outputs  # [Batch, Max_Len, K]
         think_steps = seq2seq_out.think_steps  # [Batch]
         

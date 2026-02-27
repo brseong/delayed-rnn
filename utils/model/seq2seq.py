@@ -117,7 +117,7 @@ class ThinkingRNN(nn.Module):
         self.fc = nn.Linear(hidden_size, self.vocab_size)
         self.device = config.device
 
-    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
+    def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         """
         추론(Inference) 시퀀스 생성 함수
         x shape: (Batch, N+3, vocab_size) - 원핫 인코딩된 입력 시퀀스
@@ -181,7 +181,21 @@ class ThinkingRNN(nn.Module):
                 
                 # 최종 출력 텐서에 기록하고 다음 입력으로 사용
                 final_outputs[i, j, :] = one_hot_out.squeeze(0)
-                curr_input = one_hot_out.unsqueeze(1)
+                
+                true_token_idx = targets[i, j]
+                is_teacher_forcing = (
+                    (targets is not None) and 
+                    (torch.rand(1).item() < teacher_forcing_ratio) and 
+                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
+                )
+                
+                if is_teacher_forcing:
+                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
+                    true_token_idx = targets[i, j]
+                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
+                else:
+                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
+                    curr_input = one_hot_out.unsqueeze(1)
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], # '생각 끝' 토큰을 제외한 실제 클래스 확률만 반환
                              think_steps=torch.tensor(think_steps_list, device=self.device))
@@ -203,7 +217,7 @@ class ThinkingLSTM(nn.Module):
         self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, self.vocab_size)
 
-    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
+    def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         batch_size = x.size(0)
         
         if N is None:
@@ -263,7 +277,21 @@ class ThinkingLSTM(nn.Module):
                 
                 # 다음 타임스텝의 입력은 Gumbel-Softmax를 거쳐 원핫 형태로 변환하여 전달
                 one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
-                curr_input = one_hot_out.unsqueeze(1)
+                
+                true_token_idx = targets[i, j]
+                is_teacher_forcing = (
+                    (targets is not None) and 
+                    (torch.rand(1).item() < teacher_forcing_ratio) and 
+                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
+                )
+                
+                if is_teacher_forcing:
+                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
+                    true_token_idx = targets[i, j]
+                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
+                else:
+                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
+                    curr_input = one_hot_out.unsqueeze(1)
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
 
@@ -284,7 +312,7 @@ class ThinkingGRU(nn.Module):
         self.gru = nn.GRU(input_size=self.vocab_size, hidden_size=hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, self.vocab_size)
 
-    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
+    def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         batch_size = x.size(0)
         
         if N is None:
@@ -341,7 +369,21 @@ class ThinkingGRU(nn.Module):
                 
                 # 다음 타임스텝의 입력 생성
                 one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
-                curr_input = one_hot_out.unsqueeze(1)
+                
+                true_token_idx = targets[i, j]
+                is_teacher_forcing = (
+                    (targets is not None) and 
+                    (torch.rand(1).item() < teacher_forcing_ratio) and 
+                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
+                )
+                
+                if is_teacher_forcing:
+                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
+                    true_token_idx = targets[i, j]
+                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
+                else:
+                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
+                    curr_input = one_hot_out.unsqueeze(1)
                 
         # '생각 끝' 토큰을 제외한 실제 클래스의 Logits만 반환
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
@@ -607,7 +649,7 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         
         return history, ptr, y_t
 
-    def forward(self, x, lengths, N=None):
+    def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         batch_size = x.size(0)
         device = x.device
         if N is None:
@@ -681,12 +723,65 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         curr_input = last_valid_input
         final_outputs = x.new_zeros(batch_size, N, self.vocab_size)
         
-        for j in range(N):
+        # for j in range(N):
+        #     history, ptr, y_t = self.step_fast(curr_input, history, ptr, W_rev)
+        #     final_outputs[:, j, :] = y_t
+        #     one_hot_out = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+        #     curr_input = self._adjust_dim(curr_input_sampled)
+            
+        #     true_token_idx = targets[i, j]
+        #     is_teacher_forcing = (
+        #         (targets is not None) and 
+        #         (torch.rand(1).item() < teacher_forcing_ratio) and 
+        #         (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
+        #     )
+            
+        #     if is_teacher_forcing:
+        #         # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
+        #         true_token_idx = targets[i, j]
+        #         curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
+        #     else:
+        #         # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
+        #         curr_input = one_hot_out.unsqueeze(1)
+        
+        for j in range(N): 
+            # curr_input: (batch, input_size) -> step_fast -> y_t: (batch, vocab_size)
             history, ptr, y_t = self.step_fast(curr_input, history, ptr, W_rev)
             final_outputs[:, j, :] = y_t
             
-            curr_input_sampled = F.gumbel_softmax(y_t, tau=1.0, hard=True)
-            curr_input = self._adjust_dim(curr_input_sampled)
+            # 모델의 예측값 (Batch, Vocab_size)
+            one_hot_out = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+            
+            # -----------------------------------------------------------------
+            # [수정된 배치 단위 교사 강제(Teacher Forcing) 로직]
+            # -----------------------------------------------------------------
+            if targets is not None:
+                # 1. j번째 스텝의 정답 (Batch,)
+                targets_j = targets[:, j]
+                
+                # 2. 패딩(-1)이 아닌 유효한 타겟인지 확인하는 마스크 (Batch,)
+                valid_mask = (targets_j >= 0)
+                
+                # 3. 교사 강제 확률 주사위 (Batch,) - 각 샘플마다 개별적으로 주사위 굴림
+                tf_dice = (torch.rand(targets_j.size(0), device=targets.device) < teacher_forcing_ratio)
+                
+                # 4. 최종적으로 교사 강제를 적용할 마스크 (Batch,)
+                do_tf_mask = valid_mask & tf_dice
+                
+                # 5. 정답 One-hot 인코딩 (-1 에러 방지를 위해 clamp로 -1을 0으로 덮어씌움)
+                # (어차피 do_tf_mask가 False인 곳은 이 값을 쓰지 않으므로 안전합니다)
+                safe_targets_j = torch.clamp(targets_j, min=0) # (Batch,)
+                true_one_hot = F.one_hot(safe_targets_j, num_classes=self.vocab_size).float() # (Batch, Vocab_size)
+                
+                # 6. 차원 맞추기 (Batch, Vocab_size) -> (Batch, 1, Vocab_size) 같은 형태를 위해
+                # do_tf_mask를 (Batch, 1)로 늘려줌
+                do_tf_mask = do_tf_mask.unsqueeze(-1)
+                
+                # 7. torch.where를 사용해 조건에 따라 정답(true_one_hot) 또는 예측값(one_hot_out) 선택
+                curr_input = torch.where(do_tf_mask, true_one_hot, one_hot_out) # (Batch, Vocab_size)
+            else:
+                # 추론(Test) 시에는 예측값만 사용
+                curr_input = one_hot_out
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=think_steps_tensor)
 

@@ -2,7 +2,7 @@
 trap kill SIGINT
 
 indices=(0)
-gpus=(3)
+gpus=(7)
 models=("DelayedRNN")
 hidden_sizes=(180)
 # indices=(0 1 2 3 4 5 6 7)
@@ -20,6 +20,7 @@ seq_max=100
 num_classes=10
 learning_rate=0.01
 epochs=2000
+device="cuda"
 
 for index in "${indices[@]}"; do
     model_type=${models[$((index))]}
@@ -37,7 +38,8 @@ for index in "${indices[@]}"; do
         --hidden_size $hidden_size \
         --num_classes $num_classes \
         --learning_rate $learning_rate \
-        --epochs $epochs"
+        --epochs $epochs \
+        --device $device"
     echo $script
     eval $script &
 done
