@@ -51,21 +51,11 @@ test_loader = DataLoader(
 # %%
 if config.seed is not None:
     torch.manual_seed(config.seed) # 재현성을 위해 시드 고정
-
-match config.model_type:
-    case ModelType.RNN:
-        model = ThinkingRNN(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
-    case ModelType.LSTM:
-        model = ThinkingLSTM(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
-    case ModelType.DelayedRNN:
-        model = ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
-    case _:
-        raise ValueError(f"Unknown model type: {config.model_type}")
     
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
 # scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs * len(train_loader))
-scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # CosineAnnealingLR로 대체
+scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # 학습 안정화 시 CosineAnnealingLR로 대체
 
 best_val_acc = 0.0
 best_model_state = None

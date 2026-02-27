@@ -2,16 +2,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from math import log
 import torch
 import torch.nn as nn
 from jaxtyping import Float, Int
 
 from utils.config import Config, ModelType
+from utils.random import clipped_gamma_sample
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence
+
 
 presets={
     ModelType.RNN: Config(
@@ -42,6 +45,20 @@ presets={
         num_classes=10,
         learning_rate=0.01,
         epochs=100),
+    ModelType.GRU: Config(
+        model_type=ModelType.GRU,
+        # max_delay=40,
+        max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=11,
+        # seq_length=784,
+        seq_min=5,
+        seq_max=20,
+        hidden_size=296,
+        num_classes=10,
+        learning_rate=0.01,
+        epochs=100),
     ModelType.DelayedRNN: Config(
         model_type=ModelType.DelayedRNN,
         max_delay=40,
@@ -58,7 +75,7 @@ presets={
         epochs=100),
 }
 
-def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
+def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN | FastThinkingLearnableDelayRNN | ThinkingGRU:
     if config is None:
         config = presets[model_class]
         config.device = device  # Set the device in the config for later use in model initialization
@@ -68,8 +85,11 @@ def get_model(model_class:ModelType, device:torch.device, config:Config|None=Non
         case ModelType.LSTM:
             return ThinkingLSTM(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
         case ModelType.DelayedRNN:
-            return ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
-        case _:
+            # return ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
+            return FastThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
+        case ModelType.GRU:
+            return ThinkingGRU(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
+        case _: 
             raise ValueError(f"Unsupported model type: {config.model_type}")
 
 
@@ -246,6 +266,85 @@ class ThinkingLSTM(nn.Module):
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
 
+class ThinkingGRU(nn.Module):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
+        super(ThinkingGRU, self).__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.max_think_steps = config.max_think_steps
+        self.config = config
+        
+        # 단어장 크기 (클래스 수 + '생각 끝' 토큰)
+        self.vocab_size = num_classes + 1
+        self.think_end_token = num_classes  
+        self.device = config.device
+        
+        # 내부 차원 충돌 방지를 위해 input_size를 vocab_size로 통일
+        self.gru = nn.GRU(input_size=self.vocab_size, hidden_size=hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, self.vocab_size)
+
+    def forward(self, x, lengths, N=None) -> Seq2SeqOutput:
+        batch_size = x.size(0)
+        
+        if N is None:
+            N = x.size(1) - 3  
+        
+        # GRU는 LSTM과 달리 은닉 상태(h0) 하나만 가집니다.
+        h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
+        
+        # --- 1. 인코딩 단계 ---
+        # 패딩 오염 방지용 pack_padded_sequence 적용
+        lengths_cpu = lengths.cpu()
+        packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
+        _, h = self.gru(packed_x, h0)
+        
+        # 진짜 마지막 토큰 추출 (디코더 시작 입력)
+        batch_indices = torch.arange(batch_size, device=self.device)
+        dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)  
+        
+        # 최종 결과를 저장할 빈 텐서 (Logits 형태 유지)
+        final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
+        think_steps_list = []
+        
+        # 배치 내 각 샘플마다 '생각하는 시간'이 다르므로 개별 연산
+        for i in range(batch_size):
+            h_i = h[:, i:i+1, :]
+            curr_input = dec_input[i:i+1, :, :]
+            
+            # --- 2. 생각(Thinking) 단계 ---
+            think_steps = 0
+            while True:
+                # 상태 업데이트 (GRU는 h_i 하나만 주고받음)
+                out, h_i = self.gru(curr_input, h_i)
+                logits = self.fc(out.squeeze(1))
+                
+                # 미분 가능한 샘플링 (Gumbel-Softmax)
+                curr_input_squeeze = F.gumbel_softmax(logits, tau=1.0, hard=True)
+                curr_input = curr_input_squeeze.unsqueeze(1)
+                
+                sampled_idx = curr_input_squeeze.argmax(dim=-1).item()
+                think_steps += 1
+                
+                # '생각 끝' 토큰이 나오거나 최대 스텝에 도달하면 종료
+                if sampled_idx == self.think_end_token or think_steps >= self.max_think_steps:
+                    break  
+            think_steps_list.append(think_steps)
+            
+            # --- 3. 출력(Output) 단계 ---
+            for j in range(N):
+                out, h_i = self.gru(curr_input, h_i)
+                logits = self.fc(out.squeeze(1))
+                
+                # Loss 계산을 위해 Logits 자체를 저장
+                final_outputs[i, j, :] = logits
+                
+                # 다음 타임스텝의 입력 생성
+                one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+                curr_input = one_hot_out.unsqueeze(1)
+                
+        # '생각 끝' 토큰을 제외한 실제 클래스의 Logits만 반환
+        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
+
 class ThinkingLearnableDelayRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
         super().__init__()
@@ -271,6 +370,9 @@ class ThinkingLearnableDelayRNN(nn.Module):
             )
         self.efferent = nn.Linear(hidden_size, self.output_size)
         
+        # time_horizon = 128
+        # tau = torch.empty_like(self.lateral).uniform_(0, log(time_horizon)).clamp_(0, log(max_delay))
+        # self.tau = nn.Parameter(tau)
         self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
         self.sigma = max_delay / 2
 
@@ -278,11 +380,15 @@ class ThinkingLearnableDelayRNN(nn.Module):
     @torch.jit.script
     def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
         # (기존 코드와 동일)
-        credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) 
-        credit_matrix = credit_matrix[:, None, None].repeat(1, hidden_size, hidden_size) 
+        credit_matrix = torch.arange(max_delay + 1, device=tau_clipped.device).float()  # shape: (max_delay+1,)
+        credit_matrix = credit_matrix[:, None, None]
+        distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
 
-        inv_sigma = 1 / sigma
-        credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma) 
+        # inv_sigma = 1 / sigma
+        # credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma)
+        # raw_credit = distance.rsqrt() / distance # Equivalent to distance^(-1.5) but more stable, faster.
+        raw_credit = distance.reciprocal() # Equivalent to distance^(-1) but more stable, faster.
+        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Normalize so that sum of credits across delays equals 1 for each hidden unit
         
         return credit_matrix
     
@@ -315,7 +421,7 @@ class ThinkingLearnableDelayRNN(nn.Module):
         shifted_scattered = torch.roll(scattered, shifts=buffer_ptr, dims=0)
         
         buffer = buffer + shifted_scattered
-        mask = torch.arange(max_delay + 1, out=buffer.new_empty(max_delay + 1)) == buffer_ptr 
+        mask = torch.arange(max_delay + 1, device=buffer.device) == buffer_ptr 
         buffer = buffer * (~mask[:, None, None])  
         buffer_ptr = (buffer_ptr + 1) % (max_delay + 1)  
         
@@ -407,19 +513,200 @@ class ThinkingLearnableDelayRNN(nn.Module):
                 curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
+
+class FastThinkingLearnableDelayRNN(nn.Module):
+    def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
+        super().__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.max_think_steps = config.max_think_steps
+        self.config = config
+        
+        # 딜레이가 0이면 일반 FFN과 다름없으므로 최소 1 이상이어야 함
+        assert max_delay >= 1, "max_delay must be at least 1"
+        self.max_delay = max_delay
+        self.device = config.device
+        
+        self.vocab_size = num_classes + 1
+        self.think_end_token = num_classes
+        self.output_size = self.vocab_size
+        
+        self.afferent = nn.Linear(self.input_size, hidden_size)
+        self.lateral = nn.Parameter(
+            torch.nn.init.xavier_uniform_(torch.empty(hidden_size, hidden_size))
+        )
+        self.efferent = nn.Linear(hidden_size, self.output_size)
+        
+        # tau = clipped_gamma_sample(self.lateral.new_empty(self.lateral.size()), max_delay)
+        # self.tau = nn.Parameter(tau)
+        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
+        self.sigma = max_delay / 2
+        # self.sigma = nn.Parameter(torch.full((hidden_size,), max_delay / 4.0, device=self.device))
+
+    @staticmethod
+    @torch.jit.script
+    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
+        # 기존과 동일
+        credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) 
+        credit_matrix = credit_matrix[:, None, None]
+        distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
+
+        raw_credit = distance.rsqrt() 
+        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) 
+        
+        # # 2. 목표 딜레이(tau)와의 시간 차이(dt)
+        # dt = credit_matrix - tau_clipped
+        
+        # # 3. 대칭형 STDP (Mexican Hat / Ricker Wavelet) 커널 적용
+        # variance = sigma ** 2
+        
+        # dt_sq = dt.square()
+        
+        # credit_matrix = (1.0 - dt_sq / variance) * torch.exp(-0.5 * dt_sq / variance)
+        
+        return credit_matrix
     
+    def calc_credit_matrix(self): 
+        return FastThinkingLearnableDelayRNN.calc_credit_matrix_jit(
+            torch.clamp(self.tau, 1, self.max_delay)[None,...],
+            self.max_delay,
+            self.hidden_size,
+            self.sigma
+        )
+    
+    def _adjust_dim(self, tensor: torch.Tensor) -> torch.Tensor:
+        """Gumbel-Softmax 출력(vocab_size)을 입력(input_size) 규격으로 자동 패딩/슬라이싱"""
+        if tensor.size(-1) != self.input_size:
+            diff = self.input_size - tensor.size(-1)
+            if diff > 0:
+                tensor = F.pad(tensor, (0, diff))
+            else:
+                tensor = tensor[..., :self.input_size]
+        return tensor
+
+    def step_fast(self, x_t, history, ptr, W_rev):
+        """
+        [핵심 1] O(1) Memory Write의 Gather(Pull) 스텝 함수
+        x_t: (batch, input_size)
+        history: (max_delay, batch, hidden_size) - 과거의 h_to_delay 기록
+        W_rev: (max_delay, hidden_size, hidden_size) - 뒤집힌 가중치 행렬
+        """
+        # 1. 포인터 위치에 맞춰 가중치 W를 가볍게 회전 (B 차원이 없어서 압도적으로 빠름)
+        W_aligned = torch.roll(W_rev, shifts=ptr, dims=0)
+        
+        # 2. 과거 히스토리와 가중치를 곱해 현재 시점에 도달한 지연 신호 합산 (Gather)
+        # d: delay 시간, h: hidden_out, i: hidden_in, b: batch
+        h_delayed = torch.einsum('dhi,dbi->bh', W_aligned, history)
+        
+        # 3. 새로운 은닉 상태 계산
+        h_to_delay = torch.tanh(self.afferent(x_t) + h_delayed)
+        
+        # 4. 버퍼 업데이트 (Autograd in-place 에러를 피하기 위해 torch.where 사용)
+        mask = (torch.arange(self.max_delay, device=x_t.device) == ptr).view(-1, 1, 1)
+        history = torch.where(mask, h_to_delay.unsqueeze(0), history)
+        
+        # 5. 포인터 이동 및 출력 계산
+        ptr = (ptr + 1) % self.max_delay
+        y_t = self.efferent(h_delayed)
+        
+        return history, ptr, y_t
+
+    def forward(self, x, lengths, N=None):
+        batch_size = x.size(0)
+        device = x.device
+        if N is None:
+            N = x.size(1) - 3  
+
+        # --- 사전 연산 (Pre-computation) ---
+        credit_matrix = self.calc_credit_matrix()
+        # 원래 코드에서 credit_matrix[0]은 buffer_ptr에서 읽히자마자 (~mask)로 지워졌음. 
+        # 즉 미래에 아무 영향도 주지 않는 값이므로 [1:]부터 잘라 쓰는 것이 수학적으로 완벽히 동일함.
+        W = credit_matrix[1:] * self.lateral[None, :, :]  # (max_delay, hidden, hidden)
+        W_rev = W.flip(0)  # 과거 기록과 매칭하기 위해 미리 뒤집어 둠
+        
+        # --- 1. 인코딩(Encoding) 단계 ---
+        history = x.new_zeros(self.max_delay, batch_size, self.hidden_size)
+        ptr = 0 
+        
+        saved_history = history.new_zeros(history.size())
+        saved_ptrs = torch.zeros(batch_size, dtype=torch.long, device=device)
+        
+        for t in range(x.size(1)):
+            x_t = x[:, t, :]
+            history, ptr, _ = self.step_fast(x_t, history, ptr, W_rev)
+            
+            is_last_token = (t == lengths - 1) 
+            if is_last_token.any():
+                mask = is_last_token.view(1, batch_size, 1) 
+                saved_history = torch.where(mask, history, saved_history)
+                saved_ptrs = torch.where(is_last_token, torch.tensor(ptr, device=device), saved_ptrs)
+            
+        # --- Alignment 트릭 (Thinking 시작 전 포인터 동기화) ---
+        D = self.max_delay
+        idx = torch.arange(D, device=device).unsqueeze(1)
+        gather_idx = (idx + saved_ptrs.unsqueeze(0)) % D
+        gather_idx = gather_idx.unsqueeze(-1).expand(D, batch_size, self.hidden_size)
+        
+        # 모든 배치의 히스토리를 정렬하여 포인터를 0으로 통일
+        aligned_history = torch.gather(saved_history, 0, gather_idx)
+        
+        # --- 2. 생각(Thinking) 단계 ---
+        history = aligned_history
+        ptr = 0  # 이제 배치 전체가 완벽하게 동기화됨
+        
+        batch_indices = torch.arange(batch_size, device=device)
+        curr_input = x[batch_indices, lengths - 1, :]
+        
+        is_done = torch.zeros(batch_size, dtype=torch.bool, device=device)
+        think_steps_tensor = torch.zeros(batch_size, dtype=torch.long, device=device)
+        think_steps = 0
+        
+        last_valid_input = curr_input.clone()
+        
+        while not is_done.all() and think_steps < self.max_think_steps:
+            history, ptr, y_t = self.step_fast(curr_input, history, ptr, W_rev)
+            
+            curr_input_sampled = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+            curr_input_adj = self._adjust_dim(curr_input_sampled)
+            
+            sampled_idx = curr_input_sampled.argmax(dim=-1)
+            just_finished = (sampled_idx == self.think_end_token) & ~is_done
+            
+            # 출력 단계(Output Phase)의 첫 입력으로 쓰기 위해 마지막으로 정상적인 토큰 캐싱
+            last_valid_input = torch.where((~is_done).unsqueeze(-1), curr_input_adj, last_valid_input)
+            
+            think_steps_tensor += (~is_done).long()
+            is_done = is_done | just_finished
+            think_steps += 1
+            
+            # [핵심 2] Idling: 끝난 배치는 입력을 0으로 주입 (SNN의 휴지기 시뮬레이션)
+            curr_input = curr_input_adj * (~is_done).unsqueeze(-1).to(curr_input_adj.dtype)
+            
+        # --- 3. 출력(Output) 단계 ---
+        curr_input = last_valid_input
+        final_outputs = x.new_zeros(batch_size, N, self.vocab_size)
+        
+        for j in range(N):
+            history, ptr, y_t = self.step_fast(curr_input, history, ptr, W_rev)
+            final_outputs[:, j, :] = y_t
+            
+            curr_input_sampled = F.gumbel_softmax(y_t, tau=1.0, hard=True)
+            curr_input = self._adjust_dim(curr_input_sampled)
+                
+        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=think_steps_tensor)
+
 if __name__ == "__main__":
     # Example usage
     def count_parameters(model):
         return sum(p.numel() for p in model.parameters() if p.requires_grad)
-    model = get_model_with_preset(ModelType.RNN)
-    print("SimpleRNN", count_parameters(model), "parameters")
+    model = get_model(ModelType.RNN, device=torch.device("cpu"), config=presets[ModelType.RNN])
+    print("ThinkingRNN", count_parameters(model), "parameters")
 
-    model = get_model_with_preset(ModelType.LSTM)
-    print("SimpleLSTM", count_parameters(model), "parameters")
+    model = get_model(ModelType.LSTM, device=torch.device("cpu"), config=presets[ModelType.LSTM])
+    print("ThinkingLSTM", count_parameters(model), "parameters")
 
-    # model = get_model_with_preset(ModelType.GRU)
-    # print("SimpleGRU", count_parameters(model), "parameters")
+    model = get_model(ModelType.GRU, device=torch.device("cpu"), config=presets[ModelType.GRU])
+    print("ThinkingGRU", count_parameters(model), "parameters")
     
-    model = get_model_with_preset(ModelType.DelayedRNN)
-    print("LearnableDelayRNN", count_parameters(model), "parameters")
+    model = get_model(ModelType.DelayedRNN, device=torch.device("cpu"), config=presets[ModelType.DelayedRNN])
+    print("ThinkingLearnableDelayRNN", count_parameters(model), "parameters")
