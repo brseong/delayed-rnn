@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
@@ -5,12 +6,72 @@ import torch
 import torch.nn as nn
 from jaxtyping import Float, Int
 
-from utils.config import Config
+from utils.config import Config, ModelType
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence
+
+presets={
+    ModelType.RNN: Config(
+        model_type=ModelType.RNN,
+        # max_delay=40,
+        max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=11,
+        # seq_length=784,
+        seq_min=5,
+        seq_max=20,
+        hidden_size=512,
+        num_classes=10,
+        learning_rate=0.01,
+        epochs=100),
+    ModelType.LSTM: Config(
+        model_type=ModelType.LSTM,
+        # max_delay=40,
+        max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=11,
+        # seq_length=784,
+        seq_min=5,
+        seq_max=20,
+        hidden_size=256,
+        num_classes=10,
+        learning_rate=0.01,
+        epochs=100),
+    ModelType.DelayedRNN: Config(
+        model_type=ModelType.DelayedRNN,
+        max_delay=40,
+        max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=11,
+        # seq_length=784,
+        seq_min=5,
+        seq_max=20,
+        hidden_size=360,
+        num_classes=10,
+        learning_rate=0.01,
+        epochs=100),
+}
+
+def get_model(model_class:ModelType, device:torch.device, config:Config|None=None) -> ThinkingRNN | ThinkingLSTM | ThinkingLearnableDelayRNN:
+    if config is None:
+        config = presets[model_class]
+        config.device = device  # Set the device in the config for later use in model initialization
+    match config.model_type:
+        case ModelType.RNN:
+            return ThinkingRNN(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
+        case ModelType.LSTM:
+            return ThinkingLSTM(config.input_size, config.hidden_size, config.num_classes, config=config).to(config.device)
+        case ModelType.DelayedRNN:
+            return ThinkingLearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, max_delay=config.max_delay, config=config).to(config.device)
+        case _:
+            raise ValueError(f"Unsupported model type: {config.model_type}")
+
 
 @dataclass
 class Seq2SeqOutput:
@@ -24,7 +85,7 @@ class ThinkingRNN(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         
         # 기존 클래스 수에 '생각 종료(Think End)' 토큰을 추가하여 전체 단어장 크기 설정
         self.vocab_size = num_classes + 1 
@@ -110,7 +171,7 @@ class ThinkingLSTM(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         
         # 단어장 크기 (클래스 수 + '생각 끝' 토큰)
         self.vocab_size = num_classes + 1
@@ -191,7 +252,7 @@ class ThinkingLearnableDelayRNN(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.cfg = config
+        self.config = config
         self.max_delay = max_delay
         self.device = config.device
         
@@ -346,3 +407,19 @@ class ThinkingLearnableDelayRNN(nn.Module):
                 curr_input = F.gumbel_softmax(y_t, tau=1.0, hard=True)
                 
         return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
+    
+if __name__ == "__main__":
+    # Example usage
+    def count_parameters(model):
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    model = get_model_with_preset(ModelType.RNN)
+    print("SimpleRNN", count_parameters(model), "parameters")
+
+    model = get_model_with_preset(ModelType.LSTM)
+    print("SimpleLSTM", count_parameters(model), "parameters")
+
+    # model = get_model_with_preset(ModelType.GRU)
+    # print("SimpleGRU", count_parameters(model), "parameters")
+    
+    model = get_model_with_preset(ModelType.DelayedRNN)
+    print("LearnableDelayRNN", count_parameters(model), "parameters")

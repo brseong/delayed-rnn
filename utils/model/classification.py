@@ -378,12 +378,13 @@ class LearnableDelayRNN(nn.Module):
     
 if __name__ == "__main__":
     # Example usage
-    config = Config(device='cpu')
-    model = SimpleRNN(input_size=1, hidden_size=128, num_classes=10, config=config)
-    print("SimpleRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    def count_parameters(model):
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    model = get_model_with_preset(ModelType.RNN)
+    print("SimpleRNN", count_parameters(model), "parameters")
 
-    model = SimpleLSTM(input_size=1, hidden_size=64, num_classes=10, config=config)
-    print("SimpleLSTM", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    model = get_model_with_preset(ModelType.LSTM)
+    print("SimpleLSTM", count_parameters(model), "parameters")
 
     model = SimpleGRU(input_size=1, hidden_size=75, num_classes=10, config=config)
     print("SimpleGRU", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
@@ -391,5 +392,5 @@ if __name__ == "__main__":
     model = SimpleTransformer(input_size=1, hidden_size=32, num_classes=10, config=config)
     print("SimpleTransformer", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
     
-    model = LearnableDelayRNN(input_size=1, hidden_size=90, output_size=10, max_delay=20, config=config)
-    print("LearnableDelayRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    model = get_model_with_preset(ModelType.DelayedRNN)
+    print("LearnableDelayRNN", count_parameters(model), "parameters")
