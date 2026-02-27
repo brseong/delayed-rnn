@@ -13,6 +13,8 @@ class ModelType(Enum):
     RNN = auto()
     LSTM = auto()
     GRU = auto()
+    Mamba = auto()
+    Transformer = auto()
     DelayedRNN = auto()
 
 @dataclass()

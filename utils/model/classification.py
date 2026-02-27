@@ -2,15 +2,88 @@ from typing import Any
 
 import torch
 import torch.nn as nn
-from jaxtyping import Float
+import math
 
+from jaxtyping import Float
 from utils.config import Config, ModelType
 
 
 presets={
-    ModelType.RNN: Config(model_type=ModelType.RNN),
-    ModelType.LSTM: Config(model_type=ModelType.LSTM),
-    ModelType.DelayedRNN: Config(model_type=ModelType.DelayedRNN)
+    ModelType.RNN: Config(model_type=ModelType.RNN,
+        max_delay=20,
+        # max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=1,
+        seq_length=784,
+        # seq_min=5,
+        # seq_max=20,
+        hidden_size=128,
+        num_classes=10,
+        learning_rate=0.001,
+        epochs=100,
+        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    ),
+    ModelType.LSTM: Config(model_type=ModelType.LSTM,
+        max_delay=20,
+        # max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=1,
+        seq_length=784,
+        # seq_min=5,
+        # seq_max=20,
+        hidden_size=64,
+        num_classes=10,
+        learning_rate=0.001,
+        epochs=100,
+        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    ),
+    ModelType.GRU: Config(model_type=ModelType.GRU,
+        max_delay=20,
+        # max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=1,
+        seq_length=784,
+        # seq_min=5,
+        # seq_max=20,
+        hidden_size=75,
+        num_classes=10,
+        learning_rate=0.005,
+        epochs=100,
+        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    ),
+    ModelType.Transformer: Config(model_type=ModelType.Transformer,
+        max_delay=20,
+        # max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=1,
+        seq_length=784,
+        # seq_min=5,
+        # seq_max=20,
+        hidden_size=32,
+        num_classes=10,
+        learning_rate=0.001,
+        epochs=100,
+        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    ),
+    ModelType.DelayedRNN: Config(model_type=ModelType.DelayedRNN,
+        max_delay=20,
+        # max_think_steps=100,
+        seed=None,
+        batch_size=32,
+        input_size=1,
+        seq_length=784,
+        # seq_min=5,
+        # seq_max=20,
+        hidden_size=90,
+        num_classes=10,
+        learning_rate=0.001,
+        epochs=100,
+        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    ),
 }
 
 def get_model_with_preset(model_class:ModelType) -> nn.Module:
@@ -20,6 +93,10 @@ def get_model_with_preset(model_class:ModelType) -> nn.Module:
             return SimpleRNN(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
         case ModelType.LSTM:
             return SimpleLSTM(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+        case ModelType.GRU:
+            return SimpleGRU(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
+        case ModelType.Transformer:
+            return SimpleTransformer(config.input_size, config.hidden_size, config.num_classes, config).to(config.device)
         case ModelType.DelayedRNN:
             return LearnableDelayRNN(config.input_size, config.hidden_size, config.num_classes, config.max_delay, config).to(config.device)
         case _:
@@ -35,7 +112,7 @@ class SimpleRNN(nn.Module):
         self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_classes)
         self.device = config.device
-
+        self.config = config
     def forward(self, x):
         # x shape: (Batch, 784, 1)
         
@@ -56,6 +133,7 @@ class SimpleLSTM(nn.Module):
         super(SimpleLSTM, self).__init__()
         self.hidden_size = hidden_size
         self.device = config.device
+        self.config = config
         # batch_first=True: 입력 형태를 (Batch, Seq, Feature)로 받음
         self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_classes)
@@ -81,7 +159,7 @@ class SimpleGRU(nn.Module):
         super(SimpleGRU, self).__init__()
         self.hidden_size = hidden_size
         self.device = config.device
-        
+        self.config = config
         # batch_first=True: 입력 형태 (Batch, Seq, Feature)
         self.gru = nn.GRU(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_classes)
@@ -102,7 +180,94 @@ class SimpleGRU(nn.Module):
         out = self.fc(out[:, -1, :])
         return out
 
+class SimpleMamba(nn.Module):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
+        super(SimpleMamba, self).__init__()
+        self.hidden_size = hidden_size
+        self.device = config.device
+        self.config = config
+        # 입력을 hidden_size로 투영 (Mamba는 입력과 출력 차원이 같아야 함)
+        self.embedding = nn.Linear(input_size, hidden_size)
+        
+        # Mamba 블록 설정
+        self.mamba = Mamba(
+            d_model=hidden_size,  # 모델 차원
+            d_state=16,           # SSM 상태 차원
+            d_conv=4,            # 로컬 컨볼루션 커널 크기
+            expand=2,            # 확장 계수 (내부적으로 2배 차원을 키워 연산)
+        ).to(self.device)
+        
+        self.fc = nn.Linear(hidden_size, num_classes)
 
+    def forward(self, x):
+        # x shape: (Batch, Seq_Length, Input_Size) -> (Batch, 784, 1)
+        
+        # 입력 차원 맞추기 (1 -> hidden_size)
+        x = self.embedding(x)
+        
+        # Mamba 순전파 
+        # out shape: (Batch, Seq_Length, Hidden_Size)
+        out = self.mamba(x)
+        
+        # 마지막 타임스텝의 결과 사용 
+        # out[:, -1, :] shape: (Batch, Hidden_Size)
+        out = self.fc(out[:, -1, :])
+        return out
+
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=784):
+        super().__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pe', pe.unsqueeze(0))
+
+    def forward(self, x):
+        return x + self.pe[:, :x.size(1)]
+
+class SimpleTransformer(nn.Module):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
+        super(SimpleTransformer, self).__init__()
+        self.d_model = hidden_size # Transformer에서는 hidden_size를 d_model로 사용
+        self.device = config.device
+        self.config = config
+
+        # positional encoding
+        self.embedding = nn.Linear(input_size, self.d_model)
+        self.pos_encoder = PositionalEncoding(self.d_model)
+        
+        # 트랜스포머 인코더 레이어
+        # nhead should be divided by d_model
+        encoder_layers = nn.TransformerEncoderLayer(
+            d_model=self.d_model, 
+            nhead=4, 
+            dim_feedforward=self.d_model * 4, 
+            batch_first=True,
+            dropout=0.1
+        )
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layers, num_layers=2)
+        
+        # 분류기
+        self.fc = nn.Linear(self.d_model, num_classes)
+
+    def forward(self, x):
+        # x shape: (Batch, 784, 1)
+        
+        # 임베딩 + 위치 정보 추가
+        x = self.embedding(x) * math.sqrt(self.d_model)
+        x = self.pos_encoder(x)
+        
+        # 트랜스포머 연산
+        # out shape: (Batch, 784, d_model)
+        out = self.transformer_encoder(x)
+        
+        # 마지막 타임스텝 혹은 평균 풀링 사용 (여기서는 마지막 시점 사용)
+        # out = self.fc(out[:, -1, :])
+        out = out.mean(dim=1)
+        return out
+    
 class LearnableDelayRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, output_size:int, max_delay:int, config:Config):
         super().__init__()
@@ -111,7 +276,7 @@ class LearnableDelayRNN(nn.Module):
         self.output_size = output_size
         self.max_delay = max_delay
         self.device = config.device
-        
+        self.config = config
         # 기본 가중치
         self.afferent = nn.Linear(input_size, hidden_size)
         self.lateral = nn.Parameter(
@@ -222,6 +387,9 @@ if __name__ == "__main__":
 
     model = SimpleGRU(input_size=1, hidden_size=75, num_classes=10, config=config)
     print("SimpleGRU", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
+    
+    model = SimpleTransformer(input_size=1, hidden_size=32, num_classes=10, config=config)
+    print("SimpleTransformer", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
     
     model = LearnableDelayRNN(input_size=1, hidden_size=90, output_size=10, max_delay=20, config=config)
     print("LearnableDelayRNN", sum(p.numel() for p in model.parameters() if p.requires_grad), "parameters")
