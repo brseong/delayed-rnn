@@ -4,3 +4,8 @@
 {"time":"2026-02-27T15:13:12.920996841+09:00","level":"INFO","msg":"stream: started","id":"RNN_RNN_Qswap_3_1772172791.8214805"}
 {"time":"2026-02-27T15:13:12.921018543+09:00","level":"INFO","msg":"writer: started","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
 {"time":"2026-02-27T15:13:12.921018242+09:00","level":"INFO","msg":"sender: started","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:14:51.942287364+09:00","level":"INFO","msg":"stream: closing","id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:14:52.465235298+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-27T15:14:52.757393638+09:00","level":"INFO","msg":"handler: closed","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:14:52.757613498+09:00","level":"INFO","msg":"sender: closed","stream_id":"RNN_RNN_Qswap_3_1772172791.8214805"}
+{"time":"2026-02-27T15:14:52.757625517+09:00","level":"INFO","msg":"stream: closed","id":"RNN_RNN_Qswap_3_1772172791.8214805"}

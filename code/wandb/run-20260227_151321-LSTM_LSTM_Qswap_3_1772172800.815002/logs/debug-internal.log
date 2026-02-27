@@ -4,3 +4,8 @@
 {"time":"2026-02-27T15:13:21.959957025+09:00","level":"INFO","msg":"stream: started","id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
 {"time":"2026-02-27T15:13:21.959966863+09:00","level":"INFO","msg":"writer: started","stream_id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
 {"time":"2026-02-27T15:13:21.959980731+09:00","level":"INFO","msg":"sender: started","stream_id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
+{"time":"2026-02-27T15:15:08.992129829+09:00","level":"INFO","msg":"stream: closing","id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
+{"time":"2026-02-27T15:15:09.499057933+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-02-27T15:15:09.768496475+09:00","level":"INFO","msg":"handler: closed","stream_id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
+{"time":"2026-02-27T15:15:09.768693144+09:00","level":"INFO","msg":"sender: closed","stream_id":"LSTM_LSTM_Qswap_3_1772172800.815002"}
+{"time":"2026-02-27T15:15:09.768709285+09:00","level":"INFO","msg":"stream: closed","id":"LSTM_LSTM_Qswap_3_1772172800.815002"}

@@ -87,3 +87,15 @@ Epoch [43/50] - Loss: 39.7652, Accuracy: 0.2481
 Eval - Loss: 3.9785, Accuracy: 0.2470, FLOPs (1B): 12.56
 Epoch [44/50] - Loss: 39.7116, Accuracy: 0.2477
 Eval - Loss: 3.9675, Accuracy: 0.2481, FLOPs (1B): 12.56
+Epoch [45/50] - Loss: 39.6868, Accuracy: 0.2481
+Eval - Loss: 3.9801, Accuracy: 0.2487, FLOPs (1B): 12.56
+Epoch [46/50] - Loss: 39.6170, Accuracy: 0.2497
+Eval - Loss: 3.9670, Accuracy: 0.2464, FLOPs (1B): 12.56
+Epoch [47/50] - Loss: 39.6071, Accuracy: 0.2492
+Eval - Loss: 3.9635, Accuracy: 0.2483, FLOPs (1B): 12.56
+Epoch [48/50] - Loss: 39.5678, Accuracy: 0.2493
+Eval - Loss: 3.9473, Accuracy: 0.2519, FLOPs (1B): 12.56
+Epoch [49/50] - Loss: 39.5405, Accuracy: 0.2493
+Eval - Loss: 3.9437, Accuracy: 0.2491, FLOPs (1B): 12.56
+Epoch [50/50] - Loss: 39.4875, Accuracy: 0.2501
+Eval - Loss: 3.9449, Accuracy: 0.2493, FLOPs (1B): 12.56
