@@ -1,10 +1,10 @@
 #!/bin/bash
 trap kill SIGINT
 
-indices=(0)
-gpus=(7)
-models=("DelayedRNN")
-hidden_sizes=(180)
+indices=(0 1 2 3)
+gpus=(4 5 6 7)
+models=("RNN" "LSTM" "GRU" "DelayedRNN")
+hidden_sizes=(256 128 148 180)
 # indices=(0 1 2 3 4 5 6 7)
 # gpus=(0 1 2 3 4 5 6 7)
 # models=("RNN" "LSTM" "DelayedRNN" "GRU" "RNN" "LSTM" "DelayedRNN" "GRU")
@@ -18,7 +18,7 @@ input_size=11
 seq_min=5
 seq_max=100
 num_classes=10
-learning_rate=0.01
+learning_rate=0.003
 epochs=2000
 device="cuda"
 

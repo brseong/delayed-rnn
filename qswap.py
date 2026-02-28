@@ -12,6 +12,7 @@ from utils.model.seq2seq import get_model, Seq2SeqOutput, FastThinkingLearnableD
 from utils.data import SwapDataset, collate_fn
 from utils.io import save_model, load_model
 from tqdm.auto import tqdm
+from time import time
 
 # torch.autograd.set_detect_anomaly(True)
 
@@ -55,8 +56,8 @@ if config.seed is not None:
     
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
-# scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs * len(train_loader))
-scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # 학습 안정화 시 CosineAnnealingLR로 대체
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs * len(train_loader))
+# scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # 학습 안정화 시 CosineAnnealingLR로 대체
 
 best_val_acc = 0.0
 best_model_state = None
@@ -69,6 +70,8 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
         
         optimizer.zero_grad()
+        
+        t_start = time()
         
         # 모델 Forward
         seq2seq_out:Seq2SeqOutput = model(inputs, lengths, N=targets.size(1), targets=targets, teacher_forcing_ratio=tf_ratio)
@@ -90,6 +93,8 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         optimizer.step()
         scheduler.step()
         
+        dt = time() - t_start
+        
         total_loss += loss.item()
         
         with torch.no_grad():
@@ -104,6 +109,8 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         wandb.log({"Loss/Train": loss.item(),
                 "Accuracy/Train": accuracy,
                 "Think_Steps/Train": think_steps.float().mean().item(),
+                "Time/Train": dt,
+                "Time_Per_Step/Train": dt / (2 * inputs.size(1) + think_steps.max().item()),  # 대략적인 시간/스텝 계산
                 "Learning_Rate": scheduler.get_last_lr()[0]})
         if isinstance(model, FastThinkingLearnableDelayRNN):
             wandb.log({"Scale_Exponent/Bias": softplus(model.scale_exponent.data).mean().item(),
@@ -116,13 +123,18 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
     with torch.no_grad():
         correct = 0
         total = 0
+        dt_total = 0
         think_steps_list = []
         for inputs, targets, lengths in tqdm(val_loader, desc="Validation Batches", leave=False):
             inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
             
+            t_start = time()
+            
             seq2seq_out:Seq2SeqOutput = model(inputs, lengths, N=targets.size(1))
             outputs = seq2seq_out.outputs  # [Batch, Max_Len, K]
             think_steps = seq2seq_out.think_steps  # [Batch]
+            
+            dt_total += time() - t_start
             
             _, predicted = torch.max(outputs.data, 2)
             total += targets.size(0)
@@ -135,7 +147,8 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
             save_model(model, asdict(model.config) | {"best_val_accuracy": acc, "epoch": epoch})
         
         wandb.log({"Accuracy/Validation": 100 * correct / total,
-                   "Think_Steps/Validation": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0})
+                   "Think_Steps/Validation": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0,
+                   "Time/Validation": dt_total/len(val_loader)})
         print(f'Validation Accuracy after Epoch {epoch+1}: {100 * correct / total:.2f}%')
             
 # 6. 평가 루프
@@ -143,13 +156,16 @@ model.eval()
 with torch.no_grad():
     correct = 0
     total = 0
+    dt_total = 0
     think_steps_list = []
     for inputs, targets, lengths in tqdm(test_loader, desc="Testing"):
         inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
         
+        t_start = time()
         seq2seq_out:Seq2SeqOutput = model(inputs, lengths, N=targets.size(1))
         outputs = seq2seq_out.outputs  # [Batch, Max_Len, K]
         think_steps = seq2seq_out.think_steps  # [Batch]
+        dt_total += time() - t_start
         
         _, predicted = torch.max(outputs.data, 2)
         total += targets.size(0)
@@ -157,7 +173,8 @@ with torch.no_grad():
         think_steps_list.extend(think_steps.tolist())
         
     wandb.log({"Accuracy/Test": 100 * correct / total,
-                "Think_Steps/Test": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0})
+                "Think_Steps/Test": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0,
+                "Time/Test": dt_total/len(test_loader)})
 
     print(f'Test Accuracy of the RNN on the 10000 test images (QSWAP): {100 * correct / total:.2f}%')
 

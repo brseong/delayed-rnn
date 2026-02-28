@@ -119,86 +119,98 @@ class ThinkingRNN(nn.Module):
 
     def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         """
-        추론(Inference) 시퀀스 생성 함수
+        추론(Inference) 시퀀스 생성 함수 (배치 처리 최적화 완료)
         x shape: (Batch, N+3, vocab_size) - 원핫 인코딩된 입력 시퀀스
         """
         batch_size = x.size(0)
         
-        # N값이 명시되지 않았다면 입력 형태(N+3)에서 N을 유추합니다.
         if N is None:
             N = x.size(1) - 3  
         
         # --- 1. 인코딩 단계 (주어진 N+3 시퀀스 읽기) ---
-        h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
-        lengths_cpu = lengths.cpu() # pack_padded_sequence는 CPU 텐서를 요구합니다.
+        h0 = torch.zeros(1, batch_size, self.hidden_size, device=self.device)
+        lengths_cpu = lengths.cpu() 
         packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
         _, h = self.rnn(packed_x, h0)
         
-        # [핵심 수정] 패딩을 건너뛰고 각 배치의 '진짜 마지막 토큰'을 디코더의 첫 입력으로 설정
+        # 패딩을 건너뛰고 각 배치의 '진짜 마지막 토큰'을 디코더의 첫 입력으로 설정
         batch_indices = torch.arange(batch_size, device=self.device)
         dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)
         
         # 최종 N 길이의 결과를 저장할 빈 텐서
-        final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
-        think_steps_list = []
+        final_outputs = torch.zeros(batch_size, N, self.vocab_size, device=self.device)
         
-        # 배치 내 각 샘플마다 '생각하는 시간'이 다를 수 있으므로 개별 처리합니다.
-        for i in range(batch_size):
-            h_i = h[:, i:i+1, :]
-            curr_input = dec_input[i:i+1, :, :]
+        # 배치 내 각 샘플의 상태를 추적하기 위한 텐서들
+        think_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        output_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        is_thinking = torch.ones(batch_size, dtype=torch.bool, device=self.device)
+        
+        curr_input = dec_input
+        
+        # --- 2 & 3. 생각(Thinking) & 출력(Output) 동시 배치 처리 ---
+        while True:
+            # 모든 배치가 목표 출력 길이(N)를 달성하면 완전 종료
+            if (output_steps == N).all():
+                break
+                
+            # [핵심] 현재 스텝에서 '출력 단계'인 배치 확인 (생각이 이미 끝났고, 아직 N개를 다 못 채운 경우)
+            outputting_mask = (~is_thinking) & (output_steps < N)
             
-            # --- 2. 생각(Thinking) 단계 ---
-            think_steps = 0
-            while True:
-                out, h_i = self.rnn(curr_input, h_i)
-                logits = self.fc(out.squeeze(1))  # (1, vocab_size)
-                # probs = F.softmax(logits, dim=-1)
-                
-                # # Softmax 확률 분포에서 1개 샘플링
-                # sampled_idx = torch.multinomial(probs, 1)
-                
-                # # 샘플링된 인덱스를 다시 원핫 인코딩하여 다음 스텝 입력으로 변환
-                # curr_input = F.one_hot(sampled_idx, num_classes=self.vocab_size).float().unsqueeze(1)
-                curr_input = F.gumbel_softmax(logits, tau=1.0, hard=True).unsqueeze(1)
-                
-                think_steps += 1
-                
-                # '생각 끝' 토큰이 뽑히거나, 무한 루프에 빠지는 것을 방지(최대 100번)하면 생각 종료
-                if curr_input.argmax(dim=-1).item() == self.think_end_token or think_steps > self.max_think_steps:
-                    break  
-            think_steps_list.append(think_steps)
+            # 현재 스텝에서 '여전히 생각 중'인 배치 확인
+            thinking_mask = is_thinking.clone()
             
-            # --- 3. 출력(Output) 단계 (정확히 N 길이만큼만 생성) ---
-            for j in range(N):
-                out, h_i = self.rnn(curr_input, h_i)
-                logits = self.fc(out.squeeze(1))
-                # probs = F.softmax(logits, dim=-1)
+            # RNN Forward (전체 배치 한 번에 통과)
+            out, h = self.rnn(curr_input, h)
+            logits = self.fc(out.squeeze(1))  # (batch_size, vocab_size)
+            one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True) # (batch_size, vocab_size)
+            
+            # --- 출력(Output) 처리 ---
+            out_idx = torch.nonzero(outputting_mask, as_tuple=True)[0]
+            if out_idx.numel() > 0:
+                step_idx = output_steps[out_idx]
                 
-                # sampled_idx = torch.multinomial(probs, 1)
-                # one_hot_out = F.one_hot(sampled_idx, num_classes=self.vocab_size).float()
+                # 예측된 토큰을 최종 출력 텐서에 기록
+                final_outputs[out_idx, step_idx, :] = one_hot_out[out_idx]
                 
-                one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+                # Teacher Forcing 적용 (None 체크 오류 수정됨)
+                if targets is not None:
+                    true_tokens = targets[out_idx, step_idx]
+                    
+                    # -1 (패딩)이 아닌 경우에만 Teacher Forcing 적용 여부 결정
+                    tf_rand = torch.rand(out_idx.numel(), device=self.device)
+                    do_tf = (tf_rand < teacher_forcing_ratio) & (true_tokens >= 0)
+                    
+                    if do_tf.any():
+                        tf_indices = out_idx[do_tf]
+                        tf_step_idx = step_idx[do_tf]
+                        tf_true_tokens = targets[tf_indices, tf_step_idx]
+                        
+                        # Teacher Forcing이 적용된 배치는 다음 입력으로 정답 토큰을 사용하도록 덮어쓰기
+                        tf_one_hot = F.one_hot(tf_true_tokens, num_classes=self.vocab_size).float()
+                        one_hot_out[tf_indices] = tf_one_hot
                 
-                # 최종 출력 텐서에 기록하고 다음 입력으로 사용
-                final_outputs[i, j, :] = one_hot_out.squeeze(0)
+                # 출력 카운트 증가
+                output_steps[outputting_mask] += 1
                 
-                true_token_idx = targets[i, j]
-                is_teacher_forcing = (
-                    (targets is not None) and 
-                    (torch.rand(1).item() < teacher_forcing_ratio) and 
-                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
-                )
+            # --- 생각(Thinking) 처리 ---
+            if thinking_mask.any():
+                think_steps[thinking_mask] += 1
                 
-                if is_teacher_forcing:
-                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
-                    true_token_idx = targets[i, j]
-                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
-                else:
-                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
-                    curr_input = one_hot_out.unsqueeze(1)
+                pred_tokens = one_hot_out.argmax(dim=-1)
+                hit_end = (pred_tokens == self.think_end_token)
+                hit_max = (think_steps >= self.max_think_steps)
                 
-        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], # '생각 끝' 토큰을 제외한 실제 클래스 확률만 반환
-                             think_steps=torch.tensor(think_steps_list, device=self.device))
+                # '생각 끝' 토큰이 뽑혔거나 최대 생각 횟수를 초과한 경우 해당 배치의 생각 종료
+                just_finished = thinking_mask & (hit_end | hit_max)
+                is_thinking[just_finished] = False
+                
+            # 다음 스텝의 입력 준비 (Teacher Forcing이 적용되었다면 정답 토큰이 들어감)
+            curr_input = one_hot_out.unsqueeze(1)
+            
+        return Seq2SeqOutput(
+            outputs=final_outputs[:, :, :-1], # '생각 끝' 토큰을 제외한 실제 클래스 확률만 반환
+            think_steps=think_steps
+        )
 
 class ThinkingLSTM(nn.Module):
     def __init__(self, input_size:int, hidden_size: int, num_classes: int, config):
@@ -216,7 +228,7 @@ class ThinkingLSTM(nn.Module):
         # LSTM으로 변경: 원핫 입력을 받으므로 input_size = vocab_size
         self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, self.vocab_size)
-
+    
     def forward(self, x, lengths, N=None, targets=None, teacher_forcing_ratio=0.0) -> Seq2SeqOutput:
         batch_size = x.size(0)
         
@@ -224,76 +236,83 @@ class ThinkingLSTM(nn.Module):
             N = x.size(1) - 3  
         
         # --- 1. 인코딩 단계 ---
-        # LSTM은 h0(단기 기억)와 c0(장기 기억) 두 가지 상태를 가집니다.
-        h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
-        c0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
+        h0 = torch.zeros(1, batch_size, self.hidden_size, device=self.device)
+        c0 = torch.zeros(1, batch_size, self.hidden_size, device=self.device)
         
-        # [핵심 수정] 패딩 오염 방지용 pack_padded_sequence 적용
         lengths_cpu = lengths.cpu()
         packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
         _, (h, c) = self.lstm(packed_x, (h0, c0))
-        _, (h, c) = self.lstm(x, (h0, c0))
+        # [수정됨] 기존 코드에 있던 _, (h, c) = self.lstm(x, (h0, c0)) 는 패딩 오염을 유발하므로 삭제했습니다.
         
-        # [핵심 수정] 진짜 마지막 토큰 인덱싱
         batch_indices = torch.arange(batch_size, device=self.device)
         dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)
         
         # 최종 결과를 저장할 빈 텐서 (Loss 계산을 위해 Logits 형태 유지)
-        final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
-        think_steps_list = []
+        final_outputs = torch.zeros(batch_size, N, self.vocab_size, device=self.device)
         
-        for i in range(batch_size):
-            # LSTM의 은닉 상태와 셀 상태를 각각 슬라이싱
-            h_i = h[:, i:i+1, :]
-            c_i = c[:, i:i+1, :]
-            curr_input = dec_input[i:i+1, :, :]
+        # 상태 추적용 텐서
+        think_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        output_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        is_thinking = torch.ones(batch_size, dtype=torch.bool, device=self.device)
+        
+        curr_input = dec_input
+        
+        # --- 2 & 3. 생각(Thinking) & 출력(Output) 동시 배치 처리 ---
+        while True:
+            if (output_steps == N).all():
+                break
+                
+            outputting_mask = (~is_thinking) & (output_steps < N)
+            thinking_mask = is_thinking.clone()
             
-            # --- 2. 생각(Thinking) 단계 ---
-            think_steps = 0
-            while True:
-                # 상태 튜플 (h_i, c_i)를 전달하고 업데이트
-                out, (h_i, c_i) = self.lstm(curr_input, (h_i, c_i))
-                logits = self.fc(out.squeeze(1))
-                
-                # 미분 가능한 샘플링 (Gumbel-Softmax)
-                # hard=True로 설정하여 겉모양은 원핫 벡터지만, 내부는 Softmax 기울기를 가짐
-                curr_input_squeeze = F.gumbel_softmax(logits, tau=1.0, hard=True)
-                curr_input = curr_input_squeeze.unsqueeze(1)
-                
-                sampled_idx = curr_input_squeeze.argmax(dim=-1).item()
-                think_steps += 1
-                
-                if sampled_idx == self.think_end_token or think_steps > self.max_think_steps:
-                    break  
-            think_steps_list.append(think_steps)
+            # LSTM Forward (h와 c를 튜플로 전달)
+            out, (h, c) = self.lstm(curr_input, (h, c))
+            logits = self.fc(out.squeeze(1))
             
-            # --- 3. 출력(Output) 단계 ---
-            for j in range(N):
-                out, (h_i, c_i) = self.lstm(curr_input, (h_i, c_i))
-                logits = self.fc(out.squeeze(1))
+            # Gumbel-Softmax로 다음 입력 후보 생성
+            one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+            
+            # --- 출력(Output) 처리 ---
+            out_idx = torch.nonzero(outputting_mask, as_tuple=True)[0]
+            if out_idx.numel() > 0:
+                step_idx = output_steps[out_idx]
                 
-                # [중요] CrossEntropyLoss에 그대로 넣을 수 있도록 Logits(정답) 자체를 저장
-                final_outputs[i, j, :] = logits
+                # [중요] CrossEntropyLoss를 위해 Logits 자체를 저장
+                final_outputs[out_idx, step_idx, :] = logits[out_idx]
                 
-                # 다음 타임스텝의 입력은 Gumbel-Softmax를 거쳐 원핫 형태로 변환하여 전달
-                one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+                # Teacher Forcing
+                if targets is not None:
+                    true_tokens = targets[out_idx, step_idx]
+                    tf_rand = torch.rand(out_idx.numel(), device=self.device)
+                    do_tf = (tf_rand < teacher_forcing_ratio) & (true_tokens >= 0)
+                    
+                    if do_tf.any():
+                        tf_indices = out_idx[do_tf]
+                        tf_step_idx = step_idx[do_tf]
+                        tf_true_tokens = targets[tf_indices, tf_step_idx]
+                        
+                        tf_one_hot = F.one_hot(tf_true_tokens, num_classes=self.vocab_size).float()
+                        one_hot_out[tf_indices] = tf_one_hot
                 
-                true_token_idx = targets[i, j]
-                is_teacher_forcing = (
-                    (targets is not None) and 
-                    (torch.rand(1).item() < teacher_forcing_ratio) and 
-                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
-                )
+                output_steps[outputting_mask] += 1
                 
-                if is_teacher_forcing:
-                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
-                    true_token_idx = targets[i, j]
-                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
-                else:
-                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
-                    curr_input = one_hot_out.unsqueeze(1)
+            # --- 생각(Thinking) 처리 ---
+            if thinking_mask.any():
+                think_steps[thinking_mask] += 1
                 
-        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
+                pred_tokens = one_hot_out.argmax(dim=-1)
+                hit_end = (pred_tokens == self.think_end_token)
+                hit_max = (think_steps >= self.max_think_steps)
+                
+                just_finished = thinking_mask & (hit_end | hit_max)
+                is_thinking[just_finished] = False
+                
+            curr_input = one_hot_out.unsqueeze(1)
+            
+        return Seq2SeqOutput(
+            outputs=final_outputs[:, :, :-1], 
+            think_steps=think_steps
+        )
 
 class ThinkingGRU(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
@@ -318,76 +337,83 @@ class ThinkingGRU(nn.Module):
         if N is None:
             N = x.size(1) - 3  
         
-        # GRU는 LSTM과 달리 은닉 상태(h0) 하나만 가집니다.
-        h0 = torch.zeros(1, batch_size, self.hidden_size).to(self.device)
-        
         # --- 1. 인코딩 단계 ---
-        # 패딩 오염 방지용 pack_padded_sequence 적용
+        h0 = torch.zeros(1, batch_size, self.hidden_size, device=self.device)
+        
         lengths_cpu = lengths.cpu()
         packed_x = pack_padded_sequence(x, lengths_cpu, batch_first=True, enforce_sorted=False)
         _, h = self.gru(packed_x, h0)
         
-        # 진짜 마지막 토큰 추출 (디코더 시작 입력)
         batch_indices = torch.arange(batch_size, device=self.device)
         dec_input = x[batch_indices, lengths - 1, :].unsqueeze(1)  
         
         # 최종 결과를 저장할 빈 텐서 (Logits 형태 유지)
-        final_outputs = torch.zeros(batch_size, N, self.vocab_size).to(self.device)
-        think_steps_list = []
+        final_outputs = torch.zeros(batch_size, N, self.vocab_size, device=self.device)
         
-        # 배치 내 각 샘플마다 '생각하는 시간'이 다르므로 개별 연산
-        for i in range(batch_size):
-            h_i = h[:, i:i+1, :]
-            curr_input = dec_input[i:i+1, :, :]
+        # 상태 추적용 텐서
+        think_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        output_steps = torch.zeros(batch_size, dtype=torch.long, device=self.device)
+        is_thinking = torch.ones(batch_size, dtype=torch.bool, device=self.device)
+        
+        curr_input = dec_input
+        
+        # --- 2 & 3. 생각(Thinking) & 출력(Output) 동시 배치 처리 ---
+        while True:
+            if (output_steps == N).all():
+                break
+                
+            outputting_mask = (~is_thinking) & (output_steps < N)
+            thinking_mask = is_thinking.clone()
             
-            # --- 2. 생각(Thinking) 단계 ---
-            think_steps = 0
-            while True:
-                # 상태 업데이트 (GRU는 h_i 하나만 주고받음)
-                out, h_i = self.gru(curr_input, h_i)
-                logits = self.fc(out.squeeze(1))
-                
-                # 미분 가능한 샘플링 (Gumbel-Softmax)
-                curr_input_squeeze = F.gumbel_softmax(logits, tau=1.0, hard=True)
-                curr_input = curr_input_squeeze.unsqueeze(1)
-                
-                sampled_idx = curr_input_squeeze.argmax(dim=-1).item()
-                think_steps += 1
-                
-                # '생각 끝' 토큰이 나오거나 최대 스텝에 도달하면 종료
-                if sampled_idx == self.think_end_token or think_steps >= self.max_think_steps:
-                    break  
-            think_steps_list.append(think_steps)
+            # GRU Forward (h 하나만 주고받음)
+            out, h = self.gru(curr_input, h)
+            logits = self.fc(out.squeeze(1))
             
-            # --- 3. 출력(Output) 단계 ---
-            for j in range(N):
-                out, h_i = self.gru(curr_input, h_i)
-                logits = self.fc(out.squeeze(1))
+            # Gumbel-Softmax로 다음 입력 후보 생성
+            one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+            
+            # --- 출력(Output) 처리 ---
+            out_idx = torch.nonzero(outputting_mask, as_tuple=True)[0]
+            if out_idx.numel() > 0:
+                step_idx = output_steps[out_idx]
                 
                 # Loss 계산을 위해 Logits 자체를 저장
-                final_outputs[i, j, :] = logits
+                final_outputs[out_idx, step_idx, :] = logits[out_idx]
                 
-                # 다음 타임스텝의 입력 생성
-                one_hot_out = F.gumbel_softmax(logits, tau=1.0, hard=True)
+                # Teacher Forcing
+                if targets is not None:
+                    true_tokens = targets[out_idx, step_idx]
+                    tf_rand = torch.rand(out_idx.numel(), device=self.device)
+                    do_tf = (tf_rand < teacher_forcing_ratio) & (true_tokens >= 0)
+                    
+                    if do_tf.any():
+                        tf_indices = out_idx[do_tf]
+                        tf_step_idx = step_idx[do_tf]
+                        tf_true_tokens = targets[tf_indices, tf_step_idx]
+                        
+                        tf_one_hot = F.one_hot(tf_true_tokens, num_classes=self.vocab_size).float()
+                        one_hot_out[tf_indices] = tf_one_hot
                 
-                true_token_idx = targets[i, j]
-                is_teacher_forcing = (
-                    (targets is not None) and 
-                    (torch.rand(1).item() < teacher_forcing_ratio) and 
-                    (true_token_idx >= 0)  # <-- 핵심: -1(패딩)이 아닐 때만!
-                )
+                output_steps[outputting_mask] += 1
                 
-                if is_teacher_forcing:
-                    # 정답 인덱스를 가져와서 One-hot 인코딩 후 shape 변환 (1, 1, vocab_size)
-                    true_token_idx = targets[i, j]
-                    curr_input = F.one_hot(true_token_idx, num_classes=self.vocab_size).float().view(1, 1, -1)
-                else:
-                    # 기존 방식: 모델이 예측한 값을 다음 스텝의 입력으로 사용
-                    curr_input = one_hot_out.unsqueeze(1)
+            # --- 생각(Thinking) 처리 ---
+            if thinking_mask.any():
+                think_steps[thinking_mask] += 1
                 
-        # '생각 끝' 토큰을 제외한 실제 클래스의 Logits만 반환
-        return Seq2SeqOutput(outputs=final_outputs[:,:,:-1], think_steps=torch.tensor(think_steps_list, device=self.device))
-
+                pred_tokens = one_hot_out.argmax(dim=-1)
+                hit_end = (pred_tokens == self.think_end_token)
+                hit_max = (think_steps >= self.max_think_steps)
+                
+                just_finished = thinking_mask & (hit_end | hit_max)
+                is_thinking[just_finished] = False
+                
+            curr_input = one_hot_out.unsqueeze(1)
+            
+        return Seq2SeqOutput(
+            outputs=final_outputs[:, :, :-1], 
+            think_steps=think_steps
+        )
+        
 # class ThinkingLearnableDelayRNN(nn.Module):
 #     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
 #         super().__init__()
