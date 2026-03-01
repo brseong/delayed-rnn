@@ -610,11 +610,7 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         )
         self.efferent = nn.Linear(hidden_size, self.output_size)
         
-        # tau = clipped_gamma_sample(self.lateral.new_empty(self.lateral.size()), max_delay)
-        # self.tau = nn.Parameter(tau)
         self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        # self.sigma = max_delay / 2
-        # self.sigma = nn.Parameter(torch.full((hidden_size,), max_delay / 4.0, device=self.device))
         self.scale_exponent = nn.Parameter(torch.zeros(hidden_size, device=self.device))
 
     @staticmethod
@@ -626,9 +622,15 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
 
         raw_credit = distance.pow(-softplus(scale_exponent[None, :, None]))
-        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True))
+        differentiable = raw_credit
+        # differentiable = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Backward pass goes through this path
         
-        return credit_matrix
+        nondifferentiable = (credit_matrix == tau_clipped).float() # Forward pass uses this hard assignment for stability and interpretability
+        
+        # Straight-Through Estimator trick
+        # Return equals a spike in the tau_clipped position,
+        # but gradients flow through the differentiable soft assignment, enabling learning of tau.
+        return differentiable + (nondifferentiable - differentiable).detach()
     
     def calc_credit_matrix(self): 
         return FastThinkingLearnableDelayRNN.calc_credit_matrix_jit(
