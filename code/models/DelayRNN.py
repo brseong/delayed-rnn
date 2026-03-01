@@ -1,56 +1,14 @@
 import torch
-import torch.nn as nn 
+import torch.nn as nn
 import torch.nn.functional as F
 
-from models import compute_loss, INPUT_OUT_PADDING
+from models import compute_loss
 
-class DelayBuffer:
-    def __init__(
-        self, 
-        max_delay, 
-        batch_size, 
-        input_size,
-        device
-    ):
-        super().__init__()
-        self.max_delay: int = max_delay
-        self.input_size: int = input_size
-        
-        self.device: str = device
-        """
-        delay된 입력 벡터들을 하나의 벡터로 인코딩하는 법: Circular Orthogonal Basis
-        """
-        self.buffer = torch.zeros(batch_size, max_delay + 1, max_delay, input_size).to(torch.device(self.device))
-        self.decay = 0.99
-        
-    def buffer_update(self, input, delay_gate_output):
-        """
-        input: [batch_size, input_size]
-        delay_gate_output: [batch_size, max_delay]
-        """
-        new_buffer = torch.zeros_like(self.buffer)
-        
-        new_buffer[:, :-1, :, :] = self.buffer[:, 1:, :, :]
-        tau_indices = torch.arange(1, self.max_delay + 1, device=self.device).float()
-        decay_coeffs = (self.decay ** tau_indices).view(1, -1, 1) # [1, max_delay, 1]
-        update_values = input.unsqueeze(1) * decay_coeffs * delay_gate_output.unsqueeze(-1)
-        
-        d_indices = torch.arange(self.max_delay, device=self.device)
-        new_buffer[:, d_indices, d_indices, :] = update_values
-        self.buffer = new_buffer
-        
-    def get_current_memory(self, slide = False):
-        if slide:
-            self.buffer = torch.roll(self.buffer, shifts=-1, dims=1)
-            self.buffer[:, -1, :, :] = 0.0 
-            
-        mem = self.buffer[:, 0, :, :]
-        mem_t = mem.sum(dim=1) # [batch_size, max_delay, input_size]
-        return mem_t
-    
-    def reset(self, batch_size):
-        self.buffer = torch.zeros(batch_size, self.max_delay + 1, self.max_delay, self.input_size).to(self.device)
-        
+
+
+
+
+
 class DelayRNN(nn.Module):
     def __init__(
         self,
@@ -70,91 +28,150 @@ class DelayRNN(nn.Module):
         self.hidden_size: int = hidden_size
         self.num_layers: int = num_layers
         self.num_classes: int = num_classes
-        
         self.device: str = device
         self.is_classification: bool = is_classification
         self.compute_loss = compute_loss
         
-        """
-        잠재적 문제:
-            1. delay gate가 모든 step에 대해 0.5 이상의 값을 출력하는 경우, DelayBuffer의 값이 너무 커질 수 있음 (특히 긴 시퀀스에서)
-        """
-        self.delay_gate = nn.Sequential(
-            nn.Linear(input_size + hidden_size, self.max_delay), nn.ELU(),
-            nn.Linear(self.max_delay, self.max_delay),
+        self.sigmoid = nn.Sigmoid()
+        self.tanh = nn.Tanh()
+        assert self.max_delay > 0, "max_delay must be greater than 0"
+        
+        self.input_embedding = nn.Linear(self.input_size + self.hidden_size, self.hidden_size).to(self.device)
+        self.tau_generator = nn.Sequential(
+            nn.Linear(self.hidden_size, self.hidden_size), self.sigmoid,
+        ).to(self.device)
+        self.mem_strength_generator = nn.Sequential(
+            nn.Linear(self.hidden_size, self.hidden_size), self.sigmoid,
         ).to(self.device)
         
-        self.DelayBuffer = DelayBuffer(
-            max_delay = self.max_delay,
-            batch_size = batch_size,  
-            input_size = self.input_size,
-            device = self.device
-        )
-        
-        self.input_embedding = nn.Sequential(
-            nn.Linear(input_size * 2, hidden_size), nn.ELU(),
-            nn.Linear(hidden_size, hidden_size)
+        self.m_pass_layer = nn.Sequential(
+            nn.Linear(self.hidden_size, self.hidden_size)
         ).to(self.device)
+        self.buffer_max_delay = self.max_delay + 1
+        self.index_tensor = torch.arange(1, self.buffer_max_delay).to(self.device).unsqueeze(0).unsqueeze(0) # (1, 1, max_delay)
+        if num_classes > 0:
+            self.output_layer = nn.Linear(self.hidden_size, num_classes).to(self.device)
+            
         
-        self.rnn_cell = nn.GRUCell(hidden_size, hidden_size).to(self.device)
-        
-        if self.num_classes > 0:
-            self.fc = nn.Sequential(
-                nn.Linear(self.hidden_size, self.hidden_size),
-                nn.ReLU(),
-                nn.Linear(self.hidden_size, self.num_classes)
-            ).to(self.device)
-
-    # def out2input(self, out):
-    #     dec_input = F.gumbel_softmax(out, hard=True)
-    #     dec_input = F.pad(dec_input, (0, self.input_size - self.num_classes), value=INPUT_OUT_PADDING)
-    #     return dec_input
     
-    # def delay_gate_ste(self, gate_out):
-    #     gate_out_ste = (gate_out > 0.5).float()
-    #     return gate_out + (gate_out_ste - gate_out).detach()
+    def update_buffer(
+        self, 
+        hidden, 
+        tau, 
+        mem_l,
+        buffer
+    ):
+        # tau: (batch_size, hidden_size)
+        # hidden: (batch_size, hidden_size)
+        # mem_l: (batch_size, hidden_size)
+        new_buffer = buffer[:, :, 1:]
+        
+        tau = tau.unsqueeze(-1)  # (batch_size, hidden_size, 1)
+        hidden_mem = hidden.unsqueeze(-1)  # (batch_size, hidden_size, 1)
+        
+        
+        abs_distances = torch.abs(tau - self.index_tensor) # broadcasting
+        intensity_weights = (mem_l.unsqueeze(-1) / (1 + abs_distances)) # (batch_size, hidden_size, max_delay)
+        
+        assert intensity_weights.max() <= 1.0 and intensity_weights.min() >= 0.0, "Intensity weights should be in the range [0, 1]"
+        update_val = intensity_weights * hidden_mem
+        new_buffer = new_buffer + update_val
+        new_buffer = F.pad(new_buffer, (0, 1))
+        
+        return new_buffer
         
     def forward(self, x, lengths=None, out_lengths=None, train = False):
+        """
+        Args:
+            masks : (batch_size, seq_len) - 0.0 for padding, 1.0 for valid tokens
+            x_t: (batch_size, input_size)
+            mask: (batch_size, 1)
+            
+        """
+        logs: dict[str, float] = {}
+        encode_tau_outs: list[torch.tensor] = []
+        encode_mem_l_outs: list[torch.tensor] = []
+        decode_tau_outs: list[torch.tensor] = []
+        decode_mem_l_outs: list[torch.tensor] = []
+        
         batch_size, max_seq_len, _ = x.size()
         
-        self.DelayBuffer.reset(batch_size = batch_size)
-        
-        h_t = torch.zeros(batch_size, self.hidden_size).to(self.device)
-
         masks = (torch.arange(max_seq_len).to(self.device) < lengths.unsqueeze(1)).float()
-        for t in range(max_seq_len):
-            x_t = x[:, t, :]
-            mask = masks[:, t].unsqueeze(-1)
-            cell_input = torch.cat([x_t, h_t], dim=-1)
-            mem_t = self.DelayBuffer.get_current_memory()
-            delay_gate_output = F.gumbel_softmax(self.delay_gate(cell_input), hard=True) 
-            self.DelayBuffer.buffer_update(x_t, delay_gate_output)
+        buffer = torch.zeros(batch_size, self.hidden_size, self.buffer_max_delay).to(self.device)
+        
+        for idx in range(max_seq_len):
+            x_t = x[:, idx, :]
+            h_t = buffer[:, :, 0]
+            mask = masks[:, idx].unsqueeze(-1) 
+            x_h_t = torch.cat([h_t, x_t], dim=-1)
+            h_t = self.input_embedding(x_h_t)
+            passer_output = self.m_pass_layer(h_t)
+            h_t = mask * passer_output + (1 - mask) * h_t
             
+            tau = self.max_delay * self.tau_generator(h_t)
+            mem_l = self.mem_strength_generator(h_t)
+            tau = torch.clamp(tau, 1, self.max_delay) 
             
-            rnn_input = torch.cat([x_t, mem_t], dim=-1)
-            rnn_input = self.input_embedding(rnn_input)
-            next_h = self.rnn_cell(rnn_input, h_t)
-            h_t = mask * next_h + (1 - mask) * h_t
-            
+            # tau는 분포의 평균이 되는 기준점이므로 h_t가 각 delay slot에 어떤 값으로 저장될 지에 영향을 미친다. 
+            buffer = self.update_buffer(
+                hidden = h_t,
+                tau = tau,
+                mem_l = mem_l,
+                buffer = buffer
+            )
+            encode_tau_outs.append(tau.mean().detach())
+            encode_mem_l_outs.append(mem_l.mean().detach())
+        
         outputs = []
         
-        for t in range(out_lengths):
-            x_t = torch.zeros(batch_size, self.input_size).to(self.device)
-            mem_t = self.DelayBuffer.get_current_memory(slide = True)
-            cell_input = torch.cat([x_t, h_t], dim=-1)
-            delay_gate_output = F.gumbel_softmax(self.delay_gate(cell_input), hard=True)
-            self.DelayBuffer.buffer_update(x_t, delay_gate_output)
+        for _ in range(out_lengths):
+            x_t = torch.zeros(batch_size, self.input_size).to(self.device) 
+            h_t = buffer[:, :, 0]
+            out = self.output_layer(h_t)
+            outputs.append(out)
             
-            rnn_input = torch.cat([x_t, mem_t], dim=-1)
-            rnn_input = self.input_embedding(rnn_input)
-            next_h = self.rnn_cell(rnn_input, h_t)
+            x_h_t = torch.cat([h_t, x_t], dim=-1)
+            h_t = self.input_embedding(x_h_t)
+            h_t = self.m_pass_layer(h_t)
             
-            if self.num_classes > 0:
-                out = self.fc(next_h)
-                outputs.append(out.unsqueeze(1))
-                
-            h_t = next_h
+            tau = self.max_delay * self.tau_generator(h_t)
+            mem_l = self.mem_strength_generator(h_t)
+            tau = torch.clamp(tau, 1, self.max_delay)
             
+            buffer = self.update_buffer(
+                hidden = h_t,
+                tau = tau,
+                mem_l = mem_l,
+                buffer = buffer
+            )
+            decode_tau_outs.append(tau.mean().detach())
+            decode_mem_l_outs.append(mem_l.mean().detach())
             
-        out = torch.cat(outputs, dim=1) # (batch_size, target_seq_len, num_classes)
-        return out 
+        out = torch.stack(outputs, dim=1) # (batch_size, out_seq_len, num_classes)
+        
+        if torch.jit.is_tracing():
+                return out
+        
+        # enc_len = len(encode_tau_outs)
+        # logs["encode_tau_mean"] = sum(encode_tau_outs) / enc_len
+        # logs["encode_mem_l_mean"] = sum(encode_mem_l_outs) / enc_len
+        # logs["encode_tau_var"] = sum((t - logs["encode_tau_mean"]) ** 2 for t in encode_tau_outs) / enc_len
+        # logs["encode_mem_l_var"] = sum((m - logs["encode_mem_l_mean"]) ** 2 for m in encode_mem_l_outs) / enc_len
+    
+        # dec_len = len(decode_tau_outs)
+        # logs["decode_tau_mean"] = sum(decode_tau_outs) / dec_len
+        # logs["decode_mem_l_mean"] = sum(decode_mem_l_outs) / dec_len
+        # logs["decode_tau_var"] = sum((t - logs["decode_tau_mean"]) ** 2 for t in decode_tau_outs) / dec_len
+        # logs["decode_mem_l_var"] = sum((m - logs["decode_mem_l_mean"]) ** 2 for m in decode_mem_l_outs) / dec_len
+
+        logs["encode_tau_mean"] = torch.stack(encode_tau_outs).mean().item()
+        logs["encode_mem_l_mean"] = torch.stack(encode_mem_l_outs).mean().item()
+        logs["encode_tau_var"] = torch.stack(encode_tau_outs).var().item()
+        logs["encode_mem_l_var"] = torch.stack(encode_mem_l_outs).var().item()  
+        
+        logs["decode_tau_mean"] = torch.stack(decode_tau_outs).mean().item()
+        logs["decode_mem_l_mean"] = torch.stack(decode_mem_l_outs).mean().item()
+        logs["decode_tau_var"] = torch.stack(decode_tau_outs).var().item()
+        logs["decode_mem_l_var"] = torch.stack(decode_mem_l_outs).var().item()
+        
+        return out, logs

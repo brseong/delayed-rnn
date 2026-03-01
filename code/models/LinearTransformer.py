@@ -134,4 +134,4 @@ class LinearTransformer(nn.Module):
             
         out = torch.cat(outputs, dim=1)
         
-        return out
+        return out, None

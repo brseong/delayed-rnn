@@ -9,7 +9,16 @@ IGNORE_IDX=-100
 INPUT_OUT_PADDING = 0.5
 loss_fn = nn.CrossEntropyLoss(ignore_index=IGNORE_IDX)
 
-def compute_loss(out, output_lengths=None, targets=None, optimizer=None, device="cuda"):
+
+def get_grad_norm(model):
+    total_norm = 0.0
+    for p in model.parameters():
+        if p.grad is not None:
+            param_norm = p.grad.detach().data.norm(2)
+            total_norm += param_norm.item() ** 2
+    return total_norm ** 0.5
+
+def compute_loss(out, model, output_lengths=None, targets=None, optimizer=None, device="cuda"):
     """
     Args:
         out (_type_): (batch_size, seq_len, num_classes) if output_lengths is not None else (batch_size, num_classes)
@@ -27,26 +36,28 @@ def compute_loss(out, output_lengths=None, targets=None, optimizer=None, device=
         masks = torch.arange(max_seq_len).unsqueeze(0).to(device) < output_lengths.unsqueeze(1) 
         out = out.masked_fill(~masks.unsqueeze(-1), IGNORE_IDX)  
         targets = targets.masked_fill(~masks, IGNORE_IDX)
+    
     loss = loss_fn(out.transpose(1, 2), targets)
+    
+    
     predicted = out.argmax(dim=-1)
     if optimizer is not None:
         optimizer.zero_grad()
         loss.backward()
+        total_grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 5)
         optimizer.step()
         
-    if output_lengths is not None:
-        # masking out of length positions
-        is_correct = (predicted == targets).float()
-        masked_correct = is_correct * masks
-        token_acc_tensor = masked_correct.sum(dim=-1) / output_lengths
-        seq_acc_tensor = torch.logical_or(predicted == targets, ~masks).all(dim=-1).float()
+    # masking out of length positions
+    is_correct = (predicted == targets).float()
+    masked_correct = is_correct * masks
+    token_acc_tensor = masked_correct.sum(dim=-1) / output_lengths
+    seq_acc_tensor = torch.logical_or(predicted == targets, ~masks).all(dim=-1).float()
     
+    if optimizer is not None:
+        return loss, token_acc_tensor, seq_acc_tensor, total_grad_norm
+    else:   
         return loss, token_acc_tensor, seq_acc_tensor
-    else:
-        # number of correct predictions in the batch
-        corrects = (predicted == targets).sum().item() 
 
-        return loss, corrects
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=5000):

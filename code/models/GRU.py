@@ -35,11 +35,8 @@ class GRU(nn.Module):
         ).to(self.device)
 
         if self.num_classes > 0:
-            self.fc = nn.Sequential(
-                nn.Linear(self.hidden_size, self.hidden_size),
-                nn.ReLU(),
-                nn.Linear(self.hidden_size, self.num_classes)
-            ).to(self.device)
+            self.fc = nn.Linear(self.hidden_size, self.num_classes).to(self.device)
+      
       
     def forward(self, x, lengths=None, out_lengths=None, train = False, targets=None):
         batch_size, max_seq_len, _ = x.size()
@@ -52,7 +49,7 @@ class GRU(nn.Module):
                 lengths : (batch_size,) if length is not None
                 targets : (batch_size, seq_len, input_size) 
             """
-            masks = masks = (torch.arange(max_seq_len).to(self.device) < lengths.unsqueeze(1)).float()
+            masks = (torch.arange(max_seq_len).to(self.device) < lengths.unsqueeze(1)).float()
             outputs = []
             
             for t in range(max_seq_len):
@@ -77,5 +74,5 @@ class GRU(nn.Module):
                 h_t = self.gru_cell(x_t, h_t)
             out = self.fc(h_t) # (batch_size, num_classes)
 
-        return out
+        return out, None
             

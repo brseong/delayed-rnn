@@ -1,0 +1,2 @@
+_target_: models.LayerDelayRNN.LayerDelayRNN
+max_delay: 40

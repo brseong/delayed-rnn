@@ -12,6 +12,16 @@ from torch.utils.data import DataLoader
 
 from utils import set_seed
 
+from utils import (
+    TRAIN_LOSS,
+    TRAIN_TOKEN_ACC,
+    TRAIN_SEQ_ACC,
+    EVAL_LOSS,
+    EVAL_TOKEN_ACC,
+    EVAL_SEQ_ACC,
+    EVAL_FLOPS_1B,
+)
+
 @hydra.main(config_path="config", config_name="config", version_base=None)
 def main(args):
     print("-"*20, "Experiment Configuration", "-"*20)
@@ -87,7 +97,7 @@ def main(args):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=0.1*lr)
         
     if use_wandb: 
-        unique_id = unique_id = f"{model_name}_{group_name}_{dataset_name}_{seed}_{time.time()}"
+        unique_id = f"{model_name}_{group_name}_{dataset_name}_{seed}_{time.time()}"
         wandb.init(
             entity=args.wandb.entity,
             project=dataset_name, 
@@ -96,46 +106,43 @@ def main(args):
             group=group_name,
             config=OmegaConf.to_container(args, resolve=True),
         )
+        wandb.config.update({"num_params": num_params})
 
     for epoch in tqdm(range(num_epochs), desc=f"Epochs [{dataset_name}]"):
-        train_start_time = time.time()
-        avg_loss, token_acc, seq_acc = train_dataset.train(
+        
+        train_logs = train_dataset.train(
             model = model, 
             dataloader = train_dataloader, 
             optimizer = optimizer,
             device = device,
         )
-        train_end_time = time.time()
         
         if use_lr_scheduler:
             scheduler.step()
         
-        print(f"Epoch [{epoch+1}/{num_epochs}] - Loss: {avg_loss:.4f}, Token Accuracy: {token_acc:.4f}, Sequence Accuracy: {seq_acc:.4f}")
+        print(f"Epoch [{epoch+1}/{num_epochs}] - \
+            Loss: {train_logs[TRAIN_LOSS]:.4f}, \
+            Token Accuracy: {train_logs[TRAIN_TOKEN_ACC]:.4f}, \
+            Sequence Accuracy: {train_logs[TRAIN_SEQ_ACC]:.4f}"
+        )
         
-        eval_start_time = time.time()
-        eval_avg_loss, eval_token_acc, eval_seq_acc, flops_1b = eval_dataset.eval(
+        eval_logs = eval_dataset.eval(
             model = model,
             dataloader = eval_dataloader,
             device = device
         )
-        eval_end_time = time.time()
         
-        print(f"Eval - Loss: {eval_avg_loss:.4f}, Token Accuracy: {eval_token_acc:.4f}, Sequence Accuracy: {eval_seq_acc:.4f}, FLOPs (1B): {flops_1b:.2f}")
+        print(f"Eval - Loss: {eval_logs[EVAL_LOSS]:.4f}, \
+            Token Accuracy: {eval_logs[EVAL_TOKEN_ACC]:.4f}, \
+            Sequence Accuracy: {eval_logs[EVAL_SEQ_ACC]:.4f}, \
+        FLOPs (1B): {eval_logs[EVAL_FLOPS_1B]:.2f}")
         
         if use_wandb:
             wandb.log({
-                "train_loss": avg_loss,
-                "train_token_accuracy": token_acc,
-                "train_seq_accuracy": seq_acc,
-                "eval_loss": eval_avg_loss,
-                "eval_token_accuracy": eval_token_acc,
-                "eval_seq_accuracy": eval_seq_acc,
-                "Flops(1B)": flops_1b,
-                "train_time": train_end_time - train_start_time,
-                "eval_time": eval_end_time - eval_start_time,
-                "learning_rate": optimizer.param_groups[0]['lr'],
-                "num_params": num_params,
+                **train_logs,
+                **eval_logs,
             })
+            
         
         
 

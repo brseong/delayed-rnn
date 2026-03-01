@@ -1,3 +1,4 @@
+import time
 import torch
 import random
 import logging
@@ -9,6 +10,19 @@ from torch.nn.utils.rnn import pad_sequence
 
 from fvcore.nn import FlopCountAnalysis
 logging.getLogger("fvcore.nn.jit_analysis").setLevel(logging.ERROR)
+
+from utils import (
+    TRAIN_LOSS,
+    TRAIN_TOKEN_ACC,
+    TRAIN_SEQ_ACC,
+    TRAIN_TIME,
+    TRAIN_GRAD_NORM,
+    EVAL_LOSS,
+    EVAL_TOKEN_ACC,
+    EVAL_SEQ_ACC,
+    EVAL_FLOPS_1B,
+    EVAL_TIME,
+)
 
 
 class Qswap(Dataset):
@@ -78,18 +92,40 @@ class Qswap(Dataset):
             padded_inputs = pad_sequence(inputs, batch_first=True, padding_value=0.0)
             padded_targets = pad_sequence(targets, batch_first=True, padding_value=0.0)
             lengths = torch.tensor(lengths, dtype=torch.long)
-            
-            
             return padded_inputs, padded_targets, lengths
         return collate_fn
+    
+    def fill_model_dict(self, model_log_dict: dict, logs: dict):
+        if logs is None:
+            return model_log_dict
+        
+        for log_key, log_value in logs.items():
+            if log_key not in model_log_dict:
+                model_log_dict[log_key] = []
+            model_log_dict[log_key].append(log_value)
+        return model_log_dict
+    
+    def model_log2log(self, model_log_dict: dict, logs: dict, train: bool = True):
+        if logs is None:
+            return logs
+        for log_key, log_values in model_log_dict.items():
+            if train:
+                logs[f"train/{log_key}"] = sum(log_values) / len(log_values)
+            else:
+                logs[f"eval/{log_key}"] = sum(log_values) / len(log_values)
+        return logs
     
     def train(self, model, dataloader, optimizer, device):
         model.train()
         
         token_acc_list: list[float] = []
         seq_acc_list: list[float] = []
-        
+        total_grads: list[float] = []
+        train_time: float = 0.0
+        train_logs: dict[str, float] = {}
         total_loss: float = 0.0
+        
+        model_log_dict: dict[str, list[float]] = {}
         
         for _, batch in enumerate(dataloader):
             inputs = batch[0].to(device)
@@ -97,37 +133,54 @@ class Qswap(Dataset):
             lengths = batch[2].to(device)
             
             output_lengths = (lengths - (inputs.shape[1] - targets.shape[1])).to(device)
-
+            
             optimizer.zero_grad()
-            out = model(
+            
+            start_time = time.time()
+            out, logs = model(
                 x = inputs, 
                 lengths=lengths, 
                 out_lengths = targets.shape[1], 
                 train = True, 
             )
-            loss, token_acc_tensor, seq_acc_tensor = model.compute_loss(
+            
+            loss, token_acc_tensor, seq_acc_tensor, total_grad_norm = model.compute_loss(
                 out = out, 
+                model = model,
                 output_lengths=output_lengths, 
                 targets = targets, 
                 optimizer = optimizer
             )
+            end_time = time.time()
+            
+            model_log_dict = self.fill_model_dict(model_log_dict=model_log_dict, logs=logs)
+                
+            train_time += (end_time - start_time)
             total_loss += loss.item()
             token_acc_list.append(token_acc_tensor)
             seq_acc_list.append(seq_acc_tensor)
-
-        token_acc = torch.cat(token_acc_list).mean().item()
-        seq_acc = torch.cat(seq_acc_list).mean().item()
+            total_grads.append(total_grad_norm)
         
-        return total_loss, token_acc, seq_acc
+        train_logs = self.model_log2log(model_log_dict = model_log_dict, logs = train_logs, train = True)
+            
+        train_logs[TRAIN_TIME] = train_time / len(dataloader)
+        train_logs[TRAIN_LOSS] = total_loss / len(dataloader)
+        train_logs[TRAIN_TOKEN_ACC] = torch.cat(token_acc_list).mean().item()
+        train_logs[TRAIN_SEQ_ACC] = torch.cat(seq_acc_list).mean().item() 
+        train_logs[TRAIN_GRAD_NORM] = sum(total_grads) / len(total_grads) if total_grads else 0.0
+        
+        return train_logs
     
     @torch.inference_mode()
     def eval(self, model, dataloader, device):
         model.eval()
         token_acc_list: list[float] = []
         seq_acc_list: list[float] = []
+        
         total_loss: float = 0.0
-        
-        
+        eval_time: float = 0.0
+        eval_logs: dict[str, float] = {}
+        model_log_dict: dict[str, list[float]] = {}
         
         for idx, batch in enumerate(dataloader):
             inputs = batch[0].to(device)
@@ -141,13 +194,30 @@ class Qswap(Dataset):
                 flops = FlopCountAnalysis(model, (inputs, lengths, targets.shape[1], False))
                 flops_1b = flops.total() / 1e9
             
-            out = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = False)
-            loss, token_acc_tensor, seq_acc_tensor = model.compute_loss(out = out, output_lengths=output_lengths, targets = targets)
+            start_time = time.time()
+            out, logs = model(x = inputs, lengths=lengths, out_lengths = targets.shape[1], train = False)
+            end_time = time.time()
+            
+            loss, token_acc_tensor, seq_acc_tensor = model.compute_loss(
+                out = out, 
+                model = model,
+                output_lengths=output_lengths, 
+                targets = targets
+            )
+            
+            model_log_dict = self.fill_model_dict(model_log_dict=model_log_dict, logs=logs)
             total_loss += loss.item()
             token_acc_list.append(token_acc_tensor)
             seq_acc_list.append(seq_acc_tensor)
-            
-        token_acc = torch.cat(token_acc_list).mean().item()
-        seq_acc = torch.cat(seq_acc_list).mean().item()
+            eval_time += (end_time - start_time)
         
-        return total_loss, token_acc, seq_acc, flops_1b
+
+        eval_logs = self.model_log2log(model_log_dict = model_log_dict, logs = eval_logs, train = False)
+        eval_logs[EVAL_LOSS] = total_loss / len(dataloader)
+        eval_logs[EVAL_TOKEN_ACC] = torch.cat(token_acc_list).mean().item()
+        
+        eval_logs[EVAL_SEQ_ACC] = torch.cat(seq_acc_list).mean().item()
+        eval_logs[EVAL_TIME] = eval_time / len(dataloader)
+        eval_logs[EVAL_FLOPS_1B] = flops_1b
+        
+        return eval_logs

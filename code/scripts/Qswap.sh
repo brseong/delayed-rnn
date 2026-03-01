@@ -24,7 +24,7 @@ fi
 EXTRA_ARGS=()
 data_name="Qswap"
 
-num_epochs=50
+num_epochs=2000
 hidden_size=256
 min_seq_len=5
 max_seq_len=100
@@ -55,5 +55,6 @@ do
         "dataset.max_seq_len=$max_seq_len"
         "${EXTRA_ARGS[@]}"
     )
+    # > output.log 2>&1
     python main.py "${ARGS[@]}"
 done
