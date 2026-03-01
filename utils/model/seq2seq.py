@@ -622,10 +622,17 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
 
         raw_credit = distance.pow(-softplus(scale_exponent[None, :, None]))
-        differentiable = raw_credit
+        # differentiable = raw_credit
         # differentiable = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Backward pass goes through this path
+        logits = torch.log(raw_credit + 1e-8)
+        u = torch.rand_like(logits)
+        gumbel_noise = -torch.log(-torch.log(u + 1e-8) + 1e-8)
+        perturbed_logits = logits + gumbel_noise
+        differentiable = F.softmax(perturbed_logits, dim=0) # Forward and backward pass goes through this path
         
-        nondifferentiable = (credit_matrix == tau_clipped).float() # Forward pass uses this hard assignment for stability and interpretability
+        # nondifferentiable = (credit_matrix == tau_clipped).float() # Forward pass uses this hard assignment for stability and interpretability
+        max_idx = perturbed_logits.argmax(dim=0, keepdim=True)
+        nondifferentiable = torch.zeros_like(logits).scatter_(0, max_idx, 1.0)
         
         # Straight-Through Estimator trick
         # Return equals a spike in the tau_clipped position,
