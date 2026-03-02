@@ -25,6 +25,7 @@ def get_args():
     parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate for optimizer")
     parser.add_argument("--epochs", type=int, default=10, help="Number of training epochs")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu", help="Device to use for training (cuda or cpu)")
+    parser.add_argument("--teach_forcing", action="store_true", help="Whether to use teacher forcing during training")
     
     args = parser.parse_args()
     args.model_type = ModelType[args.model_type]  # Convert string to ModelType enum
@@ -62,6 +63,7 @@ class Config():
     num_classes: int = 10
     learning_rate: float = 0.001
     epochs: int = 10
+    teach_forcing: bool = False
     device: torch.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     
     @staticmethod

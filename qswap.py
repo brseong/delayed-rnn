@@ -59,12 +59,30 @@ optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
 scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs * len(train_loader))
 # scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # 학습 안정화 시 CosineAnnealingLR로 대체
 
+
+def tokenwise_accuracy_from_flat_logits(outputs_flat: torch.Tensor, targets_flat: torch.Tensor) -> float:
+    if targets_flat.numel() == 0:
+        return 0.0
+    predictions = outputs_flat.argmax(dim=-1)
+    return (predictions == targets_flat).float().mean().item()
+
+run.define_metric("Accuracy/Validation", step_metric="val_step")
+run.define_metric("Accuracy/Validation_Tokenwise", step_metric="val_step")
+run.define_metric("Think_Steps/Validation", step_metric="val_step")
+run.define_metric("Time/Validation", step_metric="val_step")
+run.define_metric("Accuracy/Test", step_metric="test_step")
+run.define_metric("Accuracy/Test_Tokenwise", step_metric="test_step")
+run.define_metric("Think_Steps/Test", step_metric="test_step")
+run.define_metric("Time/Test", step_metric="test_step")
+val_step, test_step = 0, 0
+
 best_val_acc = 0.0
 best_model_state = None
 # 5. 학습 루프
 for epoch in tqdm(range(config.epochs), desc="Epochs"):
     total_loss = 0
-    tf_ratio = max(0.0, 1.0 - (epoch / config.epochs))
+    tf_ratio = max(0.0, 1.0 - (epoch / config.epochs)) if config.teach_forcing else 0.0
+    scale_exponent = 0.5 * (1 + 5 * epoch / config.epochs)
     model.train()
     for i, (inputs, targets, lengths) in tqdm(enumerate(train_loader), total=len(train_loader), desc="Batches", leave=False):
         inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
@@ -86,25 +104,20 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         outputs_flat = outputs[valid_mask].view(-1, config.num_classes) 
         targets_flat = targets[valid_mask]
         
-        
         loss = criterion(outputs_flat, targets_flat)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         scheduler.step()
+        if isinstance(model, FastThinkingLearnableDelayRNN) and isinstance(model.scale_exponent, float):
+            model.scale_exponent = scale_exponent
         
         dt = time() - t_start
         
         total_loss += loss.item()
         
         with torch.no_grad():
-            valid_mask = targets_flat != -1
-            if valid_mask.sum() > 0:
-                predictions = outputs_flat.argmax(dim=-1)
-                correct_predictions = (predictions[valid_mask] == targets_flat[valid_mask]).float()
-                accuracy = correct_predictions.mean().item()
-            else:
-                accuracy = 0.0
+            accuracy = tokenwise_accuracy_from_flat_logits(outputs_flat, targets_flat)
         
         wandb.log({"Loss/Train": loss.item(),
                 "Accuracy/Train": accuracy,
@@ -113,8 +126,12 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
                 "Time_Per_Step/Train": dt / (2 * inputs.size(1) + think_steps.max().item()),  # 대략적인 시간/스텝 계산
                 "Learning_Rate": scheduler.get_last_lr()[0]})
         if isinstance(model, FastThinkingLearnableDelayRNN):
-            wandb.log({"Scale_Exponent/Bias": softplus(model.scale_exponent.data).mean().item(),
-                        "Scale_Exponent/Variance": softplus(model.scale_exponent.data).var().item()})
+            if isinstance(model.scale_exponent, torch.nn.Parameter):
+                wandb.log({"Scale_Exponent/Bias": softplus(model.scale_exponent.data).mean().item(),
+                            "Scale_Exponent/Variance": softplus(model.scale_exponent.data).var().item()})
+            else:
+                wandb.log({"Scale_Exponent/Value": model.scale_exponent})
+            
                 
         if (i+1) % 300 == 0:
             print(f'Epoch [{epoch+1}/{config.epochs}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}, Acc: {accuracy:.4f}')
@@ -124,7 +141,6 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         correct = 0
         total = 0
         dt_total = 0
-        think_steps_list = []
         for inputs, targets, lengths in tqdm(val_loader, desc="Validation Batches", leave=False):
             inputs, targets, lengths = inputs.to(config.device), targets.to(config.device), lengths.to(config.device)
             
@@ -139,7 +155,15 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
             _, predicted = torch.max(outputs.data, 2)
             total += targets.size(0)
             correct += torch.all(predicted == targets, dim=1).sum().item()
-            think_steps_list.extend(think_steps.tolist())
+            
+            valid_mask = targets != -1
+            outputs_flat = outputs[valid_mask].view(-1, config.num_classes) 
+            targets_flat = targets[valid_mask]
+            with torch.no_grad():
+                accuracy = tokenwise_accuracy_from_flat_logits(outputs_flat, targets_flat)
+                wandb.log({"val_step": (val_step := val_step + 1),
+                           "Accuracy/Validation_Tokenwise": accuracy,
+                           "Think_Steps/Validation": think_steps.float().mean().item()})
         
         acc = 100 * correct / total
         if acc > best_val_acc:
@@ -147,7 +171,6 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
             save_model(model, asdict(model.config) | {"best_val_accuracy": acc, "epoch": epoch})
         
         wandb.log({"Accuracy/Validation": 100 * correct / total,
-                   "Think_Steps/Validation": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0,
                    "Time/Validation": dt_total/len(val_loader)})
         print(f'Validation Accuracy after Epoch {epoch+1}: {100 * correct / total:.2f}%')
             
@@ -172,8 +195,16 @@ with torch.no_grad():
         correct += torch.all(predicted == targets, dim=1).sum().item()
         think_steps_list.extend(think_steps.tolist())
         
+        valid_mask = targets != -1
+        outputs_flat = outputs[valid_mask].view(-1, config.num_classes) 
+        targets_flat = targets[valid_mask]
+        with torch.no_grad():
+            accuracy = tokenwise_accuracy_from_flat_logits(outputs_flat, targets_flat)
+            wandb.log({"test_step": (test_step := test_step + 1),
+                       "Accuracy/Test_Tokenwise": accuracy,
+                       "Think_Steps/Test": think_steps.float().mean().item()})
+        
     wandb.log({"Accuracy/Test": 100 * correct / total,
-                "Think_Steps/Test": sum(think_steps_list) / len(think_steps_list) if think_steps_list else 0,
                 "Time/Test": dt_total/len(test_loader)})
 
     print(f'Test Accuracy of the RNN on the 10000 test images (QSWAP): {100 * correct / total:.2f}%')
