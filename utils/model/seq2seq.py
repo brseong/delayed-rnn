@@ -486,19 +486,25 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         return nondifferentiable # No need for soft assignment during evaluation
     
     def calc_credit_matrix(self): 
-        if self.training:
-            return FastThinkingLearnableDelayRNN.calc_credit_matrix_jit(
-                torch.clamp(self.tau, 1, self.max_delay)[None,...],
-                self.max_delay,
-                self.hidden_size,
-                self.scale_exponent
-            )
-        else:
-            return FastThinkingLearnableDelayRNN.calc_credit_matrix_eval_jit(
-                torch.clamp(self.tau, 1, self.max_delay)[None,...],
-                self.max_delay,
-                self.hidden_size,
-                self.scale_exponent
+        # if self.training:
+        #     return FastThinkingLearnableDelayRNN.calc_credit_matrix_jit(
+        #         torch.clamp(self.tau, 1, self.max_delay)[None,...],
+        #         self.max_delay,
+        #         self.hidden_size,
+        #         self.scale_exponent
+        #     )
+        # else:
+        #     return FastThinkingLearnableDelayRNN.calc_credit_matrix_eval_jit(
+        #         torch.clamp(self.tau, 1, self.max_delay)[None,...],
+        #         self.max_delay,
+        #         self.hidden_size,
+        #         self.scale_exponent
+        # )
+        return FastThinkingLearnableDelayRNN.calc_credit_matrix_jit(
+            torch.clamp(self.tau, 1, self.max_delay)[None,...],
+            self.max_delay,
+            self.hidden_size,
+            self.scale_exponent
         )
     
     def _adjust_dim(self, tensor: torch.Tensor) -> torch.Tensor:

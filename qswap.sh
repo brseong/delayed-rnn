@@ -1,10 +1,10 @@
 #!/bin/bash
 trap kill SIGINT
 
-indices=(0 1 2 3)
-gpus=(1 2 3 7)
-models=("RNN" "LSTM" "GRU" "DelayedRNN")
-hidden_sizes=(512 256 296 360)
+indices=(0 1)
+gpus=(1 2)
+models=("DelayedRNN" "DelayedRNN")
+hidden_sizes=(180 360)
 # gpus=(4 5 6 7)
 # models=("RNN" "LSTM" "GRU" "DelayedRNN")
 # hidden_sizes=(256 128 148 180)
@@ -39,8 +39,8 @@ for index in "${indices[@]}"; do
         --num_classes $num_classes \
         --learning_rate $learning_rate \
         --epochs $epochs \
-        --device $device"
-        # --teach_forcing
+        --device $device \
+        --teach_forcing"
     echo $script
     eval $script &
 done
