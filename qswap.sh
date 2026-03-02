@@ -2,7 +2,7 @@
 trap kill SIGINT
 
 indices=(0 1)
-gpus=(1 2)
+gpus=(0 4)
 models=("DelayedRNN" "DelayedRNN")
 hidden_sizes=(180 360)
 # gpus=(4 5 6 7)

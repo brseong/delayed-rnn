@@ -444,18 +444,24 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         self.efferent = nn.Linear(hidden_size, self.output_size)
         
         self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        # self.scale_exponent = nn.Parameter(torch.zeros(hidden_size, device=self.device))
-        self.scale_exponent = 0.5
+        self.scale_exponent = nn.Parameter(torch.zeros(hidden_size, device=self.device))
+        # self.scale_exponent = 0.5
 
     @staticmethod
     @torch.jit.script
-    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, scale_exponent:float) -> torch.Tensor:
+    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, scale_exponent:torch.Tensor) -> torch.Tensor:
         # Same as previous version
         credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) 
         credit_matrix = credit_matrix[:, None, None]
         distance = 1.0 + torch.abs(credit_matrix - tau_clipped)
 
-        # raw_credit = distance.pow(-softplus(scale_exponent[None, :, None]))
+        ### Credit matrix with integration:
+        raw_credit = distance.pow(-softplus(scale_exponent[None, :, None]))
+        credit_matrix = raw_credit / (raw_credit.sum(dim=0, keepdim=True))  # Normalize to sum to 1 across delay dimension
+        return credit_matrix
+        ### End of credit matrix calculation
+        
+        ### Credit matrix with Gumbel-Softmax sampling (alternative):
         raw_credit = distance.pow(-scale_exponent)
         # differentiable = raw_credit
         # differentiable = raw_credit / (raw_credit.sum(dim=0, keepdim=True)) # Backward pass goes through this path
@@ -465,9 +471,9 @@ class FastThinkingLearnableDelayRNN(nn.Module):
         perturbed_logits = logits + gumbel_noise
         differentiable = F.softmax(perturbed_logits, dim=0) # Forward and backward pass goes through this path
         
-        # nondifferentiable = (credit_matrix == tau_clipped).float() # Forward pass uses this hard assignment for stability and interpretability
-        max_idx = perturbed_logits.argmax(dim=0, keepdim=True)
-        nondifferentiable = torch.zeros_like(logits).scatter_(0, max_idx, 1.0)
+        nondifferentiable = (credit_matrix == tau_clipped).float() # Forward pass uses this hard assignment for stability and interpretability
+        # max_idx = perturbed_logits.argmax(dim=0, keepdim=True)
+        # nondifferentiable = torch.zeros_like(logits).scatter_(0, max_idx, 1.0)
         
         # Straight-Through Estimator trick
         # Return equals a spike in the tau_clipped position,

@@ -109,8 +109,6 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         scheduler.step()
-        if isinstance(model, FastThinkingLearnableDelayRNN) and isinstance(model.scale_exponent, float):
-            model.scale_exponent = scale_exponent
         
         dt = time() - t_start
         
@@ -129,8 +127,11 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
             if isinstance(model.scale_exponent, torch.nn.Parameter):
                 wandb.log({"Scale_Exponent/Bias": softplus(model.scale_exponent.data).mean().item(),
                             "Scale_Exponent/Variance": softplus(model.scale_exponent.data).var().item()})
-            else:
+            elif isinstance(model.scale_exponent, float):
                 wandb.log({"Scale_Exponent/Value": model.scale_exponent})
+                model.scale_exponent = scale_exponent
+            else:
+                raise ValueError("Unsupported type for scale_exponent in FastThinkingLearnableDelayRNN")
             
                 
         if (i+1) % 300 == 0:
