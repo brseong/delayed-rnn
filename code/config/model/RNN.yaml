@@ -1,1 +1,1 @@
-_target_: models.RNN.RNN
+_target_: model.RNN.RNN

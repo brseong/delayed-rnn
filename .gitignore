@@ -5,3 +5,4 @@ __pycache__/
 
 code/outputs/*
 code/wandb/*
+code_past1/*

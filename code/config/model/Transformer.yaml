@@ -1,4 +1,3 @@
-
-_target_: models.Transformer.Transformer
+_target_: model.Transformer.Transformer
 nhead: 4
 encoding_method: 'positional'

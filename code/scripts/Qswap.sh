@@ -25,32 +25,42 @@ EXTRA_ARGS=()
 data_name="Qswap"
 
 num_epochs=2000
+batch_size=256
 hidden_size=256
 min_seq_len=5
 max_seq_len=100
+use_lr_scheduler=false
 
-if [ "$MODEL" == "Transformer" ]; then
-    EXTRA_ARGS+=("batch_size=256")
-    EXTRA_ARGS+=("model_args.num_layers=1")
-    EXTRA_ARGS+=("model_args.hidden_size=128")
+if [ "$MODEL" == "RNN" ]; then
+    EXTRA_ARGS+=("hidden_size=402")
 fi
 
-if [ "$MODEL" == "LinearTransformer" ]; then
-    EXTRA_ARGS+=("model_args.num_layers=2")
-    EXTRA_ARGS+=("model_args.hidden_size=128")
+if [ "$MODEL" == "DelayRNN" ]; then
+    EXTRA_ARGS+=("hidden_size=256")
+    EXTRA_ARGS+=("model.max_delay=50")
 fi
 
-for SEED in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19;
+if [ "$MODEL" == "GRU" ];  then
+    EXTRA_ARGS+=("hidden_size=231")
+fi
+
+# GRU와 LSTM 모두 hidden_size를 512로 설정
+if [ "$MODEL" == "LSTM" ];  then
+    EXTRA_ARGS+=("hidden_size=200")
+fi
+
+
+for SEED in 0 1 2 4 5;
 do
     ARGS=(
-        "num_workers=0"
         "seed=$SEED"  
         "model=$MODEL"
         "dataset=$data_name"
-        "use_wandb=$use_wandb"
+        "wandb.use_wandb=$use_wandb"
         "wandb.group_name=$group_name"
         "num_epochs=$num_epochs"
-        "model_args.hidden_size=$hidden_size"
+        "batch_size=$batch_size"
+        "use_lr_scheduler=$use_lr_scheduler"
         "dataset.min_seq_len=$min_seq_len"
         "dataset.max_seq_len=$max_seq_len"
         "${EXTRA_ARGS[@]}"

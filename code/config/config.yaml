@@ -7,22 +7,12 @@ defaults:
 
 seed: 0
 num_epochs: 50
-batch_size: 512
-num_workers: 4
-
+batch_size: 256
+hidden_size: 128
 lr: 0.001
-
-use_lr_scheduler: True
-use_wandb: False
-
+use_lr_scheduler: False
+use_model_compile: True
 wandb:
+    use_wandb: False
     entity: "CIDA"
     group_name: "Test"
-
-
-model_args:
-    num_layers: 1
-    hidden_size: 128
-    # use_teacher_forcing: True
-
-

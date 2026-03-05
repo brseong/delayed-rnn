@@ -1,1 +1,1 @@
-_target_: models.LSTM.LSTM
+_target_: model.LSTM.LSTM

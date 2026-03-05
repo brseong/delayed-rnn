@@ -1,2 +1,2 @@
-_target_: models.DelayRNN.DelayRNN
+_target_: model.DelayRNN.DelayRNN
 max_delay: 40 
