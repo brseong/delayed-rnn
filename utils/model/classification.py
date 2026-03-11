@@ -2,10 +2,12 @@ from typing import Any
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import math
 
 from jaxtyping import Float
 from utils.config import Config, ModelType
+from utils.model.DRNN import LearnableDelayRNNBackbone
 
 
 presets={
@@ -268,105 +270,27 @@ class SimpleTransformer(nn.Module):
         out = out.mean(dim=1)
         return out
     
-class LearnableDelayRNN(nn.Module):
+class LearnableDelayRNN(LearnableDelayRNNBackbone):
     def __init__(self, input_size:int, hidden_size:int, output_size:int, max_delay:int, config:Config):
-        super().__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.max_delay = max_delay
-        self.device = config.device
-        self.config = config
-        # 기본 가중치
-        self.afferent = nn.Linear(input_size, hidden_size)
-        self.lateral = nn.Parameter(
-            torch.nn.init.xavier_uniform_(
-                torch.empty(hidden_size, hidden_size)) # hidden_out, hidden_in
-            )
-        self.efferent = nn.Linear(hidden_size, output_size)
-        
-        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        self.sigma = max_delay / 2
-    
-    @staticmethod
-    @torch.jit.script
-    def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
-        credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) # (max_delay+1,)
-        credit_matrix = credit_matrix[:, None, None].repeat(1, hidden_size, hidden_size) # (max_delay+1, hidden_out, hidden_in)
-
-        inv_sigma = 1 / sigma
-        credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma) # Credit matrix with Gaussian profile
-        
-        return credit_matrix
-    
-    def calc_credit_matrix(self) -> Float[torch.Tensor, "max_delay+1 hidden_out hidden_in"]:
-        return LearnableDelayRNN.calc_credit_matrix_jit(
-            torch.clamp(self.tau, 1, self.max_delay)[None,...],
-            self.max_delay,
-            self.hidden_size,
-            self.sigma)
-    
-    @staticmethod
-    @torch.jit.script
-    def step_jit(x_t:torch.Tensor,
-                 credit_matrix:torch.Tensor,
-                 buffer:torch.Tensor,
-                 buffer_ptr:int,
-                 lateral:torch.Tensor,
-                 max_delay:int,
-                 w_afferent:torch.Tensor,
-                 b_afferent:torch.Tensor,
-                 w_efferent:torch.Tensor,
-                 b_efferent:torch.Tensor):
-        h_delayed = buffer[buffer_ptr]  # Get the current delayed hidden state
-        h_to_delay = torch.tanh(torch.nn.functional.linear(x_t, w_afferent, b_afferent) + h_delayed) # lateral is processed via buffer, already included in h_delayed
-        
-        
-        ### Update buffer with new hidden state to be delayed
-        credit_matrix = credit_matrix * lateral[None, :, :]  # (max_delay+1, hidden_out, hidden_in)
-        scattered = torch.einsum('dhi,bi->dbh', credit_matrix, h_to_delay)  # (max_delay+1, batch_size, hidden_out)
-        
-        # Shift the scattered values according to the current buffer pointer
-        shifted_scattered = torch.roll(scattered, shifts=buffer_ptr, dims=0)
-        
-        # Add the shifted scattered values to the buffer, and update the buffer pointer (removing the oldest value)
-        buffer = buffer + shifted_scattered
-        mask = torch.arange(max_delay + 1, out=buffer.new_empty(max_delay + 1)) == buffer_ptr # Remove the oldest value
-        buffer = buffer * (~mask[:, None, None])  # Zero out the position at buffer_ptr
-        buffer_ptr = (buffer_ptr + 1) % (max_delay + 1)  # Update the pointer
-        ### End buffer update
-        
-        
-        y_t = torch.nn.functional.linear(h_delayed, w_efferent, b_efferent)
-        return buffer, buffer_ptr, y_t # return the next delayed hidden state
-    
-    def step(self,
-             x_t: Float[torch.Tensor, "batch_size input_size"],
-             credit_matrix: Float[torch.Tensor, "max_delay+1 hidden_out hidden_in"],
-             buffer: Float[torch.Tensor, "max_delay+1 batch_size hidden_size"],
-             buffer_ptr: int) \
-                 -> tuple[Float[torch.Tensor, "max_delay+1 batch_size hidden_size"], int, Float[torch.Tensor, "batch_size output_size"]]:
-        w_afferent, b_afferent = self.afferent.weight, self.afferent.bias
-        w_efferent, b_efferent = self.efferent.weight, self.efferent.bias
-        return LearnableDelayRNN.step_jit(x_t, credit_matrix, buffer, buffer_ptr, self.lateral, self.max_delay, w_afferent, b_afferent, w_efferent, b_efferent)
+        super().__init__(input_size, hidden_size, output_size, max_delay, config)
     
     def forward(self,
                 x: Float[torch.Tensor, "batch_size time input_size"],
                 return_seq: torch.Tensor|None = None) \
                     -> Float[torch.Tensor, "batch_size time output_size"]:
-        # Precompute credit matrix (Valid until the taus are updated)
-        credit_matrix = self.calc_credit_matrix()
+        # Precompute credit matrix and gather-style weight matrix
+        W_rev = self.precompute_W_rev()
         
         # Initialize output tensor
         y = x.new_zeros(*x.shape[:-1], self.output_size)# To store outputs at each time step
         
-        # Initialize buffer and get the initial delayed hidden state
-        buffer = x.new_zeros(self.max_delay + 1, x.size(0), self.hidden_size) # (max_delay+1, batch_size, hidden_size)
-        buffer_ptr = 0  # Pointer to track the current position in the buffer
+        # Initialize history buffer
+        history = self.init_history(x.size(0), ref_tensor=x)
+        ptr = 0  # Pointer to track the current position in the buffer
         
         for t in range(x.size(1)):
             x_t = x[:, t, :] # Batch size, input_size
-            buffer, buffer_ptr, y_t = self.step(x_t, credit_matrix, buffer, buffer_ptr)
+            history, ptr, y_t = self.step_fast(x_t, history, ptr, W_rev)
             y[:, t, :] = y_t
         
         if return_seq is not None:
