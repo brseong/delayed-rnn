@@ -3,21 +3,52 @@ from torch import nn
 from pathlib import Path
 from uuid import uuid4
 from json import dump, load
+from enum import Enum
+from importlib import import_module
+
+
+def _json_default(obj):
+    if isinstance(obj, Enum):
+        enum_type = type(obj)
+        return {
+            "__kind__": "enum",
+            "module": enum_type.__module__,
+            "name": enum_type.__name__,
+            "value": obj.name,
+        }
+    if isinstance(obj, torch.device):
+        return {"__kind__": "torch.device", "value": str(obj)}
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
+
+def _json_object_hook(obj):
+    kind = obj.get("__kind__")
+    if kind == "enum":
+        try:
+            module = import_module(obj["module"])
+            enum_type = getattr(module, obj["name"])
+            return enum_type[obj["value"]]
+        except Exception:
+            # Fallback to string when enum import/lookup fails.
+            return obj["value"]
+    if kind == "torch.device":
+        return torch.device(obj["value"])
+    return obj
 
 def _save_model_to_path(model:nn.Module, data: dict, path:Path):
     """모델 저장"""
     torch.save(model.state_dict(), path / "model.pt")
     with open(path.parent / "contents.json", "r") as f:
-        loaded_data:dict = load(f)
+        loaded_data:dict = load(f, object_hook=_json_object_hook)
     loaded_data[path.name] = data
     with open(path.parent / "contents.json", "w") as f:
-        dump(loaded_data, f, indent=4)
+        dump(loaded_data, f, indent=4, default=_json_default)
 
 def _load_model_from_path(model:nn.Module, path:Path) -> dict:
     """모델 불러오기"""
     model.load_state_dict(torch.load(path / "model.pt"))
     with open(path.parent / "contents.json", "r") as f:
-        data:dict = load(f)
+        data:dict = load(f, object_hook=_json_object_hook)
     return data[path.name]
 
 def save_model(model:nn.Module, data: dict, *, path_root:Path|None = None):
@@ -31,7 +62,7 @@ def save_model(model:nn.Module, data: dict, *, path_root:Path|None = None):
     
     if not (path.parent / "contents.json").exists():
         with open(path.parent / "contents.json", "w") as f:
-            dump({}, f, indent=4)
+            dump({}, f, indent=4, default=_json_default)
             
     _save_model_to_path(model, data, path)
     print(f"Model saved to: {path}")
