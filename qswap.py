@@ -60,13 +60,13 @@ scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.epochs 
 # scheduler = optim.lr_scheduler.ConstantLR(optimizer, factor=1.0, total_iters=0) # 학습 안정화 시 CosineAnnealingLR로 대체
 
 
-def tokenwise_accuracy_from_flat_logits(outputs_flat: torch.Tensor, targets_flat: torch.Tensor) -> float:
+def tokenwise_accuracy_from_flat_logits(outputs_flat: torch.Tensor, targets_flat: torch.Tensor) -> float: #(예측 점수, 정답)
     if targets_flat.numel() == 0:
         return 0.0
-    predictions = outputs_flat.argmax(dim=-1)
-    return (predictions == targets_flat).float().mean().item()
+    predictions = outputs_flat.argmax(dim=-1) # 예측값 추려내기
+    return (predictions == targets_flat).float().mean().item() # 예측과 정답이 같은지 확인 -> 1,0으로 반환 -> 평균 구하기 -> float으로 변환
 
-run.define_metric("Accuracy/Validation", step_metric="val_step")
+run.define_metric("Accuracy/Validation", step_metric="val_step") # (y축, x축)
 run.define_metric("Accuracy/Validation_Tokenwise", step_metric="val_step")
 run.define_metric("Think_Steps/Validation", step_metric="val_step")
 run.define_metric("Time/Validation", step_metric="val_step")
@@ -81,7 +81,7 @@ best_model_state = None
 # 5. 학습 루프
 for epoch in tqdm(range(config.epochs), desc="Epochs"):
     total_loss = 0
-    tf_ratio = max(0.0, 1.0 - (epoch / config.epochs)) if config.teach_forcing else 0.0
+    tf_ratio = max(0.0, 1.0 - (epoch / config.epochs)) if config.teach_forcing else 0.0 # 처음에는 정답만 알려주고 그 비율 줄여감
     scale_exponent = 0.5 * (1 + 5 * epoch / config.epochs)
     model.train()
     for i, (inputs, targets, lengths) in tqdm(enumerate(train_loader), total=len(train_loader), desc="Batches", leave=False):
@@ -100,15 +100,15 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
         # outputs: [Batch, Max_Len, K] -> Flatten
         # targets: [Batch, Max_Len] -> Flatten (-1은 ignore_index 처리됨)
         # loss = criterion(outputs.reshape(config.batch_size, config.seq_max, config.num_classes), targets.reshape(-1))
-        valid_mask = targets != -1
+        valid_mask = targets != -1 # 패딩 없애기 : 진짜 데이터만 골라내기
         outputs_flat = outputs[valid_mask].view(-1, config.num_classes) 
         targets_flat = targets[valid_mask]
         
-        loss = criterion(outputs_flat, targets_flat)
+        loss = criterion(outputs_flat, targets_flat) # crossentropy로 오차 계산
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-        optimizer.step()
-        scheduler.step()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) # 기울기 폭발 방지
+        optimizer.step() # 가중치 업데이트
+        scheduler.step() # 학습률 업데이트
         
         dt = time() - t_start
         
@@ -134,7 +134,7 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
                 raise ValueError("Unsupported type for scale_exponent in FastThinkingLearnableDelayRNN")
             
                 
-        if (i+1) % 300 == 0:
+        if (i+1) % 300 == 0: # 300번 배치마다 현재 상태 출력 -> 학습 잘 되고 있는지 확인
             print(f'Epoch [{epoch+1}/{config.epochs}], Step [{i+1}/{len(train_loader)}], Loss: {loss.item():.4f}, Acc: {accuracy:.4f}')
 
     model.eval()
@@ -158,7 +158,7 @@ for epoch in tqdm(range(config.epochs), desc="Epochs"):
             correct += torch.all(predicted == targets, dim=1).sum().item()
             
             valid_mask = targets != -1
-            outputs_flat = outputs[valid_mask].view(-1, config.num_classes) 
+            outputs_flat = outputs[valid_mask].view(-1, config.num_classes) # flatten
             targets_flat = targets[valid_mask]
             with torch.no_grad():
                 accuracy = tokenwise_accuracy_from_flat_logits(outputs_flat, targets_flat)

@@ -4,7 +4,7 @@ from enum import Enum, auto
 from argparse import ArgumentParser, Namespace
 
 class ModelType(Enum):
-    RNN = auto()
+    RNN = auto() # auto : 알아서 숫자 부여
     LSTM = auto()
     GRU = auto()
     DelayedRNN = auto()
@@ -33,14 +33,14 @@ def get_args():
     
     return args
 
-# class Singleton(type):
+# class Singleton(type): # 객체는 하나만 존재. 여러번 만들어도 같은거야
 #     _instances = {}
 #     def __call__(cls, *args, **kwargs):
 #         if cls not in cls._instances:
 #             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
 #         return cls._instances[cls]
 
-class ModelType(Enum):
+class ModelType(Enum): # 왜 한번 더 쓴거지???
     RNN = auto()
     LSTM = auto()
     GRU = auto()
@@ -66,6 +66,9 @@ class Config():
     teach_forcing: bool = False
     device: torch.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     
-    @staticmethod
+    @staticmethod # 정적 메서드 : 객체를 만들지 않고 클래스를 쓸 수 있다
     def from_args(args: Namespace) -> 'Config':
         return Config(**vars(args))
+    # vars(args) : Namespace 안에 있는 데이터를 딕셔너리 형태로 변환
+    # ** : 언패킹
+    # argparse의 결과물을 Config라는 데이터 클래스로 변환

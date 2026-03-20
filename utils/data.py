@@ -4,7 +4,7 @@ from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
 import random
 
-class SwapDataset(Dataset):
+class SwapDataset(Dataset): # 입력된 시퀀스의 위치 변환
     def __init__(self, size, k = 10, min_len = 5, max_len = 20):
         self.size = size
         self.k = k
@@ -14,7 +14,7 @@ class SwapDataset(Dataset):
     def __len__(self):
         return self.size
 
-    def _int_to_binary_vec(self, n):
+    def _int_to_binary_vec(self, n): # 숫자를 그대로 넣으면 크기로 인식
         """정수를 K차원 이진수 벡터로 변환"""
         # 예: 3 -> '00...011' -> [0, 0, ..., 1, 1]
         binary_str = format(n, f'0{self.k}b')
@@ -23,7 +23,7 @@ class SwapDataset(Dataset):
             binary_str = binary_str[-self.k:]
         return [float(b) for b in binary_str]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx): # 새로운 입력과 타켓 만들기
         # 1. 랜덤 길이 설정
         seq_len = random.randint(self.min_len, self.max_len)
         
@@ -38,16 +38,16 @@ class SwapDataset(Dataset):
         
         # (1) Data Part: One-hot vectors
         for idx in seq_indices:
-            vec = [0.0] * (self.k + 1)
-            vec[idx] = 1.0 
+            vec = [0.0] * (self.k + 1) # 0으로 채우기
+            vec[idx] = 1.0 # 해당 위치 숫자를 1로
             input_vectors.append(vec)
             
-        # (2) SEP Token: Last dim = 1
+        # (2) SEP Token: Last dim = 1 # 구분자
         sep_vec = [0.0] * (self.k + 1)
         sep_vec[self.k] = 1.0
         input_vectors.append(sep_vec)
         
-        # (3) Command Part: Binary Position Vectors
+        # (3) Command Part: Binary Position Vectors # 바꿀 숫자
         # Pos1
         cmd1_vec = self._int_to_binary_vec(pos1) + [0.0] # SEP dim은 0
         input_vectors.append(cmd1_vec)
@@ -56,7 +56,7 @@ class SwapDataset(Dataset):
         input_vectors.append(cmd2_vec)
         
         # --- 정답 구성 (Indices) ---
-        target_seq = seq_indices[:]
+        target_seq = seq_indices[:] # 원본 복사
         target_seq[pos1], target_seq[pos2] = target_seq[pos2], target_seq[pos1]
         
         # 텐서 변환
@@ -66,7 +66,7 @@ class SwapDataset(Dataset):
                 torch.tensor(target_seq, dtype=torch.long),
                 seq_len)
 
-def collate_fn(batch):
+def collate_fn(batch): # 생성된 데이터를 모아 직사각형 텐서 형태로
     """
     배치 내의 샘플들을 받아서 Padding을 수행하고 텐서로 합침
     batch: List of (input_tensor, target_tensor, length)

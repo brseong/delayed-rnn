@@ -108,7 +108,7 @@ class SimpleRNN(nn.Module):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, config:Config):
         super(SimpleRNN, self).__init__()
         self.hidden_size = hidden_size
-        # batch_first=True: 입력 형태를 (Batch, Seq, Feature)로 받음
+        # batch_first=True: 입력 형태를 (Batch, Seq, Feature)로 받음 : batch순으로 계산(sequence순 x)
         self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, num_classes)
         self.device = config.device
@@ -125,7 +125,7 @@ class SimpleRNN(nn.Module):
         
         # 마지막 타임스텝(Time step)의 결과만 가져와서 분류
         # out[:, -1, :] shape: (Batch, Hidden_Size)
-        out = self.fc(out[:, -1, :])
+        out = self.fc(out[:, -1, :]) # 가장 확률이 높은 class 반환
         return out
 
 class SimpleLSTM(nn.Module):
@@ -180,7 +180,7 @@ class SimpleGRU(nn.Module):
         out = self.fc(out[:, -1, :])
         return out
 
-class SimpleMamba(nn.Module):
+class SimpleMamba(nn.Module): # 중요한 정보만 기억 + 병렬처리
     def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
         super(SimpleMamba, self).__init__()
         self.hidden_size = hidden_size
@@ -191,9 +191,9 @@ class SimpleMamba(nn.Module):
         
         # Mamba 블록 설정
         self.mamba = Mamba(
-            d_model=hidden_size,  # 모델 차원
-            d_state=16,           # SSM 상태 차원
-            d_conv=4,            # 로컬 컨볼루션 커널 크기
+            d_model=hidden_size,  # 모델 차원 # 한번에 처리하는 정보 크기
+            d_state=16,           # SSM 상태 차원 # 정보 담는 크기
+            d_conv=4,            # 로컬 컨볼루션 커널 크기 # 주변 정보 4개도 보면서 진행
             expand=2,            # 확장 계수 (내부적으로 2배 차원을 키워 연산)
         ).to(self.device)
         
@@ -214,18 +214,18 @@ class SimpleMamba(nn.Module):
         out = self.fc(out[:, -1, :])
         return out
 
-class PositionalEncoding(nn.Module):
+class PositionalEncoding(nn.Module): # 트랜스포머 # 데이터에 숫자 부여
     def __init__(self, d_model, max_len=784):
         super().__init__()
         pe = torch.zeros(max_len, d_model)
         position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
+        pe[:, 0::2] = torch.sin(position * div_term) # 짝수
+        pe[:, 1::2] = torch.cos(position * div_term) # 홀수
         self.register_buffer('pe', pe.unsqueeze(0))
 
     def forward(self, x):
-        return x + self.pe[:, :x.size(1)]
+        return x + self.pe[:, :x.size(1)] # 데이터에 위치(번호) pe 부여
 
 class SimpleTransformer(nn.Module):
     def __init__(self, input_size: int, hidden_size: int, num_classes: int, config):
@@ -278,26 +278,26 @@ class LearnableDelayRNN(nn.Module):
         self.device = config.device
         self.config = config
         # 기본 가중치
-        self.afferent = nn.Linear(input_size, hidden_size)
+        self.afferent = nn.Linear(input_size, hidden_size) # input_size를 hidden_size에 맞게 # W_ih
         self.lateral = nn.Parameter(
             torch.nn.init.xavier_uniform_(
                 torch.empty(hidden_size, hidden_size)) # hidden_out, hidden_in
-            )
-        self.efferent = nn.Linear(hidden_size, output_size)
+            ) # 은닉상태 가중치 W_hh
+        self.efferent = nn.Linear(hidden_size, output_size) # W_ho
         
-        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        self.sigma = max_delay / 2
+        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1) # 지연시간 스스로 학습하게 
+        self.sigma = max_delay / 2 # 지연 시간 오차 넓게 퍼뜨림
     
     @staticmethod
-    @torch.jit.script
+    @torch.jit.script # 계산 빠르게
     def calc_credit_matrix_jit(tau_clipped:torch.Tensor, max_delay:int, hidden_size:int, sigma:float) -> torch.Tensor:
-        credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) # (max_delay+1,)
+        credit_matrix = torch.arange(max_delay + 1, out=tau_clipped.new_empty(max_delay + 1)) # (max_delay+1,) # delay 타임라인 1차원 텐서 만듦
         credit_matrix = credit_matrix[:, None, None].repeat(1, hidden_size, hidden_size) # (max_delay+1, hidden_out, hidden_in)
 
         inv_sigma = 1 / sigma
         credit_matrix = torch.nn.functional.relu(-abs((credit_matrix - tau_clipped) * inv_sigma ** 2) + inv_sigma) # Credit matrix with Gaussian profile
         
-        return credit_matrix
+        return credit_matrix # delay를 연속적인 확률값으로(정답인 delay 시간 외의 주변 값도 계산해보려고)
     
     def calc_credit_matrix(self) -> Float[torch.Tensor, "max_delay+1 hidden_out hidden_in"]:
         return LearnableDelayRNN.calc_credit_matrix_jit(
@@ -319,18 +319,18 @@ class LearnableDelayRNN(nn.Module):
                  w_efferent:torch.Tensor,
                  b_efferent:torch.Tensor):
         h_delayed = buffer[buffer_ptr]  # Get the current delayed hidden state
-        h_to_delay = torch.tanh(torch.nn.functional.linear(x_t, w_afferent, b_afferent) + h_delayed) # lateral is processed via buffer, already included in h_delayed
+        h_to_delay = torch.tanh(torch.nn.functional.linear(x_t, w_afferent, b_afferent) + h_delayed) # lateral is processed via buffer, already included in h_delayed # (batch_size, hidden_in)
         
         
-        ### Update buffer with new hidden state to be delayed
+        ### Update buffer with new hidden state to be delayed # 지연 시간 축으로 데이터 정렬
         credit_matrix = credit_matrix * lateral[None, :, :]  # (max_delay+1, hidden_out, hidden_in)
-        scattered = torch.einsum('dhi,bi->dbh', credit_matrix, h_to_delay)  # (max_delay+1, batch_size, hidden_out)
+        scattered = torch.einsum('dhi,bi->dbh', credit_matrix, h_to_delay)  # (max_delay+1, batch_size, hidden_out) # dot product
         
         # Shift the scattered values according to the current buffer pointer
         shifted_scattered = torch.roll(scattered, shifts=buffer_ptr, dims=0)
         
         # Add the shifted scattered values to the buffer, and update the buffer pointer (removing the oldest value)
-        buffer = buffer + shifted_scattered
+        buffer = buffer + shifted_scattered # 같은 시간에 도착한 지연들을 합침
         mask = torch.arange(max_delay + 1, out=buffer.new_empty(max_delay + 1)) == buffer_ptr # Remove the oldest value
         buffer = buffer * (~mask[:, None, None])  # Zero out the position at buffer_ptr
         buffer_ptr = (buffer_ptr + 1) % (max_delay + 1)  # Update the pointer
@@ -362,12 +362,12 @@ class LearnableDelayRNN(nn.Module):
         
         # Initialize buffer and get the initial delayed hidden state
         buffer = x.new_zeros(self.max_delay + 1, x.size(0), self.hidden_size) # (max_delay+1, batch_size, hidden_size)
-        buffer_ptr = 0  # Pointer to track the current position in the buffer
+        buffer_ptr = 0  # Pointer to track the current position in the buffer # 현재의 위치
         
         for t in range(x.size(1)):
-            x_t = x[:, t, :] # Batch size, input_size
+            x_t = x[:, t, :] # Batch size, input_size # 현재 타임스텝 슬라이싱
             buffer, buffer_ptr, y_t = self.step(x_t, credit_matrix, buffer, buffer_ptr)
-            y[:, t, :] = y_t
+            y[:, t, :] = y_t # 현재 스텝의 출력값 리스트 저장
         
         if return_seq is not None:
             if return_seq.shape != y.shape:

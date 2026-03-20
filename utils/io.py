@@ -6,10 +6,10 @@ from json import dump, load
 
 def _save_model_to_path(model:nn.Module, data: dict, path:Path):
     """모델 저장"""
-    torch.save(model.state_dict(), path / "model.pt")
-    with open(path.parent / "contents.json", "r") as f:
-        loaded_data:dict = load(f)
-    loaded_data[path.name] = data
+    torch.save(model.state_dict(), path / "model.pt") # weights & bias만 path 폴더 안에 model.pt라고 파일 저장
+    with open(path.parent / "contents.json", "r") as f: # 상위 폴더 읽기
+        loaded_data:dict = load(f) # 내용 -> 딕셔너리
+    loaded_data[path.name] = data # 데이터의 값 추가
     with open(path.parent / "contents.json", "w") as f:
         dump(loaded_data, f, indent=4)
 
