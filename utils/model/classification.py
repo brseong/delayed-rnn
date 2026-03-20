@@ -2,10 +2,12 @@ from typing import Any
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import math
 
 from jaxtyping import Float
 from utils.config import Config, ModelType
+from utils.model.DRNN import LearnableDelayRNNBackbone
 
 
 presets={
@@ -268,7 +270,7 @@ class SimpleTransformer(nn.Module):
         out = out.mean(dim=1)
         return out
     
-class LearnableDelayRNN(nn.Module):
+class LearnableDelayRNN(LearnableDelayRNNBackbone):
     def __init__(self, input_size:int, hidden_size:int, output_size:int, max_delay:int, config:Config):
         super().__init__()
         self.input_size = input_size
@@ -354,8 +356,8 @@ class LearnableDelayRNN(nn.Module):
                 x: Float[torch.Tensor, "batch_size time input_size"],
                 return_seq: torch.Tensor|None = None) \
                     -> Float[torch.Tensor, "batch_size time output_size"]:
-        # Precompute credit matrix (Valid until the taus are updated)
-        credit_matrix = self.calc_credit_matrix()
+        # Precompute credit matrix and gather-style weight matrix
+        W_rev = self.precompute_W_rev()
         
         # Initialize output tensor
         y = x.new_zeros(*x.shape[:-1], self.output_size)# To store outputs at each time step

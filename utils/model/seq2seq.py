@@ -9,6 +9,7 @@ from jaxtyping import Float, Int
 
 from utils.config import Config, ModelType
 from utils.random import clipped_gamma_sample
+from utils.model.DRNN import LearnableDelayRNNBackbone
 
 import torch
 import torch.nn as nn
@@ -422,32 +423,12 @@ class ThinkingGRU(nn.Module):
             think_steps=think_steps
         )
 
-class FastThinkingLearnableDelayRNN(nn.Module):
+class FastThinkingLearnableDelayRNN(LearnableDelayRNNBackbone):
     def __init__(self, input_size:int, hidden_size:int, num_classes:int, max_delay:int, config:Config):
-        super().__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
         self.max_think_steps = config.max_think_steps
-        self.config = config
-        
-        # If delay is 0 it is effectively a standard FFN, so it must be at least 1
-        assert max_delay >= 1, "max_delay must be at least 1"
-        self.max_delay = max_delay
-        self.device = config.device
-        
         self.vocab_size = num_classes + 1
         self.think_end_token = num_classes
-        self.output_size = self.vocab_size
-        
-        self.afferent = nn.Linear(self.input_size, hidden_size)
-        self.lateral = nn.Parameter(
-            torch.nn.init.xavier_uniform_(torch.empty(hidden_size, hidden_size))
-        )
-        self.efferent = nn.Linear(hidden_size, self.output_size)
-        
-        self.tau = nn.Parameter(max_delay * torch.rand_like(self.lateral) + 1)
-        self.scale_exponent = nn.Parameter(torch.zeros(hidden_size, device=self.device))
-        # self.scale_exponent = 0.5
+        super().__init__(input_size, hidden_size, self.vocab_size, max_delay, config)
 
     @staticmethod
     @torch.jit.script
@@ -559,14 +540,10 @@ class FastThinkingLearnableDelayRNN(nn.Module):
             N = x.size(1) - 3  
 
         # --- Pre-computation ---
-        credit_matrix = self.calc_credit_matrix()
-        # In the original code, credit_matrix[0] was cleared by (~mask) immediately after being read from buffer_ptr.
-        # So it has no future effect, and slicing from [1:] is mathematically equivalent.
-        W = credit_matrix[1:] * self.lateral[None, :, :]  # (max_delay, hidden, hidden)
-        W_rev = W.flip(0)  # Pre-flip to match the ordering of past records
+        W_rev = self.precompute_W_rev()
         
         # --- 1. Encoding stage ---
-        history = x.new_zeros(self.max_delay, batch_size, self.hidden_size)
+        history = self.init_history(batch_size, ref_tensor=x)
         ptr = 0 
         
         saved_history = history.new_zeros(history.size()) # (max_delay, batch_size, hidden_size)

@@ -7,6 +7,8 @@ class ModelType(Enum):
     RNN = auto() # auto : 알아서 숫자 부여
     LSTM = auto()
     GRU = auto()
+    Mamba = auto()
+    Transformer = auto()
     DelayedRNN = auto()
     
 def get_args():
@@ -39,14 +41,6 @@ def get_args():
 #         if cls not in cls._instances:
 #             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
 #         return cls._instances[cls]
-
-class ModelType(Enum): # 왜 한번 더 쓴거지???
-    RNN = auto()
-    LSTM = auto()
-    GRU = auto()
-    Mamba = auto()
-    Transformer = auto()
-    DelayedRNN = auto()
 
 @dataclass()
 class Config():
